@@ -1,0 +1,1 @@
+python run_model.py model_config_debug_remote.json input_files_remote.json unet

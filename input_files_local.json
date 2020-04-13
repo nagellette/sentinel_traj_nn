@@ -1,0 +1,35 @@
+{
+  "file_type": "image",
+  "working_path": "/home/nagellette/Desktop/final_data/",
+  "input_files": [
+    [
+      "_montreal_20160720_B02.tif",
+      "sentinel_msi"
+    ],
+    [
+      "_montreal_20160720_B03.tif",
+      "sentinel_msi"
+    ],
+    [
+      "_montreal_20160720_B04.tif",
+      "sentinel_msi"
+    ],
+    [
+      "_montreal_20160720_B08.tif",
+      "sentinel_msi"
+    ],
+    [
+      "output_trajectory_count.tif",
+      "min_max"
+    ],
+    [
+      "output_trajectory_speed_avg.tif",
+      "speed"
+    ],
+    [
+      "output_trajectory_speed_max.tif",
+      "speed"
+    ]
+  ],
+  "label_file": "_montreal_labels.tif"
+}

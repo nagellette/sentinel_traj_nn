@@ -1,0 +1,13 @@
+{
+  "file_type": "config",
+  "batch_size": 4,
+  "image_dim": {"x":  1024, "y":  1024},
+  "l_rate": 0.001,
+  "epochs": 5,
+  "data_split": {"train": 0.6, "test": 0.2, "validate": 0.2},
+  "augment_deg": 45,
+  "overlap": 0.1,
+  "shuffle": true,
+  "seed": true,
+  "epoch_limit": 100
+}
