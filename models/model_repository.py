@@ -100,8 +100,8 @@ class ModelRepository:
 
         self.model = tf.keras.Model(inputs=inputs_layer, outputs=output_layer)
 
-        opt = tf.keras.optimizers.Adam(lr=0.0001)
+        opt = tf.keras.optimizers.SGD(lr=0.001, decay=1e-6, momentum=0.9, nesterov=True)
 
         self.model.compile(optimizer=opt,
                            loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
-                           metrics=["accuracy", MeanIoU(num_classes=2)])
+                           metrics=[MeanIoU(num_classes=2)])

@@ -1,0 +1,2 @@
+epoch,accuracy,loss,mean_io_u,val_accuracy,val_loss,val_mean_io_u
+0,0.78435516,0.6354754438996315,0.24172589,0.94878423,0.5320577919483185,0.25

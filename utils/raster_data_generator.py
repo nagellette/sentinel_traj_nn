@@ -102,20 +102,24 @@ class RasterDataGenerator(tf.keras.utils.Sequence):
                     raster_as_array = rotate(raster_as_array, list_ID[2], cval=0.0)
 
                 train_batch.append(raster_as_array)
-                '''
+
                 if i == 1:
                     raster_as_array = raster_as_array * 255
                     raster_as_array = raster_as_array.astype(np.uint8)
-                    imsave("./debug/images/" + self.ext + "_" + str(list_ID[0]) + "_" + str(list_ID[1]) + ""
+
+                    imsave("../debug/images/" + self.ext + "_" + str(list_ID[0]) + "_" + str(list_ID[1]) + ""
                                                                                                           "-b2.png",
                            raster_as_array)
+
                 elif i == 13:
                     raster_as_array = raster_as_array * 200
                     raster_as_array = raster_as_array.astype(np.uint8)
+
                     imsave(
-                        "./debug/images/" + self.ext + "_" + str(list_ID[0]) + "_" + str(list_ID[1]) + "_b_speed.png",
+                        "../debug/images/" + self.ext + "_" + str(list_ID[0]) + "_" + str(list_ID[1]) + "_b_speed.png",
                         raster_as_array)
-                '''
+
+
             # fill data
             train_batch_all.append(train_batch)
 
@@ -129,14 +133,14 @@ class RasterDataGenerator(tf.keras.utils.Sequence):
             label_array = tf.keras.utils.to_categorical(np.array(label_array), num_classes=2)
 
             label_batch.append(label_array)
-            '''
-            imsave("./debug/images/" + self.ext + "_" + str(list_ID[0]) + "_" + str(list_ID[1]) + "_label_1_" + str(counter) + ".png",
+
+            imsave("../debug/images/" + self.ext + "_" + str(list_ID[0]) + "_" + str(list_ID[1]) + "_label_1_" + str(counter) + ".png",
                    label_array[:,:,0])
 
-            imsave("./debug/images/" + self.ext + "_" + str(list_ID[0]) + "_" + str(list_ID[1]) + "_label_2_" + str(counter) + ".png",
+            imsave("../debug/images/" + self.ext + "_" + str(list_ID[0]) + "_" + str(list_ID[1]) + "_label_2_" + str(counter) + ".png",
                    label_array[:,:,1])
             counter += 1
-            '''
+
         train_batch_all = np.array(train_batch_all)
         label_batch = np.array(label_batch)
 

@@ -1,1 +1,0 @@
-python run_model.py model_config_debug_local.json input_files_local.json unet

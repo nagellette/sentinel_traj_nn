@@ -56,7 +56,7 @@ class DataGenerator(keras.utils.Sequence):
             ximage = tf.keras.preprocessing.image.load_img(self.data_path + ID, color_mode='rgb',
                                                   target_size=self.dim, interpolation='nearest')
             image_to_append = tf.keras.preprocessing.image.img_to_array(ximage)
-            tf.keras.preprocessing.image.save_img("/Users/gengec/Desktop/code/sentinel_traj_nn/debug/images/mass/" + str(self.j) + "_" + ID, ximage)
+            # tf.keras.preprocessing.image.save_img("/home/nagellette/Desktop/codebases/sentinel_traj_nn/debug/images/mass/" + str(self.j) + "_" + ID, ximage)
             X.append(image_to_append / 255.)
 
             tf.keras.preprocessing.image.load_img(self.data_path + ID, color_mode='rgb',

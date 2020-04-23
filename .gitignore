@@ -1,6 +1,8 @@
 # Created by https://www.gitignore.io/api/linux,pycharm
 # Edit at https://www.gitignore.io/?templates=linux,pycharm
 
+# TODO: correct ignore data folders entry
+
 ### Linux ###
 *~
 output_models/
