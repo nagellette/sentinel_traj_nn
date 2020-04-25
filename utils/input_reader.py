@@ -126,19 +126,29 @@ class InputReader:
 
     def get_seed(self):
         try:
-            if self.json_data["seed"] is True:
-                return True
-            elif self.json_data["seed"] is False:
-                return False
+            return self.json_data["seed"]
         except KeyError:
-            print("Seed not provided, will not be seeded.")
+            print("Seed not provided, using 0.")
             pass
         except:
             raise
-        return False
+        return 0
 
     def get_epoch_limit(self):
         try:
             return self.json_data["epoch_limit"]
         except KeyError:
             pass
+
+    def get_test_model(self):
+        try:
+            if self.json_data["test_model"] is True:
+                return True
+            elif self.json_data["test_model"] is False:
+                return False
+        except KeyError:
+            print("Test model not provided, will not be tested.")
+            pass
+        except:
+            raise
+        return False

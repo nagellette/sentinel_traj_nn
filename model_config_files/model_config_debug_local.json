@@ -15,6 +15,7 @@
   "augment_deg": 90,
   "overlap": 0.2,
   "shuffle": true,
-  "seed": false,
-  "epoch_limit": 10
+  "seed": 10,
+  "epoch_limit": 10,
+  "test_model": true
 }

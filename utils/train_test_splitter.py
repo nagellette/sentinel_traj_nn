@@ -4,7 +4,7 @@ import sys
 
 
 class TrainTestValidateSplitter:
-    def __init__(self, sample_file, train, test, validation, dim, augment=0, overlap=0):
+    def __init__(self, sample_file, train, test, validation, dim, augment=0, overlap=0, seed=0):
         '''
         Train, Test, Validation data list creator.
 
@@ -15,8 +15,9 @@ class TrainTestValidateSplitter:
         :param dim: dimensions of the batch
         :param augment: augmentation value in degrees
         :param overlap: percentage of the overlap between batch
-        :param seed: seed Yes/No, Yes if reproduction needed
+        :param seed: if provided, use as seed value
         '''
+
         self.sample_file = sample_file
         self.train = train
         self.test = test
@@ -24,6 +25,7 @@ class TrainTestValidateSplitter:
         self.dim = dim
         self.augment = augment
         self.overlap = overlap
+        self.seed = seed
 
         raster_file = gdal.Open(sample_file)
         self.X = raster_file.RasterXSize
@@ -65,8 +67,9 @@ class TrainTestValidateSplitter:
         input_set_ID_list = np.arange(len(self.data_set))
 
         # shuffle the list
-        np.random.seed(0)
-        np.random.shuffle(input_set_ID_list)
+        if self.seed is not None:
+            np.random.seed(self.seed)
+            np.random.shuffle(input_set_ID_list)
 
         # create train, test boundaries as integer
         train_count = int(self.train * len(self.data_set))
