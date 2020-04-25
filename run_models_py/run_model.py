@@ -82,9 +82,9 @@ history = model.fit_generator(train_data_generator, validation_data=validation_d
                               shuffle=SHUFFLE, callbacks=[csv_logger, reduce_lr, tb_callback], steps_per_epoch=EPOCH_LIMIT,
                               validation_steps=EPOCH_LIMIT)
 
-os.system("mv " + "../logs/" + sys.argv[3] + "_" + starttime + ".csv " + "_" + "../logs/" + sys.argv[3] + "_" + starttime
+os.system("mv " + "../logs/" + sys.argv[3] + "_" + starttime + ".csv ../logs/" + sys.argv[3] + "_" + starttime
           + "_completed.csv ")
 
 # TODO: Add log file writer for config of the run with same file name as csv log file.
 
-model.save("./output_models/" + sys.argv[3] + "_" + starttime)
+model.save("../output_models/" + sys.argv[3] + "_" + starttime)

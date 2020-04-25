@@ -6,7 +6,7 @@
     "y": 256
   },
   "l_rate": 0.001,
-  "epochs": 50,
+  "epochs": 1,
   "data_split": {
     "train": 0.7,
     "test": 0.1,
@@ -16,5 +16,5 @@
   "overlap": 0.2,
   "shuffle": true,
   "seed": false,
-  "epoch_limit": 500
+  "epoch_limit": 10
 }

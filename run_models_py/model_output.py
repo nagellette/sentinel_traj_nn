@@ -3,9 +3,10 @@ from utils import raster_data_generator
 from utils.train_test_splitter import TrainTestValidateSplitter
 from utils.input_reader import InputReader
 import sys
-from skimage.io import imsave
+from PIL import Image
+import numpy as np
 
-model = tf.keras.models.load_model("../run_models_py/output_models/unet_2020-04-21-11:07:27", compile=True)
+model = tf.keras.models.load_model("../output_models/unet_2020-04-21-11:07:27", compile=True)
 
 # read input and configuration files
 config = InputReader(sys.argv[1])
@@ -27,8 +28,13 @@ SEED = config.get_seed()
 EPOCH_LIMIT = config.get_epoch_limit()
 
 # splitting data into train, test and validation
-data_splitter = TrainTestValidateSplitter(work_directory + label_path, TRAIN_SIZE, TEST_SIZE, VALIDATE_SIZE, IMAGE_DIMS,
-                                          AUGMENT, OVERLAP)
+data_splitter = TrainTestValidateSplitter(work_directory + label_path,
+                                          TRAIN_SIZE,
+                                          TEST_SIZE,
+                                          VALIDATE_SIZE,
+                                          IMAGE_DIMS,
+                                          AUGMENT,
+                                          OVERLAP)
 
 # train, test, validate = data_splitter._data_sets()
 train_list, test_list, validation_list = data_splitter.get_train_test_validation()
@@ -40,12 +46,20 @@ test_data_generator = raster_data_generator.RasterDataGenerator(file_names=file_
                                                                 batch_size=BATCH_SIZE,
                                                                 dim=IMAGE_DIMS,
                                                                 shuffle=SHUFFLE,
-                                                                ext="test")
+                                                                ext="test",
+                                                                save_image_file="../debug/images/")
 
 predictions = model.predict_generator(test_data_generator, steps=10)
 
 i = predictions.shape
 i = i[0]
 for j in range(i):
-    imsave("../debug/images/predict_" + str(j) + "_1.png", predictions[j,:,:,0])
-    imsave("../debug/images/predict_" + str(j) + "_2.png", predictions[j,:,:,1])
+    img = predictions[j,:,:,0] * 255.
+    img = img.astype(np.uint8)
+    img = Image.fromarray(img, 'L')
+    img.save("../debug/images/predict_" + str(j) + "_1.png")
+
+    img = predictions[j,:,:,1] * 255.
+    img = img.astype(np.uint8)
+    img = Image.fromarray(img, 'L')
+    img.save("../debug/images/predict_" + str(j) + "_2.png")
