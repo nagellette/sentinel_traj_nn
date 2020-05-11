@@ -8,7 +8,7 @@ class InputReader:
         Input images file reader
         :param file_path: Input json file path.
         '''
-
+        # TODO: add srcnn control variables
         self.file_path = file_path
 
         try:

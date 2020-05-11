@@ -2,11 +2,11 @@
   "file_type": "config",
   "batch_size": 1,
   "image_dim": {
-    "x": 256,
-    "y": 256
+    "x": 512,
+    "y": 512
   },
   "l_rate": 0.001,
-  "epochs": 1,
+  "epochs": 60,
   "data_split": {
     "train": 0.7,
     "test": 0.1,
@@ -16,6 +16,6 @@
   "overlap": 0.2,
   "shuffle": true,
   "seed": 10,
-  "epoch_limit": 10,
+  "epoch_limit": 75,
   "test_model": true
 }

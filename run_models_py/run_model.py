@@ -9,6 +9,9 @@ import os
 from PIL import Image
 import numpy as np
 
+# set starttime variable for output file naming
+starttime = datetime.now().strftime("%Y-%m-%d-%H:%M:%S")
+
 # read input and configuration files
 config = InputReader(sys.argv[1])
 image_inputs = InputReader(sys.argv[2])
@@ -46,6 +49,10 @@ print("Train data count:", str(len(train_list)))
 print("Test data count:", str(len(test_list)))
 print("Validation data count:", str(len(validation_list)))
 
+# TODO: move debut folder control to json input file
+debug_folder = "../debug/images/" + sys.argv[3] + "_" + starttime + "/"
+os.system("mkdir " + debug_folder)
+
 # create data generators
 train_data_generator = raster_data_generator.RasterDataGenerator(file_names=file_names,
                                                                  file_path=work_directory,
@@ -54,7 +61,9 @@ train_data_generator = raster_data_generator.RasterDataGenerator(file_names=file
                                                                  batch_size=BATCH_SIZE,
                                                                  dim=IMAGE_DIMS,
                                                                  shuffle=SHUFFLE,
-                                                                 ext="train")
+                                                                 ext="train",
+                                                                 srcnn_count=4,
+                                                                 non_srcnn_count=False)
 
 validation_data_generator = raster_data_generator.RasterDataGenerator(file_names=file_names,
                                                                       file_path=work_directory,
@@ -63,7 +72,9 @@ validation_data_generator = raster_data_generator.RasterDataGenerator(file_names
                                                                       batch_size=BATCH_SIZE,
                                                                       dim=IMAGE_DIMS,
                                                                       shuffle=SHUFFLE,
-                                                                      ext="val")
+                                                                      ext="val",
+                                                                      srcnn_count=4,
+                                                                      non_srcnn_count=False)
 
 test_data_generator = raster_data_generator.RasterDataGenerator(file_names=file_names,
                                                                 file_path=work_directory,
@@ -73,17 +84,22 @@ test_data_generator = raster_data_generator.RasterDataGenerator(file_names=file_
                                                                 dim=IMAGE_DIMS,
                                                                 shuffle=SHUFFLE,
                                                                 ext="test",
-                                                                save_image_file="../debug/images/")
+                                                                save_image_file=debug_folder,
+                                                                srcnn_count=4,
+                                                                non_srcnn_count=False)
 
 # create model
-model = ModelRepository(sys.argv[3], IMAGE_DIMS, len(file_names), BATCH_SIZE).get_model()
+# TODO: remove hard coding of srcnn layer count
+# TODO: IoU callback test + replace if a custom version needed
+model = ModelRepository(sys.argv[3], IMAGE_DIMS, len(file_names), BATCH_SIZE, srcnn_count=4).get_model()
 
 # build model with defining input parameters
-model.build([IMAGE_DIMS[0], IMAGE_DIMS[1], len(file_names)])
+if sys.argv[3] == "unet":
+    model.build([IMAGE_DIMS[0], IMAGE_DIMS[1], len(file_names)])
+elif sys.argv[3] == "srcnn_unet":
+    # TODO: remove hard coded values
+    model.build([(512, 512, 1), (512, 256, 1), (512, 512, 1), (512, 512, 1)])
 print(model.summary())
-
-# set starttime variable for output file naming
-starttime = datetime.now().strftime("%Y-%m-%d-%H:%M:%S")
 
 # create csv logger callback
 csv_logger = tf.keras.callbacks.CSVLogger("../logs/" +
@@ -101,6 +117,7 @@ reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(monitor="val_loss",
                                                  min_lr=0.0001)
 
 # train model
+# TODO: creatae time spent per epoch and test callback as custom callback
 history = model.fit_generator(train_data_generator,
                               validation_data=validation_data_generator,
                               epochs=EPOCH,
@@ -129,17 +146,19 @@ model.save("../output_models/" +
 
 if TEST_MODEL:
     print("Creating test output:")
-    predictions = model.predict_generator(test_data_generator, steps=10) # TODO: steps hard coded
+    predictions = model.predict_generator(test_data_generator, steps=100)  # TODO: steps hard coded
 
     i = predictions.shape
+    print("shape of predictions")
+    print(i)
     i = i[0]
     for j in range(i):
         img = predictions[j, :, :, 0] * 255.
         img = img.astype(np.uint8)
         img = Image.fromarray(img, 'L')
-        img.save("../debug/images/predict_" + str(j) + "_1.png")
+        img.save(debug_folder + "/" + str(j) + "_predict_" + str(j) + "_1.png")
 
         img = predictions[j, :, :, 1] * 255.
         img = img.astype(np.uint8)
         img = Image.fromarray(img, 'L')
-        img.save("../debug/images/predict_" + str(j) + "_2.png")
+        img.save(debug_folder + "/" + str(j) + "_predict_" + str(j) + "_2.png")
