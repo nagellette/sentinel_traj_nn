@@ -53,8 +53,6 @@ class RasterDataGenerator(tf.keras.utils.Sequence):
         self.num_of_classes = num_of_classes
         self.srcnn_count = srcnn_count
         self.non_scrnn_count = non_srcnn_count
-
-        # TODO: remove after debug
         self.filename_counter = 0
 
         self.raster_files = []
@@ -124,9 +122,12 @@ class RasterDataGenerator(tf.keras.utils.Sequence):
 
                 # applying data rotation augmentation
                 if list_ID[2] != 0:
+                    # WARNING: empty areas generated except the 90, 180 rotations
                     raster_as_array = rotate(raster_as_array, list_ID[2], cval=0.0)
 
                 train_batch.append(raster_as_array)
+                # image save if save image set to True - file name counter added to the saved file name with
+                # file name coutner.
                 if self.save_image_file is not None:
                     raster_as_array = raster_as_array * 255
                     raster_as_array = raster_as_array.astype(np.uint8)
@@ -141,7 +142,7 @@ class RasterDataGenerator(tf.keras.utils.Sequence):
                         str(i) +
                         ".jpg")
 
-            # fill data
+            # fill data to main batch
             train_batch_all.append(train_batch)
 
             # fill label
@@ -149,12 +150,15 @@ class RasterDataGenerator(tf.keras.utils.Sequence):
                                                                          self.dim[1])
 
             if list_ID[2] != 0:
-                # TODO: overcome the empty areas for the cases where rotation is not the exact product of 90
+                # WARNING: empty areas generated except the 90, 180 rotations
                 label_array = rotate(label_array, list_ID[2], cval=0.0)
 
+            # create categorical labels, one layer per class. two layers created if labels binary.
             label_array = tf.keras.utils.to_categorical(np.array(label_array), num_classes=self.num_of_classes)
-
             label_batch.append(label_array)
+
+            # image save if save image set to True - file name counter added to the saved file name with
+            # file name coutner
             if self.save_image_file is not None:
                 for i in range(0, self.num_of_classes):
                     label_array_img = label_array[:, :, i] * 255.
@@ -173,50 +177,30 @@ class RasterDataGenerator(tf.keras.utils.Sequence):
                         str(counter) +
                         ".jpg")
 
+            # incrementing file name counter
             self.filename_counter += 1
 
+        # converting input to model input data dimensions and data formats
         train_batch_all = np.array(train_batch_all)
-        train_batch_all = np.rollaxis(train_batch_all, 2, 1)
-        train_batch_all = np.rollaxis(train_batch_all, 3, 2)
+        train_batch_all = np.rollaxis(train_batch_all, 2, 1)    # converting from "bands first" tensor to "bands last" tensor
+        train_batch_all = np.rollaxis(train_batch_all, 3, 2)    # converting from "bands first" tensor to "bands last" tensor, continued
         label_batch = np.array(label_batch)
 
         if self.srcnn_count == 0:
-            # train_batch_all = np.reshape(train_batch_all, (self.batch_size, self.dim[0], self.dim[1], len(self.raster_files)), order='C')
-            '''
-            # debug start
-            for i in range(len(self.raster_files)):
-                raster_as_array = train_batch_all[0,:,:,i] * 255
-                raster_as_array = raster_as_array.astype(np.uint8)
-                img = Image.fromarray(raster_as_array, 'L')
-                img.save(
-                    "../debug/test/" +
-                    self.ext + "_" + str(self.counter_temp) + "_" +
-                     str(i) +
-                    ".jpg")
-
-            for i in range(0, 2):
-                raster_as_array = label_batch[0,:,:,i] * 255
-                raster_as_array = raster_as_array.astype(np.uint8)
-                img = Image.fromarray(raster_as_array, 'L')
-                img.save(
-                    "../debug/test/" +
-                    self.ext + "_" + str(self.counter_temp) + "_" +
-                     str(i) + "_label" +
-                    ".jpg")
-            # debug end
-            self.counter_temp += 1
-            '''
-
+            # return as raw if SRCNN is not used.
             return train_batch_all, label_batch
 
         else:
-            # TODO: add algorithm logic definition
+            # custom return once SRCNN is used.
             train_batch_srcnn = []
+
+            # fill in the layers one by one which will run through SRCNN
             for i in range(self.srcnn_count):
                 temp_srcnn = train_batch_all[:, :, :, i]
                 temp_srcnn = temp_srcnn.reshape([self.batch_size, self.dim[0], self.dim[1], 1])
                 train_batch_srcnn.append(temp_srcnn)
 
+            # create one stack of layers which will skip SRCNN TODO: not tested. check outputs dimensions and actual outputs
             if self.non_scrnn_count:
                 temp_srcnn = train_batch_all[:,
                              (len(self.raster_files) - self.srcnn_count):(len(self.raster_files) - 1), :, :]

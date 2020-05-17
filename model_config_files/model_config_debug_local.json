@@ -1,6 +1,6 @@
 {
   "file_type": "config",
-  "batch_size": 1,
+  "batch_size": 2,
   "image_dim": {
     "x": 512,
     "y": 512
@@ -12,10 +12,12 @@
     "test": 0.1,
     "validate": 0.2
   },
-  "augment_deg": 90,
+  "augment_deg": 45,
   "overlap": 0.2,
   "shuffle": true,
   "seed": 10,
-  "epoch_limit": 75,
-  "test_model": true
+  "epoch_limit": 200,
+  "test_model": true,
+  "test_model_count": 200,
+  "srcnn_count": 0
 }

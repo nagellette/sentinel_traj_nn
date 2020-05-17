@@ -31,6 +31,9 @@ SHUFFLE = config.get_shuffle()
 SEED = config.get_seed()
 EPOCH_LIMIT = config.get_epoch_limit()
 TEST_MODEL = config.get_test_model()
+TEST_MODEL_LENGTH = config.get_test_model_count()
+SRCNN_COUNT = config.get_srcnn_count()
+
 
 # splitting data into train, test and validation
 data_splitter = TrainTestValidateSplitter(work_directory + label_path,
@@ -49,9 +52,9 @@ print("Train data count:", str(len(train_list)))
 print("Test data count:", str(len(test_list)))
 print("Validation data count:", str(len(validation_list)))
 
-# TODO: move debut folder control to json input file
-debug_folder = "../debug/images/" + sys.argv[3] + "_" + starttime + "/"
-os.system("mkdir " + debug_folder)
+# define output folder
+output_folder = "../output/images/" + sys.argv[3] + "_" + starttime + "/"
+os.system("mkdir " + output_folder)
 
 # create data generators
 train_data_generator = raster_data_generator.RasterDataGenerator(file_names=file_names,
@@ -62,7 +65,7 @@ train_data_generator = raster_data_generator.RasterDataGenerator(file_names=file
                                                                  dim=IMAGE_DIMS,
                                                                  shuffle=SHUFFLE,
                                                                  ext="train",
-                                                                 srcnn_count=4,
+                                                                 srcnn_count=SRCNN_COUNT,
                                                                  non_srcnn_count=False)
 
 validation_data_generator = raster_data_generator.RasterDataGenerator(file_names=file_names,
@@ -73,36 +76,45 @@ validation_data_generator = raster_data_generator.RasterDataGenerator(file_names
                                                                       dim=IMAGE_DIMS,
                                                                       shuffle=SHUFFLE,
                                                                       ext="val",
-                                                                      srcnn_count=4,
+                                                                      srcnn_count=SRCNN_COUNT,
                                                                       non_srcnn_count=False)
 
 test_data_generator = raster_data_generator.RasterDataGenerator(file_names=file_names,
                                                                 file_path=work_directory,
                                                                 label_path=label_path,
                                                                 generation_list=test_list,
-                                                                batch_size=BATCH_SIZE,
+                                                                batch_size=1,
                                                                 dim=IMAGE_DIMS,
                                                                 shuffle=SHUFFLE,
                                                                 ext="test",
-                                                                save_image_file=debug_folder,
-                                                                srcnn_count=4,
+                                                                save_image_file=output_folder,
+                                                                srcnn_count=SRCNN_COUNT,
                                                                 non_srcnn_count=False)
 
 # create model
-# TODO: remove hard coding of srcnn layer count
 # TODO: IoU callback test + replace if a custom version needed
-model = ModelRepository(sys.argv[3], IMAGE_DIMS, len(file_names), BATCH_SIZE, srcnn_count=4).get_model()
+model = ModelRepository(sys.argv[3], IMAGE_DIMS, len(file_names), BATCH_SIZE, srcnn_count=SRCNN_COUNT).get_model()
 
 # build model with defining input parameters
 if sys.argv[3] == "unet":
+    #build model with default provided dimensions for UNET
     model.build([IMAGE_DIMS[0], IMAGE_DIMS[1], len(file_names)])
 elif sys.argv[3] == "srcnn_unet":
-    # TODO: remove hard coded values
-    model.build([(512, 512, 1), (512, 256, 1), (512, 512, 1), (512, 512, 1)])
+    build_input_dimensions = []
+    # create input shapes which will run through SRCNN
+    for i in range(0, SRCNN_COUNT):
+        build_input_dimensions.append((IMAGE_DIMS[0], IMAGE_DIMS[1], 1))
+
+    # create input shapes which won't run through SRCNN, if any
+    if SRCNN_COUNT != len(file_names):
+        build_input_dimensions.append((IMAGE_DIMS[0], IMAGE_DIMS[1], len(file_names) - SRCNN_COUNT))
+
+    # build model
+    model.build(build_input_dimensions)
 print(model.summary())
 
 # create csv logger callback
-csv_logger = tf.keras.callbacks.CSVLogger("../logs/" +
+csv_logger = tf.keras.callbacks.CSVLogger("../output/logs/" +
                                           sys.argv[3] +
                                           "_" +
                                           starttime +
@@ -117,7 +129,7 @@ reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(monitor="val_loss",
                                                  min_lr=0.0001)
 
 # train model
-# TODO: creatae time spent per epoch and test callback as custom callback
+# TODO: create time spent per epoch and test callback as custom callback
 history = model.fit_generator(train_data_generator,
                               validation_data=validation_data_generator,
                               epochs=EPOCH,
@@ -127,10 +139,10 @@ history = model.fit_generator(train_data_generator,
                               validation_steps=EPOCH_LIMIT)
 
 # mark output log file as complete if train succeded
-os.system("mv ../logs/" +
+os.system("mv ../output/logs/" +
           sys.argv[3] +
           "_" + starttime +
-          ".csv ../logs/" +
+          ".csv ../output/logs/" +
           sys.argv[3] +
           "_" +
           starttime
@@ -139,14 +151,14 @@ os.system("mv ../logs/" +
 # TODO: Add log file writer for config of the run with same file name as csv log file.
 
 # save model
-model.save("../output_models/" +
+model.save("../output/output_models/" +
            sys.argv[3] +
            "_" +
            starttime)
 
 if TEST_MODEL:
     print("Creating test output:")
-    predictions = model.predict_generator(test_data_generator, steps=100)  # TODO: steps hard coded
+    predictions = model.predict_generator(test_data_generator, steps=TEST_MODEL_LENGTH)
 
     i = predictions.shape
     print("shape of predictions")
@@ -156,9 +168,9 @@ if TEST_MODEL:
         img = predictions[j, :, :, 0] * 255.
         img = img.astype(np.uint8)
         img = Image.fromarray(img, 'L')
-        img.save(debug_folder + "/" + str(j) + "_predict_" + str(j) + "_1.png")
+        img.save(output_folder + "/" + str(j) + "_predict_" + str(j) + "_1.png")
 
         img = predictions[j, :, :, 1] * 255.
         img = img.astype(np.uint8)
         img = Image.fromarray(img, 'L')
-        img.save(debug_folder + "/" + str(j) + "_predict_" + str(j) + "_2.png")
+        img.save(output_folder + "/" + str(j) + "_predict_" + str(j) + "_2.png")

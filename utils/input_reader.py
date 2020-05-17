@@ -152,3 +152,15 @@ class InputReader:
         except:
             raise
         return False
+
+    def get_srcnn_count(self):
+        try:
+            return self.json_data["srcnn_count"]
+        except KeyError:
+            pass
+
+    def get_test_model_count(self):
+        try:
+            return self.json_data["test_model_count"]
+        except KeyError:
+            pass

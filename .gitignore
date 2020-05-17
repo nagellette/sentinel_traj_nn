@@ -1,9 +1,9 @@
 # ignore folders
-output_models/*
-logs/*
-debug/*
+outputs/output_models/*
+output/logs/*
+output/*
 
 # ignore folders exceptions
-!output_models/.gitkeep
-!logs/.gitkeep
-!debug/.gitkeep
+!outputs/output_models/.gitkeep
+!output/logs/.gitkeep
+!output/.gitkeep

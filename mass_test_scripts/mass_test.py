@@ -21,7 +21,7 @@ validation_generator = DataGenerator(valid_data, valid_label, batch_size=1, dim=
 model.build([256, 256, 3])
 print(model.summary())
 
-csv_logger = tf.keras.callbacks.CSVLogger("../logs/mass.csv", append=False, separator=",")
+csv_logger = tf.keras.callbacks.CSVLogger("../output/logs/mass.csv", append=False, separator=",")
 history = model.fit_generator(training_generator, epochs=40,
                               shuffle=True, callbacks=[csv_logger], steps_per_epoch=200, validation_steps=20,
                               validation_data=validation_generator
