@@ -2,6 +2,7 @@ import tensorflow as tf
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dropout, Conv2DTranspose, concatenate, BatchNormalization
 import sys
 from tensorflow.keras.metrics import Recall, Precision, MeanIoU
+from utils.custom_metrics import MeanIoU_custom
 
 
 
@@ -121,7 +122,7 @@ class ModelRepository:
                            metrics=["accuracy",
                                     Precision(),
                                     Recall(),
-                                    MeanIoU(num_classes=2)])
+                                    MeanIoU_custom(num_classes=2)])
 
     def srcnn_unet(self, dim, input_channels, batch_size, srcnn_count):
 
@@ -214,4 +215,4 @@ class ModelRepository:
                            metrics=["accuracy",
                                     Precision(),
                                     Recall(),
-                                    MeanIoU(num_classes=2)])
+                                    MeanIoU_custom(num_classes=2)])

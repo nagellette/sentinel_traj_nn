@@ -1,0 +1,23 @@
+{
+  "file_type": "image",
+  "working_path": "/Users/gengec/Desktop/desktop/final_data_small/",
+  "input_files": [
+    [
+      "_montreal_20160720_B02_small.tif",
+      "sentinel_msi"
+    ],
+    [
+      "_montreal_20160720_B03_small.tif",
+      "sentinel_msi"
+    ],
+    [
+      "_montreal_20160720_B04_small.tif",
+      "sentinel_msi"
+    ],
+    [
+      "_montreal_20160720_B08_small.tif",
+      "sentinel_msi"
+    ]
+  ],
+  "label_file": "_montreal_labels_small.tif"
+}
