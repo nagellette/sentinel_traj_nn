@@ -1,6 +1,7 @@
 import numpy as np
 import gdal
 import sys
+from utils.calc_augmentation_dim import calc_augmentation_dim
 
 
 class TrainTestValidateSplitter:
@@ -23,6 +24,7 @@ class TrainTestValidateSplitter:
         self.test = test
         self.validation = validation
         self.dim = dim
+        self.dim_initial = dim
         self.augment = augment
         self.overlap = overlap
         self.seed = seed
@@ -60,7 +62,16 @@ class TrainTestValidateSplitter:
         for x_i in range(0, x_count):
             for y_i in range(0, y_count):
                 for augment_i in range(0, augment_count):
-                    self.data_set.append([self.dim[0] * x_i, self.dim[1] * y_i, self.augment * augment_i])
+                    new_dim, shift = calc_augmentation_dim(self.dim_initial[0], self.augment * augment_i)
+                    if (self.dim[0] * x_i) - shift >= 0 and \
+                            (self.dim[1] * y_i) - shift >= 0 and \
+                            (self.dim[0] * x_i) + new_dim <= self.X and \
+                            (self.dim[1] * y_i) + new_dim <= self.Y:
+                        self.data_set.append([self.dim[0] * x_i,
+                                              self.dim[1] * y_i,
+                                              self.augment * augment_i,
+                                              new_dim,
+                                              shift])
 
     def get_train_test_validation(self):
         # get list of files and generate numbered list

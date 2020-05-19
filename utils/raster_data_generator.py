@@ -1,13 +1,10 @@
-'''
-Modified version of https://stanford.edu/~shervine/blog/keras-how-to-generate-data-on-the-fly
-'''
-
 import tensorflow as tf
 import gdal
 import numpy as np
 from skimage.transform import rotate
 from utils.raster_standardize import raster_standardize
 from PIL import Image
+from utils.calc_augmentation_dim import calc_augmentation_dim
 
 
 class RasterDataGenerator(tf.keras.utils.Sequence):
@@ -115,7 +112,7 @@ class RasterDataGenerator(tf.keras.utils.Sequence):
 
                 # standardizing raster array values according to the data type
                 raster_as_array = raster_standardize(
-                    raster_band.ReadAsArray(list_ID[0], list_ID[1], self.dim[0], self.dim[1]),
+                    raster_band.ReadAsArray(list_ID[0] - list_ID[4], list_ID[1] - list_ID[4], list_ID[3], list_ID[3]),
                     raster_file[1],
                     raster_file[2],
                     raster_file[3])
@@ -124,6 +121,8 @@ class RasterDataGenerator(tf.keras.utils.Sequence):
                 if list_ID[2] != 0:
                     # WARNING: empty areas generated except the 90, 180 rotations
                     raster_as_array = rotate(raster_as_array, list_ID[2], cval=0.0)
+                    if list_ID[2] % 90 != 0:
+                        raster_as_array = raster_as_array[list_ID[4]:-list_ID[4], list_ID[4]:-list_ID[4]]
 
                 train_batch.append(raster_as_array)
                 # image save if save image set to True - file name counter added to the saved file name with
@@ -138,6 +137,8 @@ class RasterDataGenerator(tf.keras.utils.Sequence):
                         str(list_ID[0]) +
                         "_" +
                         str(list_ID[1]) +
+                        "_" +
+                        str(list_ID[2]) +
                         "-b" +
                         str(i) +
                         ".jpg")
@@ -146,12 +147,15 @@ class RasterDataGenerator(tf.keras.utils.Sequence):
             train_batch_all.append(train_batch)
 
             # fill label
-            label_array = self.label_raster.GetRasterBand(1).ReadAsArray(list_ID[0], list_ID[1], self.dim[0],
-                                                                         self.dim[1])
+            label_array = self.label_raster.GetRasterBand(1).ReadAsArray(list_ID[0] - list_ID[4],
+                                                                         list_ID[1] - list_ID[4], list_ID[3],
+                                                                         list_ID[3])
 
             if list_ID[2] != 0:
                 # WARNING: empty areas generated except the 90, 180 rotations
                 label_array = rotate(label_array, list_ID[2], cval=0.0)
+                if list_ID[2] % 90 != 0:
+                    label_array = label_array[list_ID[4]:-list_ID[4], list_ID[4]:-list_ID[4]]
 
             # create categorical labels, one layer per class. two layers created if labels binary.
             label_array = tf.keras.utils.to_categorical(np.array(label_array), num_classes=self.num_of_classes)
@@ -171,6 +175,8 @@ class RasterDataGenerator(tf.keras.utils.Sequence):
                         str(list_ID[0]) +
                         "_" +
                         str(list_ID[1]) +
+                        "_" +
+                        str(list_ID[2]) +
                         "_label_" +
                         str(i) +
                         "_" +
@@ -182,8 +188,10 @@ class RasterDataGenerator(tf.keras.utils.Sequence):
 
         # converting input to model input data dimensions and data formats
         train_batch_all = np.array(train_batch_all)
-        train_batch_all = np.rollaxis(train_batch_all, 2, 1)    # converting from "bands first" tensor to "bands last" tensor
-        train_batch_all = np.rollaxis(train_batch_all, 3, 2)    # converting from "bands first" tensor to "bands last" tensor, continued
+        train_batch_all = np.rollaxis(train_batch_all, 2,
+                                      1)  # converting from "bands first" tensor to "bands last" tensor
+        train_batch_all = np.rollaxis(train_batch_all, 3,
+                                      2)  # converting from "bands first" tensor to "bands last" tensor, continued
         label_batch = np.array(label_batch)
 
         if self.srcnn_count == 0:

@@ -143,6 +143,8 @@ class ModelRepository:
 
         main_inputs = concatenate(input_conc_layers)
 
+        # TODO: replace code with Unet method to remove code duplication
+
         conv1 = Conv2D(64, (3, 3), activation="relu", padding="same")(main_inputs)
         conv1 = BatchNormalization()(conv1)
         conv1 = Conv2D(64, (3, 3), activation="relu", padding="same")(conv1)
