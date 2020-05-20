@@ -65,7 +65,6 @@ train_data_generator = raster_data_generator.RasterDataGenerator(file_names=file
                                                                  dim=IMAGE_DIMS,
                                                                  shuffle=SHUFFLE,
                                                                  ext="train",
-                                                                 save_image_file=output_folder,
                                                                  srcnn_count=SRCNN_COUNT,
                                                                  non_srcnn_count=False)
 

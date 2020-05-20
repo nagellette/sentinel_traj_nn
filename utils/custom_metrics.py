@@ -15,10 +15,10 @@ class MeanIoU_custom(Metric):
     Customized version of
     """
 
-    def __init__(self, num_classes, treshold=0.5, name=None, dtype=None):
+    def __init__(self, num_classes, threshold=0.5, name=None, dtype=None):
         super(MeanIoU_custom, self).__init__(name=name, dtype=dtype)
         self.num_classes = num_classes
-        self.treshold = treshold
+        self.threshold = threshold
 
         # Variable to accumulate the predictions in the confusion matrix. Setting
         # the type to be `float64` as required by confusion_matrix_ops.
@@ -43,7 +43,7 @@ class MeanIoU_custom(Metric):
         """
 
         y_true = math_ops.cast(y_true, self._dtype)
-        y_pred = tf.where(y_pred >= self.treshold, tf.zeros_like(y_pred), tf.ones_like(y_pred))
+        y_pred = tf.where(y_pred >= self.threshold, tf.zeros_like(y_pred), tf.ones_like(y_pred))
         y_pred = math_ops.cast(y_pred, self._dtype)
 
         # Flatten the input if its rank > 1.

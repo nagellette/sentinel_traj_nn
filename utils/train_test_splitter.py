@@ -24,6 +24,7 @@ class TrainTestValidateSplitter:
         self.test = test
         self.validation = validation
         self.dim = dim
+        # dim_initial added for future use of original dimensions
         self.dim_initial = dim
         self.augment = augment
         self.overlap = overlap
@@ -63,6 +64,7 @@ class TrainTestValidateSplitter:
             for y_i in range(0, y_count):
                 for augment_i in range(0, augment_count):
                     new_dim, shift = calc_augmentation_dim(self.dim_initial[0], self.augment * augment_i)
+                    # check if the new dimensions are out of main image dimensions before adding image info to main list
                     if (self.dim[0] * x_i) - shift >= 0 and \
                             (self.dim[1] * y_i) - shift >= 0 and \
                             (self.dim[0] * x_i) + new_dim <= self.X and \

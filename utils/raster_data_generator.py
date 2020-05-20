@@ -4,7 +4,6 @@ import numpy as np
 from skimage.transform import rotate
 from utils.raster_standardize import raster_standardize
 from PIL import Image
-from utils.calc_augmentation_dim import calc_augmentation_dim
 
 
 class RasterDataGenerator(tf.keras.utils.Sequence):
@@ -119,9 +118,9 @@ class RasterDataGenerator(tf.keras.utils.Sequence):
 
                 # applying data rotation augmentation
                 if list_ID[2] != 0:
-                    # WARNING: empty areas generated except the 90, 180 rotations
                     raster_as_array = rotate(raster_as_array, list_ID[2], cval=0.0)
                     if list_ID[2] % 90 != 0:
+                        # cropping image to model input dimensions
                         raster_as_array = raster_as_array[list_ID[4]:-list_ID[4], list_ID[4]:-list_ID[4]]
 
                 train_batch.append(raster_as_array)
@@ -150,11 +149,11 @@ class RasterDataGenerator(tf.keras.utils.Sequence):
             label_array = self.label_raster.GetRasterBand(1).ReadAsArray(list_ID[0] - list_ID[4],
                                                                          list_ID[1] - list_ID[4], list_ID[3],
                                                                          list_ID[3])
-
+            # applying data rotation augmentation to label image
             if list_ID[2] != 0:
-                # WARNING: empty areas generated except the 90, 180 rotations
                 label_array = rotate(label_array, list_ID[2], cval=0.0)
                 if list_ID[2] % 90 != 0:
+                    # cropping image to model input dimensions
                     label_array = label_array[list_ID[4]:-list_ID[4], list_ID[4]:-list_ID[4]]
 
             # create categorical labels, one layer per class. two layers created if labels binary.
