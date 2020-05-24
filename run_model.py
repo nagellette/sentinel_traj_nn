@@ -9,8 +9,9 @@ import os
 from PIL import Image
 import numpy as np
 
-# set starttime variable for output file naming
-starttime = datetime.now().strftime("%Y-%m-%d-%H:%M:%S")
+
+# set start time variable for output file naming
+start_time = datetime.now().strftime("%Y-%m-%d-%H:%M:%S")
 
 # read input and configuration files
 config = InputReader(sys.argv[1])
@@ -53,7 +54,7 @@ print("Test data count:", str(len(test_list)))
 print("Validation data count:", str(len(validation_list)))
 
 # define output folder
-output_folder = "../output/images/" + sys.argv[3] + "_" + starttime + "/"
+output_folder = "./output/images/" + sys.argv[3] + "_" + start_time + "/"
 os.system("mkdir " + output_folder)
 
 # create data generators
@@ -114,10 +115,10 @@ elif sys.argv[3] == "srcnn_unet":
 print(model.summary())
 
 # create csv logger callback
-csv_logger = tf.keras.callbacks.CSVLogger("../output/logs/" +
+csv_logger = tf.keras.callbacks.CSVLogger("./output/logs/" +
                                           sys.argv[3] +
                                           "_" +
-                                          starttime +
+                                          start_time +
                                           ".csv",
                                           append=False,
                                           separator=",")
@@ -139,22 +140,22 @@ history = model.fit_generator(train_data_generator,
                               validation_steps=EPOCH_LIMIT)
 
 # mark output log file as complete if train succeded
-os.system("mv ../output/logs/" +
+os.system("mv ./output/logs/" +
           sys.argv[3] +
-          "_" + starttime +
-          ".csv ../output/logs/" +
+          "_" + start_time +
+          ".csv ./output/logs/" +
           sys.argv[3] +
           "_" +
-          starttime
+          start_time
           + "_completed.csv ")
 
 # TODO: Add log file writer for config of the run with same file name as csv log file.
 
 # save model
-model.save("../output/output_models/" +
+model.save("./output/output_models/" +
            sys.argv[3] +
            "_" +
-           starttime)
+           start_time)
 
 if TEST_MODEL:
     print("Creating test output:")
