@@ -53,9 +53,15 @@ print("Train data count:", str(len(train_list)))
 print("Test data count:", str(len(test_list)))
 print("Validation data count:", str(len(validation_list)))
 
-# define output folder
-output_folder = "./output/images/" + sys.argv[3] + "_" + start_time + "/"
+# define output folder and create necessary folders
+output_folder = "./output/" + sys.argv[3] + "_" + start_time + "/"
+image_outputs = output_folder + "images/"
 os.system("mkdir " + output_folder)
+os.system("mkdir " + image_outputs)
+
+# saving model configuration and input files
+os.system("cp " + sys.argv[1] + " " + output_folder + "config.json")
+os.system("cp " + sys.argv[2] + " " + output_folder + "inputs.json")
 
 # create data generators
 train_data_generator = raster_data_generator.RasterDataGenerator(file_names=file_names,
@@ -88,7 +94,7 @@ test_data_generator = raster_data_generator.RasterDataGenerator(file_names=file_
                                                                 dim=IMAGE_DIMS,
                                                                 shuffle=SHUFFLE,
                                                                 ext="test",
-                                                                save_image_file=output_folder,
+                                                                save_image_file=image_outputs,
                                                                 srcnn_count=SRCNN_COUNT,
                                                                 non_srcnn_count=False)
 
@@ -115,11 +121,11 @@ elif sys.argv[3] == "srcnn_unet":
 print(model.summary())
 
 # create csv logger callback
-csv_logger = tf.keras.callbacks.CSVLogger("./output/logs/" +
+csv_logger = tf.keras.callbacks.CSVLogger(output_folder +
                                           sys.argv[3] +
                                           "_" +
                                           start_time +
-                                          ".csv",
+                                          "_log.csv",
                                           append=False,
                                           separator=",")
 
@@ -140,22 +146,23 @@ history = model.fit_generator(train_data_generator,
                               validation_steps=EPOCH_LIMIT)
 
 # mark output log file as complete if train succeded
-os.system("mv ./output/logs/" +
+os.system("mv " + output_folder +
           sys.argv[3] +
           "_" + start_time +
-          ".csv ./output/logs/" +
+          "_log.csv " + output_folder +
           sys.argv[3] +
           "_" +
           start_time
-          + "_completed.csv ")
+          + "_log_completed.csv ")
 
 # TODO: Add log file writer for config of the run with same file name as csv log file.
 
 # save model
-model.save("./output/output_models/" +
+model.save(output_folder +
            sys.argv[3] +
            "_" +
-           start_time)
+           start_time +
+           "_model")
 
 if TEST_MODEL:
     print("Creating test output:")
@@ -169,9 +176,9 @@ if TEST_MODEL:
         img = predictions[j, :, :, 0] * 255.
         img = img.astype(np.uint8)
         img = Image.fromarray(img, 'L')
-        img.save(output_folder + "/" + str(j) + "_predict_" + str(j) + "_1.png")
+        img.save(image_outputs + "/" + str(j) + "_predict_" + str(j) + "_1.png")
 
         img = predictions[j, :, :, 1] * 255.
         img = img.astype(np.uint8)
         img = Image.fromarray(img, 'L')
-        img.save(output_folder + "/" + str(j) + "_predict_" + str(j) + "_2.png")
+        img.save(image_outputs + "/" + str(j) + "_predict_" + str(j) + "_2.png")

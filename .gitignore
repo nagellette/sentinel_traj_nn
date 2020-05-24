@@ -1,7 +1,3 @@
-/output/images/*
-/output/logs/*
-/output/output_models/*
+/output/*
 
-!/output/images/.gitkeep
-!/output/logs/.gitkeep
-!/output/output_models/.gitkeep
+!/output/.gitkeep
