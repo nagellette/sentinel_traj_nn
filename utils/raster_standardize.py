@@ -18,7 +18,7 @@ def raster_standardize(data, data_type, raster_min, raster_max):
 
         data = data / 10000.0
 
-    # standardizing Sentinel SAR layers TODO: to be added later
+    # standardizing Sentinel SAR layers TODO: SAR standardization be added later
     elif data_type == "sentinel_sar":
         sys.exit("Not supporting Sentinel SAR images yet.")
 
@@ -30,7 +30,7 @@ def raster_standardize(data, data_type, raster_min, raster_max):
 
         data = data / 200.0
 
-    # standardizing bearing layers TODO
+    # standardizing bearing layers TODO: Bearing standardization to be added later.
     elif data_type == "bearing":
         sys.exit("Not supporting bearing images yet.")
 

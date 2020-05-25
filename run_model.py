@@ -9,7 +9,6 @@ import os
 from PIL import Image
 import numpy as np
 
-
 # set start time variable for output file naming
 start_time = datetime.now().strftime("%Y-%m-%d-%H:%M:%S")
 
@@ -34,7 +33,6 @@ EPOCH_LIMIT = config.get_epoch_limit()
 TEST_MODEL = config.get_test_model()
 TEST_MODEL_LENGTH = config.get_test_model_count()
 SRCNN_COUNT = config.get_srcnn_count()
-
 
 # splitting data into train, test and validation
 data_splitter = TrainTestValidateSplitter(work_directory + label_path,
@@ -104,7 +102,7 @@ model = ModelRepository(sys.argv[3], IMAGE_DIMS, len(file_names), BATCH_SIZE, sr
 
 # build model with defining input parameters
 if sys.argv[3] == "unet":
-    #build model with default provided dimensions for UNET
+    # build model with default provided dimensions for UNET
     model.build([IMAGE_DIMS[0], IMAGE_DIMS[1], len(file_names)])
 elif sys.argv[3] == "srcnn_unet":
     build_input_dimensions = []
@@ -129,19 +127,30 @@ csv_logger = tf.keras.callbacks.CSVLogger(output_folder +
                                           append=False,
                                           separator=",")
 
-# create reduce on plateau callback TODO: test with different options
+# create reduce on plateau callback TODO: test with different options WARNING: Not used
 reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(monitor="val_loss",
                                                  factor=0.1,
                                                  patience=5,
                                                  min_lr=0.0001)
 
+#
+checkpoint = tf.keras.callbacks.ModelCheckpoint(output_folder +
+                                                sys.argv[3] +
+                                                "_" +
+                                                start_time +
+                                                "_checkpoint",
+                                                monitor='val_loss',
+                                                save_best_only=True,
+                                                save_freq="epoch")
+
 # train model
 # TODO: create time spent per epoch and test callback as custom callback
+# TODO: add checkpoint callback
 history = model.fit_generator(train_data_generator,
                               validation_data=validation_data_generator,
                               epochs=EPOCH,
                               shuffle=SHUFFLE,
-                              callbacks=[csv_logger, reduce_lr],
+                              callbacks=[csv_logger, checkpoint],
                               steps_per_epoch=EPOCH_LIMIT,
                               validation_steps=EPOCH_LIMIT)
 
@@ -154,8 +163,6 @@ os.system("mv " + output_folder +
           "_" +
           start_time
           + "_log_completed.csv ")
-
-# TODO: Add log file writer for config of the run with same file name as csv log file.
 
 # save model
 model.save(output_folder +
