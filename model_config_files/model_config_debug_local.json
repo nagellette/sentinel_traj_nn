@@ -6,7 +6,7 @@
     "y": 256
   },
   "l_rate": 0.001,
-  "epochs": 2,
+  "epochs": 3,
   "data_split": {
     "train": 0.7,
     "test": 0.1,
@@ -16,7 +16,7 @@
   "overlap": 0.2,
   "shuffle": true,
   "seed": 10,
-  "epoch_limit": 2,
+  "epoch_limit": 4,
   "test_model": true,
   "test_model_count": 20,
   "srcnn_count": 4

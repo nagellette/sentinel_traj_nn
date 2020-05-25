@@ -4,6 +4,7 @@ from models.model_repository import ModelRepository
 from utils import raster_data_generator
 from utils.input_reader import InputReader
 from utils.train_test_splitter import TrainTestValidateSplitter
+from utils.custom_callbacks import TimeKeeper
 from datetime import datetime
 import os
 from PIL import Image
@@ -133,7 +134,7 @@ reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(monitor="val_loss",
                                                  patience=5,
                                                  min_lr=0.0001)
 
-#
+# model checkpoint callback for saving best achieved weights
 checkpoint = tf.keras.callbacks.ModelCheckpoint(output_folder +
                                                 sys.argv[3] +
                                                 "_" +
@@ -143,14 +144,15 @@ checkpoint = tf.keras.callbacks.ModelCheckpoint(output_folder +
                                                 save_best_only=True,
                                                 save_freq="epoch")
 
+# model train/test/validation time keeper by epoch and iteration
+time_keeper = TimeKeeper(log_path=output_folder)
+
 # train model
-# TODO: create time spent per epoch and test callback as custom callback
-# TODO: add checkpoint callback
 history = model.fit_generator(train_data_generator,
                               validation_data=validation_data_generator,
                               epochs=EPOCH,
                               shuffle=SHUFFLE,
-                              callbacks=[csv_logger, checkpoint],
+                              callbacks=[csv_logger, checkpoint, time_keeper],
                               steps_per_epoch=EPOCH_LIMIT,
                               validation_steps=EPOCH_LIMIT)
 

@@ -10,13 +10,13 @@ from tensorflow.python.ops import math_ops
 from tensorflow.python.keras.metrics import Metric
 
 
-class MeanIoU_custom(Metric):
+class MeanIoUCustom(Metric):
     """
     Customized version of
     """
 
     def __init__(self, num_classes, threshold=0.5, name=None, dtype=None):
-        super(MeanIoU_custom, self).__init__(name=name, dtype=dtype)
+        super(MeanIoUCustom, self).__init__(name=name, dtype=dtype)
         self.num_classes = num_classes
         self.threshold = threshold
 
@@ -96,5 +96,5 @@ class MeanIoU_custom(Metric):
 
     def get_config(self):
         config = {'num_classes': self.num_classes}
-        base_config = super(MeanIoU_custom, self).get_config()
+        base_config = super(MeanIoUCustom, self).get_config()
         return dict(list(base_config.items()) + list(config.items()))
