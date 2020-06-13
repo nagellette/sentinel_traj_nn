@@ -1,17 +1,16 @@
 #!/bin/bash
-#SBATCH -p debug
+#SBATCH -p barbun-cuda
 #SBATCH -A ngengec
 #SBATCH -J gpu-test-ngengec
 #SBATCH -N 1
 #SBATCH -n 1
 #SBATCH -c 2
-#SBATCH --gres=gpu:1
+#SBATCH --gres=gpu:2
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=gengec@itu.edu.tr
 #SBATCH --error=/truba/home/ngengec/error_logs/err
 #SBATCH --output=/truba/home/ngengec/output_logs/out
-#SBATCH --constraint=akya-cuda
-#SBATCH --time=0-00:14:00
+#SBATCH --time=0-05:00:00
 
 model_name=unet
 config_name=model_config_debug_remote.json
