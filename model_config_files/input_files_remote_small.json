@@ -1,0 +1,35 @@
+{
+  "file_type": "image",
+  "working_path": "/truba/home/ngengec/data_sets/small_2.5/",
+  "input_files": [
+    [
+      "montreal_20160720_B02_clipped_small.tif",
+      "sentinel_msi"
+    ],
+    [
+      "montreal_20160720_B03_clipped_small.tif",
+      "sentinel_msi"
+    ],
+    [
+      "montreal_20160720_B04_clipped_small.tif",
+      "sentinel_msi"
+    ],
+    [
+      "montreal_20160720_B08_clipped_small.tif",
+      "sentinel_msi"
+    ],
+    [
+      "trajectory_small_frequency.tif",
+      "min_max"
+    ],
+    [
+      "trajectory_small_speed_avg.tif",
+      "speed"
+    ],
+    [
+      "trajectory_small_speed_max.tif",
+      "speed"
+    ]
+  ],
+  "label_file": "montreal_small_label.tif"
+}
