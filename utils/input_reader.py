@@ -163,3 +163,13 @@ class InputReader:
             return self.json_data["test_model_count"]
         except KeyError:
             pass
+
+    def get_output_path(self):
+        try:
+            return self.json_data["output_path"]
+        except KeyError:
+            print("Output path not defined.")
+            pass
+        except:
+            raise
+        return 0

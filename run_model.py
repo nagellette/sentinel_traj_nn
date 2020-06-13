@@ -34,6 +34,7 @@ EPOCH_LIMIT = config.get_epoch_limit()
 TEST_MODEL = config.get_test_model()
 TEST_MODEL_LENGTH = config.get_test_model_count()
 SRCNN_COUNT = config.get_srcnn_count()
+OUTPUT_PATH = config.get_output_path()
 
 # splitting data into train, test and validation
 data_splitter = TrainTestValidateSplitter(work_directory + label_path,
@@ -45,7 +46,7 @@ data_splitter = TrainTestValidateSplitter(work_directory + label_path,
                                           OVERLAP,
                                           SEED)
 
-# train, test, validate = data_splitter._data_sets()
+# split data to train, test, validate
 train_list, test_list, validation_list = data_splitter.get_train_test_validation()
 
 print("Train data count:", str(len(train_list)))
@@ -53,7 +54,7 @@ print("Test data count:", str(len(test_list)))
 print("Validation data count:", str(len(validation_list)))
 
 # define output folder and create necessary folders
-output_folder = "./output/" + sys.argv[3] + "_" + start_time + "/"
+output_folder = OUTPUT_PATH + sys.argv[3] + "_" + start_time + "/"
 image_outputs = output_folder + "images/"
 os.system("mkdir " + output_folder)
 os.system("mkdir " + image_outputs)
