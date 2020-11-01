@@ -1,0 +1,1 @@
+sudo openvpn --config TRUBA-genel.ovpn --auth-user-pass truba_pass.txt
