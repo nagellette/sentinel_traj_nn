@@ -1,11 +1,11 @@
 #!/bin/bash
-#SBATCH -p barbun-cuda
+#SBATCH -p akya-cuda
 #SBATCH -A ngengec
 #SBATCH -J gpu-test-ngengec
 #SBATCH -N 1
 #SBATCH -n 1
-#SBATCH -c 2
-#SBATCH --gres=gpu:2
+#SBATCH -c 10
+#SBATCH --gres=gpu:1
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=gengec@itu.edu.tr
 #SBATCH --error=/truba/home/ngengec/error_logs/err
@@ -13,7 +13,7 @@
 #SBATCH --time=0-05:00:00
 
 model_name=unet
-config_name=model_config_debug_remote.json
+config_name=model_config_remote.json
 input_name=input_files_remote_small_msi.json
 
 current_time=$(date "+%Y.%m.%d-%H.%M.%S")
