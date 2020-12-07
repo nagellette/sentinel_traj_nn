@@ -10,6 +10,9 @@ import os
 from PIL import Image
 import numpy as np
 
+# call out available GPU info
+print("Num GPUs Available: ", len(tf.config.experimental.list_physical_devices('GPU')))
+
 # set start time variable for output file naming
 start_time = datetime.now().strftime("%Y-%m-%d-%H:%M:%S")
 
