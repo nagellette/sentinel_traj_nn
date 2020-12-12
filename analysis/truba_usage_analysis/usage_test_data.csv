@@ -1,0 +1,6 @@
+model,dataset,batch_size,patch_size,num_of_epochs,epoch_size,cluster,gpu,cpu,before_usage,after_usage
+unet,Montreal-small (4 MSI bands),2,512x512,10,1000,Akya-cuda,1,10,39644,85184
+unet,Montreal-small (4 MSI bands),2,512x512,10,1000,Akya-cuda,2,10,85184,133344
+unet,Montreal-small (4 MSI bands),2,1024x1024,10,1000,Akya-cuda,1,10,133344,292374
+unet,Montreal-small (4 MSI bands),2,1024x1024,10,1000,Akya-cuda,2,10,292374,452974
+unet,Montreal-small (4 MSI bands),4,512x512,10,1000,Akya-cuda,4,10,455314,537754
