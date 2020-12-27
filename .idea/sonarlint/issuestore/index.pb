@@ -36,3 +36,15 @@ L
 utils/train_test_splitter.py,b/f/bf50b6798761365e890877e9eb85b62a09c5fed9
 <
 run_model.py,7/3/739503b521f6df321162a9c4959e9280ca78dc66
+J
+scripts/run_debug_local.sh,f/a/faaf8381878efada7f76827eb56eb962ad61cb4a
+[
++model_config_files/model_config_remote.json,7/3/73b5aac7310e8d9e6a668a2d6a1defcf2a7a6144
+d
+4model_config_files/input_files_remote_small_msi.json,8/e/8e320896c75cc34bfbb311b2c3b3e955a3b49765
+A
+scripts/README.md,b/f/bfd42b091bfb8273e08b1987652a9b2a5bea3cfb
+a
+1analysis/truba_usage_analysis/usage_test_data.csv,0/b/0bd7f586b4f49c060c4f4d845150295099f4e8d8
+h
+8analysis/truba_usage_analysis/truba_usage_analysis.ipynb,b/0/b068ca7758537ba2526b21e503b1167ee89f29b2
