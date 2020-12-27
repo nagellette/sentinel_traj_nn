@@ -12,7 +12,7 @@ from tensorflow.python.keras.metrics import Metric
 
 class MeanIoUCustom(Metric):
     """
-    Customized version of
+    Customized version of Mean Intersection over Union TODO: Not completed yet
     """
 
     def __init__(self, num_classes, threshold=0.5, name=None, dtype=None):
