@@ -3,6 +3,7 @@ from tensorflow.keras.layers import Conv2D, MaxPooling2D, Conv2DTranspose, conca
 import sys
 from tensorflow.keras.metrics import Recall, Precision
 from utils.custom_metrics import MeanIoUCustom
+from utils.custom_losses import dice_loss
 
 
 
@@ -116,9 +117,16 @@ class ModelRepository:
                                       decay=1e-6,
                                       momentum=0.9,
                                       nesterov=True)
-
+        """        
         self.model.compile(optimizer=opt,
                            loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
+                           metrics=["accuracy",
+                                    Precision(),
+                                    Recall(),
+                                    MeanIoUCustom(num_classes=2)])
+        """
+        self.model.compile(optimizer=opt,
+                           loss=dice_loss,
                            metrics=["accuracy",
                                     Precision(),
                                     Recall(),
@@ -211,9 +219,16 @@ class ModelRepository:
                                       decay=1e-6,
                                       momentum=0.9,
                                       nesterov=True)
-
+        """
         self.model.compile(optimizer=opt,
                            loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
+                           metrics=["accuracy",
+                                    Precision(),
+                                    Recall(),
+                                    MeanIoUCustom(num_classes=2)])
+        """
+        self.model.compile(optimizer=opt,
+                           loss=DiceLoss(),
                            metrics=["accuracy",
                                     Precision(),
                                     Recall(),
