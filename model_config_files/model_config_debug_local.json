@@ -3,22 +3,22 @@
   "output_path": "/home/nagellette/Desktop/model_outputs/",
   "batch_size": 1,
   "image_dim": {
-    "x": 256,
-    "y": 256
+    "x": 512,
+    "y": 512
   },
   "l_rate": 0.001,
-  "epochs": 3,
+  "epochs": 10,
   "data_split": {
     "train": 0.7,
-    "test": 0.1,
-    "validate": 0.2
+    "test": 0.15,
+    "validate": 0.15
   },
   "augment_deg": 45,
   "overlap": 0.2,
   "shuffle": true,
   "seed": 10,
-  "epoch_limit": 4,
+  "epoch_limit": 100,
   "test_model": true,
-  "test_model_count": 20,
+  "test_model_count": 50,
   "srcnn_count": 0
 }
