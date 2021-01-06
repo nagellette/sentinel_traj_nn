@@ -10,6 +10,8 @@ import os
 from PIL import Image
 import numpy as np
 
+tf.executing_eagerly()
+
 # call out available GPU info
 print("Num GPUs Available: ", len(tf.config.experimental.list_physical_devices('GPU')))
 
@@ -160,7 +162,7 @@ history = model.fit_generator(train_data_generator,
                               steps_per_epoch=EPOCH_LIMIT,
                               validation_steps=EPOCH_LIMIT)
 
-# mark output log file as complete if train succeded
+# mark output log file as complete if train succeeded
 os.system("mv " + output_folder +
           sys.argv[3] +
           "_" + start_time +

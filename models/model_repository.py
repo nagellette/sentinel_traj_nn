@@ -2,9 +2,8 @@ import tensorflow as tf
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Conv2DTranspose, concatenate, BatchNormalization
 import sys
 from tensorflow.keras.metrics import Recall, Precision
-from utils.custom_metrics import MeanIoUCustom
+from utils.custom_metrics import mean_iou
 from utils.custom_losses import dice_loss
-
 
 
 class ModelRepository:
@@ -123,14 +122,15 @@ class ModelRepository:
                            metrics=["accuracy",
                                     Precision(),
                                     Recall(),
-                                    MeanIoUCustom(num_classes=2)])
+                                    MeanIoU(num_classes=2)])
         """
+
         self.model.compile(optimizer=opt,
                            loss=dice_loss,
                            metrics=["accuracy",
                                     Precision(),
                                     Recall(),
-                                    MeanIoUCustom(num_classes=2)])
+                                    mean_iou])
 
     def srcnn_unet(self, dim, input_channels, batch_size, srcnn_count):
 
@@ -225,11 +225,11 @@ class ModelRepository:
                            metrics=["accuracy",
                                     Precision(),
                                     Recall(),
-                                    MeanIoUCustom(num_classes=2)])
+                                    MeanIoU(num_classes=2)])
         """
         self.model.compile(optimizer=opt,
-                           loss=DiceLoss(),
+                           loss=dice_loss,
                            metrics=["accuracy",
                                     Precision(),
                                     Recall(),
-                                    MeanIoUCustom(num_classes=2)])
+                                    MeanIoU(num_classes=2)])
