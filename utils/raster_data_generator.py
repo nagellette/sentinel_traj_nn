@@ -31,7 +31,7 @@ class RasterDataGenerator(tf.keras.utils.Sequence):
         :param dim: dimensions of the batch
         :param shuffle: shuffle Yes/No
         :param ext: extension for file save output extension
-        :param save_image_file: image file save path, if not provided save ommited
+        :param save_image_file: image file save path, if not provided save omitted
         :param num_of_classes: number of classes for label dataset
         :param srcnn_count: count of raster layers to apply srcnn
         :param non_scrnn_count: count of raster layers to skip srcnn
@@ -151,7 +151,7 @@ class RasterDataGenerator(tf.keras.utils.Sequence):
                                                                          list_ID[3])
             # applying data rotation augmentation to label image
             if list_ID[2] != 0:
-                label_array = rotate(label_array, list_ID[2], cval=0.0)
+                label_array = rotate(label_array, list_ID[2], cval=0.0, preserve_range=True)
                 if list_ID[2] % 90 != 0:
                     # cropping image to model input dimensions
                     label_array = label_array[list_ID[4]:-list_ID[4], list_ID[4]:-list_ID[4]]
