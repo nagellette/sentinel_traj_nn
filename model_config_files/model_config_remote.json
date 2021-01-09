@@ -6,7 +6,14 @@
     "x": 512,
     "y": 512
   },
-  "l_rate": 0.001,
+  "optimizer_parameters": {
+    "optimizer": "SGD",
+    "l_rate": 0.001,
+    "decay": 1e-6,
+    "momentum": 0.9,
+    "nesterov": true
+  },
+  "loss_function": "dice",
   "epochs": 10,
   "data_split": {
     "train": 0.7,

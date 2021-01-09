@@ -3,11 +3,23 @@ from tensorflow.keras.layers import Conv2D, MaxPooling2D, Conv2DTranspose, conca
 import sys
 from tensorflow.keras.metrics import Recall, Precision
 from utils.custom_metrics import mean_iou
-from utils.custom_losses import dice_loss
+from utils.constract_loss_function import ConstructLossFunction
+from utils.construct_optimizer import ConstructOptimizer
 
 
 class ModelRepository:
-    def __init__(self, model_name, dim, input_channels, batch_size, srcnn_count=0):
+    def __init__(self,
+                 model_name,
+                 dim,
+                 input_channels,
+                 batch_size,
+                 srcnn_count=0,
+                 optimizer="SGD",
+                 l_rate=0.001,
+                 decay=1e-6,
+                 momentum=0.9,
+                 nesterov=True,
+                 loss="dice"):
         '''
         Collection of deep learning models for image segmentation.
         :param model_name:name of the model that'll run.
@@ -15,12 +27,28 @@ class ModelRepository:
         :param input_channels: channel count of the input image
         :param batch_size: size of a batch
         :param srcnn_count: number of srcnn layers - first srcnn_count images are applied, later not applied or ignored.
+        :param optimizer: Optimizer
+        :param l_rate: Learning rate.
+        :param decay: decay parameter for SGD optimizer
+        :param momentum: momentum parameter for SGD optimizer
+        :param nesterov: nesterov parameter for SGD optimizer
+        :param loss: loss function parameter
         '''
         self.model_name = model_name
         self.dim = dim
         self.input_channels = input_channels
         self.batch_size = batch_size
         self.srcnn_count = srcnn_count
+        self.optimizer = optimizer
+        self.l_rate = l_rate
+        self.decay = decay
+        self.momentum = momentum
+        self.nesterov = nesterov
+        self.loss = loss
+
+        self.loss_function = ConstructLossFunction(loss_function_name=self.loss).get_loss_function()
+        self.optimizer = ConstructOptimizer(optimizer_name=self.optimizer, l_rate = self.l_rate, decay = self.decay,
+                                            momentum = self.momentum, nesterov=self.nesterov).get_optimizer()
 
         # model to run
         if self.model_name == "test_model":
@@ -43,8 +71,8 @@ class ModelRepository:
         self.model.add(tf.keras.layers.Dense(100, activation='relu'))
         self.model.add(tf.keras.layers.Dense(100, activation='relu'))
         self.model.add(tf.keras.layers.Dense(10000, activation='softmax'))
-        self.model.compile(optimizer='adam',
-                           loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+        self.model.compile(optimizer=self.optimizer,
+                           loss=self.loss_function,
                            metrics=['accuracy'])
 
     def unet(self, dim, input_channels, batch_size):
@@ -111,22 +139,8 @@ class ModelRepository:
 
         self.model = tf.keras.Model(inputs=inputs_layer, outputs=output_layer)
 
-        # TODO: add optimizer and loss function as model parameter
-        opt = tf.keras.optimizers.SGD(lr=0.001,
-                                      decay=1e-6,
-                                      momentum=0.9,
-                                      nesterov=True)
-        """        
-        self.model.compile(optimizer=opt,
-                           loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
-                           metrics=["accuracy",
-                                    Precision(),
-                                    Recall(),
-                                    MeanIoU(num_classes=2)])
-        """
-
-        self.model.compile(optimizer=opt,
-                           loss=dice_loss,
+        self.model.compile(optimizer=self.optimizer,
+                           loss=self.loss_function,
                            metrics=["accuracy",
                                     Precision(),
                                     Recall(),
@@ -214,22 +228,9 @@ class ModelRepository:
 
         self.model = tf.keras.Model(inputs=input_layers, outputs=output_layer)
 
-        # TODO: add optimizer, loss function and model metrics as model parameter
-        opt = tf.keras.optimizers.SGD(lr=0.001,
-                                      decay=1e-6,
-                                      momentum=0.9,
-                                      nesterov=True)
-        """
-        self.model.compile(optimizer=opt,
-                           loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
+        self.model.compile(optimizer=self.optimizer,
+                           loss=self.loss_function,
                            metrics=["accuracy",
                                     Precision(),
                                     Recall(),
-                                    MeanIoU(num_classes=2)])
-        """
-        self.model.compile(optimizer=opt,
-                           loss=dice_loss,
-                           metrics=["accuracy",
-                                    Precision(),
-                                    Recall(),
-                                    MeanIoU(num_classes=2)])
+                                    mean_iou])

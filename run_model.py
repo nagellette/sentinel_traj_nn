@@ -28,7 +28,7 @@ work_directory, file_names, label_path = image_inputs.read_image()
 # set model parameters from config file
 BATCH_SIZE = config.get_batch_size()
 IMAGE_DIMS = config.get_image_dim()
-L_RATE = config.get_learning_rate()
+OPTIMIZER, L_RATE, DECAY, MOMENTUM, NESTEROV = config.get_optimizer_parameters()
 EPOCH = config.get_epoch_count()
 TRAIN_SIZE, TEST_SIZE, VALIDATE_SIZE = config.get_data_split()
 AUGMENT = config.get_augmentation()
@@ -40,6 +40,7 @@ TEST_MODEL = config.get_test_model()
 TEST_MODEL_LENGTH = config.get_test_model_count()
 SRCNN_COUNT = config.get_srcnn_count()
 OUTPUT_PATH = config.get_output_path()
+LOSS = config.get_loss()
 
 # splitting data into train, test and validation
 data_splitter = TrainTestValidateSplitter(work_directory + label_path,
@@ -104,8 +105,17 @@ test_data_generator = raster_data_generator.RasterDataGenerator(file_names=file_
                                                                 non_srcnn_count=False)
 
 # create model
-# TODO: IoU callback test + replace if a custom version needed
-model = ModelRepository(sys.argv[3], IMAGE_DIMS, len(file_names), BATCH_SIZE, srcnn_count=SRCNN_COUNT).get_model()
+model = ModelRepository(sys.argv[3],
+                        IMAGE_DIMS,
+                        len(file_names),
+                        BATCH_SIZE,
+                        srcnn_count=SRCNN_COUNT,
+                        optimizer=OPTIMIZER,
+                        l_rate=L_RATE,
+                        decay=DECAY,
+                        momentum=MOMENTUM,
+                        nesterov=NESTEROV,
+                        loss=LOSS).get_model()
 
 # build model with defining input parameters
 if sys.argv[3] == "unet":

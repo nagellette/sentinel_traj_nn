@@ -42,7 +42,7 @@ class InputReader:
         try:
             return self.json_data["batch_size"]
         except KeyError:
-            print("Batch size not defined, setting 1.")
+            print("Batch size is not defined, setting 1.")
             pass
         except:
             raise
@@ -53,27 +53,17 @@ class InputReader:
             dims = self.json_data["image_dim"]
             return (dims["x"], dims["y"])
         except KeyError:
-            print("Image dimension not provided, using (572, 572).")
+            print("Image dimension is not provided, using (572, 572).")
             pass
         except:
             raise
         return (572, 572)
 
-    def get_learning_rate(self):
-        try:
-            return self.json_data["l_rate"]
-        except KeyError:
-            print("Learning rate not provided, using 0.0001.")
-            pass
-        except:
-            raise
-        return 0.0001
-
     def get_epoch_count(self):
         try:
             return self.json_data["epochs"]
         except KeyError:
-            print("Number of epochs not provided, using 5.")
+            print("Number of epochs is not provided, using 5.")
             pass
         except:
             raise
@@ -84,7 +74,7 @@ class InputReader:
             data_split = self.json_data["data_split"]
             return data_split["train"], data_split["test"], data_split["validate"]
         except KeyError:
-            print("Data split not provided, using - Train: %70, Test: %15, Validation: %15.")
+            print("Data split is not provided, using - Train: %70, Test: %15, Validation: %15.")
             pass
         except:
             raise
@@ -94,7 +84,7 @@ class InputReader:
         try:
             return self.json_data["augment_deg"]
         except KeyError:
-            print("Augmentation not provided, using 0.")
+            print("Augmentation is not provided, using 0.")
             pass
         except:
             raise
@@ -104,7 +94,7 @@ class InputReader:
         try:
             return self.json_data["overlap"]
         except KeyError:
-            print("Overlap not provided, using 0.")
+            print("Overlap is not provided, using 0.")
             pass
         except:
             raise
@@ -117,7 +107,7 @@ class InputReader:
             elif self.json_data["shuffle"] is False:
                 return False
         except KeyError:
-            print("Shuffle not provided, will not be shuffled.")
+            print("Shuffle is not provided, will not be shuffled.")
             pass
         except:
             raise
@@ -127,7 +117,7 @@ class InputReader:
         try:
             return self.json_data["seed"]
         except KeyError:
-            print("Seed not provided, using 0.")
+            print("Seed is not provided, using 0.")
             pass
         except:
             raise
@@ -146,7 +136,7 @@ class InputReader:
             elif self.json_data["test_model"] is False:
                 return False
         except KeyError:
-            print("Test model not provided, will not be tested.")
+            print("Test model is not provided, will not be tested.")
             pass
         except:
             raise
@@ -168,8 +158,34 @@ class InputReader:
         try:
             return self.json_data["output_path"]
         except KeyError:
-            print("Output path not defined.")
+            print("Output pathis  not defined.")
             pass
         except:
             raise
         return 0
+
+    def get_optimizer_parameters(self):
+        try:
+            optimizer_parameters = self.json_data["optimizer_parameters"]
+            return optimizer_parameters["optimizer"], \
+                   optimizer_parameters["l_rate"], \
+                   optimizer_parameters["decay"], \
+                   optimizer_parameters["momentum"], \
+                   optimizer_parameters["nesterov"]
+        except KeyError:
+            print("Optimizer parameters are not provided, using - SGD with learning rate: 0.001, decay: 1e-6, "
+                  "momentum: 0.9, nesterov: True.")
+            pass
+        except:
+            raise
+        return "SGD", 0.001, 1e-6, 0.9, True
+
+    def get_loss(self):
+        try:
+            return self.json_data["loss_function"]
+        except KeyError:
+            print("Loss function is not defined, setting 'dice'.")
+            pass
+        except:
+            raise
+        return "dice"
