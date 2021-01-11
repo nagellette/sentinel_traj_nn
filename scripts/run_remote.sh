@@ -10,13 +10,13 @@
 #SBATCH --mail-user=gengec@itu.edu.tr
 #SBATCH --error=/truba/home/ngengec/error_logs/err
 #SBATCH --output=/truba/home/ngengec/output_logs/out
-#SBATCH --time=0-05:00:00
+#SBATCH --time=0-10:00:00
 
 model_name=unet
 config_name=model_config_remote.json
 input_name=input_files_remote_small_msi.json
 
-current_time=$(date "+%Y.%m.%d-%H.%M.%S")
+current_time=$(date "+%Y_%m_%d-%H_%M_%S")
 
 new_fileName=runtime_log.$current_time
 home_path=/truba/home/ngengec/

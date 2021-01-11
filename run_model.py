@@ -16,7 +16,7 @@ tf.executing_eagerly()
 print("Num GPUs Available: ", len(tf.config.experimental.list_physical_devices('GPU')))
 
 # set start time variable for output file naming
-start_time = datetime.now().strftime("%Y-%m-%d-%H:%M:%S")
+start_time = datetime.now().strftime("%Y_%m_%d-%H_%M_%S")
 
 # read input and configuration files
 config = InputReader(sys.argv[1])
