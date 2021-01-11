@@ -5,6 +5,7 @@ from tensorflow.keras.metrics import Recall, Precision
 from utils.custom_metrics import mean_iou
 from utils.constract_loss_function import ConstructLossFunction
 from utils.construct_optimizer import ConstructOptimizer
+from utils.get_metrics import get_metrics
 
 
 class ModelRepository:
@@ -45,6 +46,7 @@ class ModelRepository:
         self.momentum = momentum
         self.nesterov = nesterov
         self.loss = loss
+        self.model = None
 
         self.loss_function = ConstructLossFunction(loss_function_name=self.loss).get_loss_function()
         self.optimizer = ConstructOptimizer(optimizer_name=self.optimizer, l_rate = self.l_rate, decay = self.decay,
@@ -141,10 +143,7 @@ class ModelRepository:
 
         self.model.compile(optimizer=self.optimizer,
                            loss=self.loss_function,
-                           metrics=["accuracy",
-                                    Precision(),
-                                    Recall(),
-                                    mean_iou])
+                           metrics=get_metrics())
 
     def srcnn_unet(self, dim, input_channels, batch_size, srcnn_count):
 
@@ -230,7 +229,4 @@ class ModelRepository:
 
         self.model.compile(optimizer=self.optimizer,
                            loss=self.loss_function,
-                           metrics=["accuracy",
-                                    Precision(),
-                                    Recall(),
-                                    mean_iou])
+                           metrics=get_metrics())

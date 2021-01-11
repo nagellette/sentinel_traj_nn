@@ -1,3 +1,8 @@
+'''
+Hard coded values for output filename extensions.
+'''
+
+
 def get_file_extension(file_name):
     if "_B01_" in file_name:
         return "_B01"
