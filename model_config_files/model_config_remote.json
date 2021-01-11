@@ -27,5 +27,6 @@
   "epoch_limit": 1000,
   "test_model": true,
   "test_model_count": 100,
+  "validation_model_count": 50,
   "srcnn_count": 0
 }

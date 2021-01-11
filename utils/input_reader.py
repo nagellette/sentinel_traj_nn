@@ -154,6 +154,12 @@ class InputReader:
         except KeyError:
             pass
 
+    def get_validation_model_count(self):
+        try:
+            return self.json_data["validation_model_count"]
+        except KeyError:
+            pass
+
     def get_output_path(self):
         try:
             return self.json_data["output_path"]

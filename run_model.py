@@ -38,6 +38,7 @@ SEED = config.get_seed()
 EPOCH_LIMIT = config.get_epoch_limit()
 TEST_MODEL = config.get_test_model()
 TEST_MODEL_LENGTH = config.get_test_model_count()
+VALIDATION_MODEL_LENGTH = config.get_validation_model_count()
 SRCNN_COUNT = config.get_srcnn_count()
 OUTPUT_PATH = config.get_output_path()
 LOSS = config.get_loss()
@@ -54,6 +55,16 @@ data_splitter = TrainTestValidateSplitter(work_directory + label_path,
 
 # split data to train, test, validate
 train_list, test_list, validation_list = data_splitter.get_train_test_validation()
+
+# verify input values of test and validation sizes and convert to max validation/test data available if available
+# data is short
+if len(validation_list) < VALIDATION_MODEL_LENGTH:
+    VALIDATION_MODEL_LENGTH = len(validation_list)
+    print("Validation size converted to {}".format(len(validation_list)))
+
+if len(test_list) < TEST_MODEL_LENGTH:
+    TEST_MODEL_LENGTH = len(test_list)
+    print("Test size converted to {}".format(len(test_list)))
 
 print("Train data count:", str(len(train_list)))
 print("Test data count:", str(len(test_list)))
@@ -133,6 +144,7 @@ elif sys.argv[3] == "srcnn_unet":
 
     # build model
     model.build(build_input_dimensions)
+
 print(model.summary())
 
 # create csv logger callback
@@ -170,7 +182,7 @@ history = model.fit_generator(train_data_generator,
                               shuffle=SHUFFLE,
                               callbacks=[csv_logger, checkpoint, time_keeper],
                               steps_per_epoch=EPOCH_LIMIT,
-                              validation_steps=EPOCH_LIMIT)
+                              validation_steps=VALIDATION_MODEL_LENGTH)
 
 # mark output log file as complete if train succeeded
 os.system("mv " + output_folder +
