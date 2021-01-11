@@ -4,6 +4,7 @@ import numpy as np
 from skimage.transform import rotate
 from utils.raster_standardize import raster_standardize
 from PIL import Image
+from utils.get_file_extension import get_file_extension
 
 
 class RasterDataGenerator(tf.keras.utils.Sequence):
@@ -67,8 +68,8 @@ class RasterDataGenerator(tf.keras.utils.Sequence):
             self.raster_files.append([gdal.Open(file_path + file_name[0]),
                                       file_name[1],
                                       temp_min,
-                                      temp_max])
-
+                                      temp_max,
+                                      file_name[0]])
         self.label_raster = gdal.Open(file_path + label_path)
 
         self.on_epoch_end()
@@ -135,11 +136,11 @@ class RasterDataGenerator(tf.keras.utils.Sequence):
                         self.ext + "_" +
                         str(list_ID[0]) +
                         "_" +
+
                         str(list_ID[1]) +
                         "_" +
                         str(list_ID[2]) +
-                        "-b" +
-                        str(i) +
+                        get_file_extension(raster_file[4]) +
                         ".jpg")
 
             # fill data to main batch
