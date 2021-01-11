@@ -1,6 +1,6 @@
 {
   "file_type": "image",
-  "working_path": "/home/nagellette/Desktop/final_data/",
+  "working_path": "/home/nagellette/Desktop/final_data/mtl_final_small/",
   "input_files": [
     [
       "montreal_20160720_B02_small.tif",
@@ -27,7 +27,7 @@
       "speed"
     ],
     [
-      "output_trajectory_speed_max_small.tif",
+      "montreal_2016_speed_max_small.tif",
       "speed"
     ]
   ],
