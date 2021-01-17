@@ -18,7 +18,7 @@ class InputReader:
         except:
             print("Unexpected error:", sys.exc_info()[0])
         else:
-            print("Image file in use: {0}".format(self.file_path))
+            print("File in use: {0}".format(self.file_path))
 
     def read_image(self):
         '''
