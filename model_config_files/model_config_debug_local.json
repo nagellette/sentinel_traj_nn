@@ -8,7 +8,7 @@
   },
   "optimizer_parameters": {
     "optimizer": "SGD",
-    "l_rate": 0.001,
+    "l_rate": 0.0001,
     "decay": 1e-6,
     "momentum": 0.9,
     "nesterov": true
@@ -24,7 +24,7 @@
   "overlap": 0.2,
   "shuffle": true,
   "seed": 10,
-  "epoch_limit": 10,
+  "epoch_limit": 50,
   "test_model": true,
   "test_model_count": 50,
   "validation_model_count": 5,

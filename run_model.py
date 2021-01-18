@@ -162,7 +162,11 @@ reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(monitor="val_loss",
                                                  patience=5,
                                                  min_lr=0.0001)
 
+
 # model checkpoint callback for saving best achieved weights
+'''
+Commenting out since the output size gets big. model is saved seperately.
+
 checkpoint = tf.keras.callbacks.ModelCheckpoint(output_folder +
                                                 sys.argv[3] +
                                                 "_" +
@@ -171,6 +175,7 @@ checkpoint = tf.keras.callbacks.ModelCheckpoint(output_folder +
                                                 monitor='val_loss',
                                                 save_best_only=True,
                                                 save_freq="epoch")
+'''
 
 # model train/test/validation time keeper by epoch and iteration
 time_keeper = TimeKeeper(log_path=output_folder)
@@ -180,7 +185,7 @@ history = model.fit_generator(train_data_generator,
                               validation_data=validation_data_generator,
                               epochs=EPOCH,
                               shuffle=SHUFFLE,
-                              callbacks=[csv_logger, checkpoint, time_keeper],
+                              callbacks=[csv_logger, time_keeper], # "checkpoint" removed
                               steps_per_epoch=EPOCH_LIMIT,
                               validation_steps=VALIDATION_MODEL_LENGTH)
 
