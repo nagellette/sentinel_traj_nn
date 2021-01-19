@@ -13,6 +13,10 @@
     [
       "montreal_20160720_B04_small.tif",
       "sentinel_msi"
+    ],
+    [
+      "montreal_20160720_B08_small.tif",
+      "sentinel_msi"
     ]
   ],
   "label_file": "montreal_2018_label_small.tif"
