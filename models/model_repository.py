@@ -60,6 +60,8 @@ class ModelRepository:
             self.srcnn_unet(self.dim, self.input_channels, self.batch_size, self.srcnn_count)
         elif self.model_name == "resunet":
             self.resunet(self.dim, self.input_channels, self.batch_size)
+        elif self.model_name == "resunetlight":
+            self.resunet_light(self.dim, self.input_channels, self.batch_size)
         else:
             print(self.model_name + " not defined yet.")
             sys.exit()
@@ -401,6 +403,119 @@ class ModelRepository:
         conv9_shortcut = Conv2D(64, (1, 1), padding="same", strides=1)(conc9)
         conv9_shortcut = BatchNormalization()(conv9_shortcut)
         conv9_shortcut = Activation("relu")(conv9_shortcut)
+
+        conv9_output = Add()([conv9, conv9_shortcut])
+
+        output_layer = Conv2D(2, (1, 1), padding="same", activation="sigmoid")(conv9_output)
+
+        self.model = tf.keras.Model(inputs=inputs_layer, outputs=output_layer)
+
+        self.model.compile(optimizer=self.optimizer,
+                           loss=self.loss_function,
+                           metrics=get_metrics())
+
+    def resunet_light(self, dim, input_channels, batch_size):
+
+        """
+        ResUnet implemented using
+        - https://arxiv.org/pdf/1711.10684.pdf
+        - https://github.com/nikhilroxtomar/Deep-Residual-Unet/blob/master/Deep%20Residual%20UNet.ipynb
+
+        :param dim: dimension of inputs
+        :param input_channels: number of bands/layers of input
+        :param batch_size: # batches in the input
+        :return: compiled model
+        """
+
+        inputs_layer = tf.keras.layers.Input((dim[0], dim[1], input_channels), batch_size=batch_size)
+        # level1
+        conv1 = Conv2D(64, (3, 3), padding="same", strides=(1, 1))(inputs_layer)
+        conv1 = BatchNormalization()(conv1)
+        conv1 = Activation("relu")(conv1)
+        conv1 = Conv2D(64, (3, 3), padding="same", strides=(1, 1))(conv1)
+
+        conv1_shortcut = Conv2D(64, (1, 1), padding="same", strides=(1, 1))(inputs_layer)
+
+        conv1_output = Add()([conv1, conv1_shortcut])
+
+        # level2
+        conv2 = BatchNormalization()(conv1_output)
+        conv2 = Activation("relu")(conv2)
+        conv2 = Conv2D(128, (3, 3), padding="same", strides=(2, 2))(conv2)
+        conv2 = BatchNormalization()(conv2)
+        conv2 = Activation("relu")(conv2)
+        conv2 = Conv2D(128, (3, 3), padding="same", strides=(1, 1))(conv2)
+
+        conv2_shortcut = Conv2D(128, (1, 1), padding="same", strides=(2, 2))(conv1_output)
+
+        conv2_output = Add()([conv2, conv2_shortcut])
+
+        # level3
+        conv3 = BatchNormalization()(conv2_output)
+        conv3 = Activation("relu")(conv3)
+        conv3 = Conv2D(256, (3, 3), padding="same", strides=(2, 2))(conv3)
+        conv3 = BatchNormalization()(conv3)
+        conv3 = Activation("relu")(conv3)
+        conv3 = Conv2D(256, (3, 3), padding="same", strides=(1, 1))(conv3)
+
+        conv3_shortcut = Conv2D(256, (1, 1), padding="same", strides=(2, 2))(conv2_output)
+
+        conv3_output = Add()([conv3, conv3_shortcut])
+
+        # level5
+        conv5 = BatchNormalization()(conv3_output)
+        conv5 = Activation("relu")(conv5)
+        conv5 = Conv2D(512, (3, 3), padding="same", strides=(2, 2))(conv5)
+        conv5 = BatchNormalization()(conv5)
+        conv5 = Activation("relu")(conv5)
+        conv5 = Conv2D(512, (3, 3), padding="same", strides=(1, 1))(conv5)
+
+        conv5_shortcut = Conv2D(512, (1, 1), padding="same", strides=(2, 2))(conv3_output)
+
+        conv5_output = Add()([conv5, conv5_shortcut])
+
+        # level7
+        upscale7 = UpSampling2D((2, 2))(conv5_output)
+        conc7 = Concatenate()([upscale7, conv3_output])
+
+        conv7 = BatchNormalization()(conc7)
+        conv7 = Activation("relu")(conv7)
+        conv7 = Conv2D(256, (3, 3), padding="same", strides=(1, 1))(conv7)
+        conv7 = BatchNormalization()(conv7)
+        conv7 = Activation("relu")(conv7)
+        conv7 = Conv2D(256, (3, 3), padding="same", strides=(1, 1))(conv7)
+
+        conv7_shortcut = Conv2D(256, (1, 1), padding="same", strides=(1, 1))(conc7)
+
+        conv7_output = Add()([conv7, conv7_shortcut])
+
+        # level8
+        upscale8 = UpSampling2D((2, 2))(conv7_output)
+        conc8 = Concatenate()([upscale8, conv2_output])
+
+        conv8 = BatchNormalization()(conc8)
+        conv8 = Activation("relu")(conv8)
+        conv8 = Conv2D(128, (3, 3), padding="same", strides=(1, 1))(conv8)
+        conv8 = BatchNormalization()(conv8)
+        conv8 = Activation("relu")(conv8)
+        conv8 = Conv2D(128, (3, 3), padding="same", strides=(1, 1))(conv8)
+
+        conv8_shortcut = Conv2D(128, (1, 1), padding="same", strides=(1, 1))(conc8)
+
+        conv8_output = Add()([conv8, conv8_shortcut])
+
+        # level9
+        upscale9 = UpSampling2D((2, 2))(conv8_output)
+        conc9 = Concatenate()([upscale9, conv1_output])
+
+        conv9 = BatchNormalization()(conc9)
+        conv9 = Activation("relu")(conv9)
+        conv9 = Conv2D(64, (3, 3), padding="same", strides=(1, 1))(conv9)
+        conv9 = BatchNormalization()(conv9)
+        conv9 = Activation("relu")(conv9)
+        conv9 = Conv2D(64, (3, 3), padding="same", strides=(1, 1))(conv9)
+
+        conv9_shortcut = Conv2D(64, (1, 1), padding="same", strides=(1, 1))(conc9)
 
         conv9_output = Add()([conv9, conv9_shortcut])
 
