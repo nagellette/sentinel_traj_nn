@@ -8,16 +8,16 @@
   },
   "optimizer_parameters": {
     "optimizer": "SGD",
-    "l_rate": 0.001,
+    "l_rate": 0.00001,
     "decay": 1e-6,
     "momentum": 0.9,
     "nesterov": true
   },
   "loss_function": "dice",
-  "epochs": 10,
+  "epochs": 50,
   "data_split": {
-    "train": 0.7,
-    "test": 0.1,
+    "train": 0.6,
+    "test": 0.2,
     "validate": 0.2
   },
   "augment_deg": 45,
@@ -26,7 +26,7 @@
   "seed": 10,
   "epoch_limit": 1000,
   "test_model": true,
-  "test_model_count": 100,
-  "validation_model_count": 50,
+  "test_model_count": 200,
+  "validation_model_count": 600,
   "srcnn_count": 0
 }
