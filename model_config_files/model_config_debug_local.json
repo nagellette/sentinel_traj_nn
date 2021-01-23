@@ -24,9 +24,9 @@
   "overlap": 0.2,
   "shuffle": true,
   "seed": 10,
-  "epoch_limit": 20,
+  "epoch_limit": 10,
   "test_model": true,
-  "test_model_count": 50,
+  "test_model_count": 10,
   "validation_model_count": 5,
   "srcnn_count": 0
 }
