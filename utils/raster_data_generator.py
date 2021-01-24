@@ -21,7 +21,7 @@ class RasterDataGenerator(tf.keras.utils.Sequence):
                  num_of_classes=2,
                  srcnn_count=0,
                  non_srcnn_count=False):
-        '''
+        """
         Raster data generator for generating images from multiple raster datasets.
 
         :param file_names: list of files and data types
@@ -35,8 +35,8 @@ class RasterDataGenerator(tf.keras.utils.Sequence):
         :param save_image_file: image file save path, if not provided save omitted
         :param num_of_classes: number of classes for label dataset
         :param srcnn_count: count of raster layers to apply srcnn
-        :param non_scrnn_count: count of raster layers to skip srcnn
-        '''
+        :param non_srcnn_count: count of raster layers to skip srcnn
+        """
 
         self.file_names = file_names
         self.file_path = file_path
@@ -79,7 +79,7 @@ class RasterDataGenerator(tf.keras.utils.Sequence):
         return int(np.floor(len(self.generation_list) / self.batch_size))
 
     def __getitem__(self, index):
-        'Generate one batch of data'
+        """Generate one batch of data"""
         # Generate indexes of the batch
         indexes = self.indexes[index * self.batch_size:(index + 1) * self.batch_size]
 
@@ -92,9 +92,9 @@ class RasterDataGenerator(tf.keras.utils.Sequence):
         return X, y
 
     def on_epoch_end(self):
-        'Updates indexes after each epoch'
+        """Updates indexes after each epoch"""
         self.indexes = np.arange(len(self.generation_list))
-        if self.shuffle == True:
+        if self.shuffle:
             np.random.shuffle(self.indexes)
 
     def __data_generation(self, list_IDs_temp):
@@ -126,7 +126,7 @@ class RasterDataGenerator(tf.keras.utils.Sequence):
 
                 train_batch.append(raster_as_array)
                 # image save if save image set to True - file name counter added to the saved file name with
-                # file name coutner.
+                # file name counter.
                 if self.save_image_file is not None:
                     raster_as_array = raster_as_array * 255
                     raster_as_array = raster_as_array.astype(np.uint8)
@@ -162,7 +162,7 @@ class RasterDataGenerator(tf.keras.utils.Sequence):
             label_batch.append(label_array)
 
             # image save if save image set to True - file name counter added to the saved file name with
-            # file name coutner
+            # file name counter
             if self.save_image_file is not None:
                 for i in range(0, self.num_of_classes):
                     label_array_img = label_array[:, :, i] * 255.
@@ -208,7 +208,8 @@ class RasterDataGenerator(tf.keras.utils.Sequence):
                 temp_srcnn = temp_srcnn.reshape([self.batch_size, self.dim[0], self.dim[1], 1])
                 train_batch_srcnn.append(temp_srcnn)
 
-            # create one stack of layers which will skip SRCNN TODO: not tested. check outputs dimensions and actual outputs
+            # create one stack of layers which will skip SRCNN TODO: not tested. check outputs dimensions and actual
+            #  outputs
             if self.non_scrnn_count:
                 temp_srcnn = train_batch_all[:,
                              (len(self.raster_files) - self.srcnn_count):(len(self.raster_files) - 1), :, :]

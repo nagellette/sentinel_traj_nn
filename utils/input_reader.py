@@ -4,10 +4,10 @@ import sys
 
 class InputReader:
     def __init__(self, file_path):
-        '''
+        """
         Input images file reader
         :param file_path: Input json file path.
-        '''
+        """
         self.file_path = file_path
 
         try:
@@ -21,10 +21,10 @@ class InputReader:
             print("File in use: {0}".format(self.file_path))
 
     def read_image(self):
-        '''
+        """
         Image input files json parser.
         :return: image file names and work directory path
-        '''
+        """
         if self.json_data["file_type"] == "image":
             image_array = self.json_data["input_files"]
             working_path = self.json_data["working_path"]
@@ -164,7 +164,7 @@ class InputReader:
         try:
             return self.json_data["output_path"]
         except KeyError:
-            print("Output pathis  not defined.")
+            print("Output path is not defined.")
             pass
         except:
             raise

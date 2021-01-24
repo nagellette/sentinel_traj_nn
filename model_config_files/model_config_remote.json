@@ -9,12 +9,12 @@
   "optimizer_parameters": {
     "optimizer": "SGD",
     "l_rate": 0.00001,
-    "decay": 1e-6,
+    "decay": 0.0,
     "momentum": 0.9,
-    "nesterov": true
+    "nesterov": false
   },
   "loss_function": "dice",
-  "epochs": 50,
+  "epochs": 70,
   "data_split": {
     "train": 0.6,
     "test": 0.2,

@@ -1,6 +1,6 @@
 import tensorflow as tf
-from tensorflow.keras.layers import Conv2D, MaxPooling2D, Conv2DTranspose, concatenate, BatchNormalization, Activation, \
-    Add, Concatenate, UpSampling2D
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Conv2DTranspose, concatenate, BatchNormalization, \
+    Activation, Add, Concatenate, UpSampling2D
 import sys
 from utils.constract_loss_function import ConstructLossFunction
 from utils.construct_optimizer import ConstructOptimizer
@@ -56,6 +56,8 @@ class ModelRepository:
             self.test_model()
         elif self.model_name == "unet":
             self.unet(self.dim, self.input_channels, self.batch_size)
+        elif self.model_name == "unetlight":
+            self.unet_light(self.dim, self.input_channels, self.batch_size)
         elif self.model_name == "srcnn_unet":
             self.srcnn_unet(self.dim, self.input_channels, self.batch_size, self.srcnn_count)
         elif self.model_name == "resunet":
@@ -130,6 +132,71 @@ class ModelRepository:
         up_conv4 = BatchNormalization()(up_conv4)
 
         conv_t3 = Conv2DTranspose(256, (2, 2), strides=(2, 2), padding="same")(up_conv4)
+        conc3 = concatenate([conv_t3, conv3])
+        up_conv3 = Conv2D(256, (3, 3), activation="relu", padding="same")(conc3)
+        up_conv3 = BatchNormalization()(up_conv3)
+        up_conv3 = Conv2D(256, (3, 3), activation="relu", padding="same")(up_conv3)
+        up_conv3 = BatchNormalization()(up_conv3)
+
+        conv_t2 = Conv2DTranspose(128, (2, 2), strides=(2, 2), padding="same")(up_conv3)
+        conc2 = concatenate([conv_t2, conv2])
+        up_conv2 = Conv2D(128, (3, 3), activation="relu", padding="same")(conc2)
+        up_conv2 = BatchNormalization()(up_conv2)
+        up_conv2 = Conv2D(128, (3, 3), activation="relu", padding="same")(up_conv2)
+        up_conv2 = BatchNormalization()(up_conv2)
+
+        conv_t1 = Conv2DTranspose(64, (2, 2), strides=(2, 2), padding="same")(up_conv2)
+        conc1 = concatenate([conv_t1, conv1])
+        up_conv1 = Conv2D(64, (3, 3), activation="relu", padding="same")(conc1)
+        up_conv1 = BatchNormalization()(up_conv1)
+        up_conv1 = Conv2D(64, (3, 3), activation="relu", padding="same")(up_conv1)
+        up_conv1 = BatchNormalization()(up_conv1)
+
+        output_layer = Conv2D(2, (1, 1), padding="same", activation="sigmoid")(up_conv1)
+
+        self.model = tf.keras.Model(inputs=inputs_layer, outputs=output_layer)
+
+        self.model.compile(optimizer=self.optimizer,
+                           loss=self.loss_function,
+                           metrics=get_metrics())
+
+    def unet_light(self, dim, input_channels, batch_size):
+
+        """
+        Unet implementation:
+        - https://arxiv.org/abs/1505.04597
+
+        :param dim: dimension of inputs
+        :param input_channels: number of bands/layers of input
+        :param batch_size: # batches in the input
+        :return: compiled model
+        """
+
+        inputs_layer = tf.keras.layers.Input((dim[0], dim[1], input_channels), batch_size=batch_size)
+        conv1 = Conv2D(64, (3, 3), activation="relu", padding="same")(inputs_layer)
+        conv1 = BatchNormalization()(conv1)
+        conv1 = Conv2D(64, (3, 3), activation="relu", padding="same")(conv1)
+        conv1 = BatchNormalization()(conv1)
+        pool1 = MaxPooling2D((2, 2))(conv1)
+
+        conv2 = Conv2D(128, (3, 3), activation="relu", padding="same")(pool1)
+        conv2 = BatchNormalization()(conv2)
+        conv2 = Conv2D(128, (3, 3), activation="relu", padding="same")(conv2)
+        conv2 = BatchNormalization()(conv2)
+        pool2 = MaxPooling2D((2, 2))(conv2)
+
+        conv3 = Conv2D(256, (3, 3), activation="relu", padding="same")(pool2)
+        conv3 = BatchNormalization()(conv3)
+        conv3 = Conv2D(256, (3, 3), activation="relu", padding="same")(conv3)
+        conv3 = BatchNormalization()(conv3)
+        pool3 = MaxPooling2D((2, 2))(conv3)
+
+        conv_middle = Conv2D(512, (3, 3), activation="relu", padding="same")(pool3)
+        conv_middle = BatchNormalization()(conv_middle)
+        conv_middle = Conv2D(512, (3, 3), activation="relu", padding="same")(conv_middle)
+        conv_middle = BatchNormalization()(conv_middle)
+
+        conv_t3 = Conv2DTranspose(256, (2, 2), strides=(2, 2), padding="same")(conv_middle)
         conc3 = concatenate([conv_t3, conv3])
         up_conv3 = Conv2D(256, (3, 3), activation="relu", padding="same")(conc3)
         up_conv3 = BatchNormalization()(up_conv3)

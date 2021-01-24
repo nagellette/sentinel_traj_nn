@@ -1,7 +1,3 @@
-import numpy as np
-
-import tensorflow as tf
-from tensorflow.keras.losses import Loss
 import tensorflow.keras.backend as K
 
 """
