@@ -89,7 +89,6 @@ train_data_generator = raster_data_generator.RasterDataGenerator(file_names=file
                                                                  dim=IMAGE_DIMS,
                                                                  shuffle=SHUFFLE,
                                                                  ext="train",
-                                                                 save_image_file=image_outputs,
                                                                  srcnn_count=SRCNN_COUNT,
                                                                  non_srcnn_count=False)
 
@@ -163,10 +162,9 @@ reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(monitor="val_loss",
                                                  patience=5,
                                                  min_lr=0.0001)
 
-
 # model checkpoint callback for saving best achieved weights
 '''
-Commenting out since the output size gets big. model is saved seperately.
+Commenting out since the output size gets big. model is saved separately.
 
 checkpoint = tf.keras.callbacks.ModelCheckpoint(output_folder +
                                                 sys.argv[3] +
@@ -186,7 +184,7 @@ history = model.fit_generator(train_data_generator,
                               validation_data=validation_data_generator,
                               epochs=EPOCH,
                               shuffle=SHUFFLE,
-                              callbacks=[csv_logger, time_keeper], # "checkpoint" removed
+                              callbacks=[csv_logger, time_keeper],  # "checkpoint" removed
                               steps_per_epoch=EPOCH_LIMIT,
                               validation_steps=VALIDATION_MODEL_LENGTH)
 

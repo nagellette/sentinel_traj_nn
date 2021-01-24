@@ -1,0 +1,27 @@
+{
+  "file_type": "image",
+  "working_path": "/truba/home/ngengec/data_sets/normal_2.5/",
+  "input_files": [
+    [
+      "montreal_20160720_B02_clipped.tif",
+      "sentinel_msi"
+    ],
+    [
+      "montreal_20160720_B03_clipped.tif",
+      "sentinel_msi"
+    ],
+    [
+      "montreal_20160720_B04_clipped.tif",
+      "sentinel_msi"
+    ],
+    [
+      "montreal_20160720_B08_clipped.tif",
+      "sentinel_msi"
+    ],
+    [
+      "trajectory_frequency.tif",
+      "min_max"
+    ]
+  ],
+  "label_file": "montreal_label.tif"
+}

@@ -5,11 +5,11 @@ from csv import writer
 
 class TimeKeeper(Callback):
     def __init__(self, log_path):
-        '''
+        """
         Callback class for time spent logger for training, validation and test runs by epoch and iteration
         :param log_path: output folder for timekeeper.csv file
-        '''
-        #output file
+        """
+        # output file
         self.log_path = log_path + "timekeeper.csv"
 
         # counters
@@ -96,7 +96,8 @@ class TimeKeeper(Callback):
     def on_test_batch_end(self, batch, logs=None):
         self.validate_batch_end = datetime.now()
         validate_batch_duration = (self.validate_batch_end - self.validate_batch_start).total_seconds()
-        write_output = ["validate", "iteration", self.epoch_counter, "-", self.validate_counter, validate_batch_duration]
+        write_output = ["validate", "iteration", self.epoch_counter, "-", self.validate_counter,
+                        validate_batch_duration]
         self.append_list_as_row(self.log_path, write_output)
         self.validate_counter += 1
 

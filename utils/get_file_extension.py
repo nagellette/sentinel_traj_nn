@@ -1,6 +1,6 @@
-'''
+"""
 Hard coded values for output filename extensions.
-'''
+"""
 
 
 def get_file_extension(file_name):
