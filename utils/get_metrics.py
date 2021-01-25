@@ -11,4 +11,5 @@ def get_metrics():
             BinaryAccuracy(threshold=0.5),
             Precision(),
             Recall(),
-            mean_iou, MeanIoU(num_classes=2)]
+            mean_iou,
+            MeanIoU(num_classes=2)]

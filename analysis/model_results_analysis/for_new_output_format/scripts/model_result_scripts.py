@@ -9,8 +9,8 @@ import pandas as pd
 sys.path.insert(1, '../../../')
 
 from utils.input_reader import InputReader
-from utils.custom_losses import dice_loss
-from utils.custom_metrics import mean_iou
+from utils.custom_losses import dice_loss, dice_loss_soft
+from utils.custom_metrics import mean_iou, MeanIoU
 
 """
 Scripts that are used in model output visualize notebook.
@@ -118,7 +118,7 @@ def read_model(model_path):
 
     if model_available:
         saved_model_path = "{}{}".format(model_path, model_folder_name)
-        with custom_object_scope({"dice_loss": dice_loss, "mean_iou": mean_iou}):
+        with custom_object_scope({"dice_loss_soft": dice_loss_soft, "dice_loss": dice_loss, "mean_iou": mean_iou, "MeanIoU": MeanIoU}):
             model = tf.keras.models.load_model(saved_model_path)
             trainable_count = np.sum([K.count_params(w) for w in model.trainable_weights])
             non_trainable_count = np.sum([K.count_params(w) for w in model.non_trainable_weights])
