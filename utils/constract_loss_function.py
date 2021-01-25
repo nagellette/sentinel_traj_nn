@@ -10,7 +10,11 @@ class ConstructLossFunction:
     def set_loss_function(self):
 
         if self.loss_function_name == "dice":
-            print("Setting loss function as Dice loss.")
+            print("Setting loss function as Dice loss with output probabilities.")
+            return custom_losses.dice_loss_soft
+
+        elif self.loss_function_name == "dice_th":
+            print("Setting loss function as Dice loss with threshold 0.5.")
             return custom_losses.dice_loss
 
         elif self.loss_function_name == "binary_crossentropy":

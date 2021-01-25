@@ -18,7 +18,7 @@ input_name=input_files_remote_small_msi.json
 
 current_time=$(date "+%Y_%m_%d-%H_%M_%S")
 
-new_fileName=runtime_log.$current_time
+new_fileName=runtime_log_$current_time
 home_path=/truba/home/ngengec/
 
 python ${home_path}sentinel_traj_nn/run_model.py \
