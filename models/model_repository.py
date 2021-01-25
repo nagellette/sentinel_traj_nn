@@ -1,7 +1,10 @@
+import sys
+
 import tensorflow as tf
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Conv2DTranspose, concatenate, BatchNormalization, \
-    Activation, Add, Concatenate, UpSampling2D
-import sys
+    Activation, Add
+from tensorflow_core.python.keras.layers import AveragePooling2D, GlobalAveragePooling2D
+
 from utils.constract_loss_function import ConstructLossFunction
 from utils.construct_optimizer import ConstructOptimizer
 from utils.get_metrics import get_metrics
@@ -64,6 +67,8 @@ class ModelRepository:
             self.resunet(self.dim, self.input_channels, self.batch_size)
         elif self.model_name == "resunetlight":
             self.resunet_light(self.dim, self.input_channels, self.batch_size)
+        elif self.model_name == "dlinknet":
+            self.dlinknet(self.dim, self.input_channels, self.batch_size)
         else:
             print(self.model_name + " not defined yet.")
             sys.exit()
@@ -575,6 +580,287 @@ class ModelRepository:
         upconv4_output = Activation("relu")(upconv4_output)
 
         output_layer = Conv2D(2, (1, 1), padding="same", activation="sigmoid")(upconv4_output)
+
+        self.model = tf.keras.Model(inputs=inputs_layer, outputs=output_layer)
+
+        self.model.compile(optimizer=self.optimizer,
+                           loss=self.loss_function,
+                           metrics=get_metrics())
+
+    def dlinknet(self, dim, input_channels, batch_size):
+
+        '''
+        D-LinkNet implementation. Derived from:
+        - D-LinkNet: https://arxiv.org/abs/1707.03718
+        - D-LinkNet Pytorch implementation: https://github.com/zlkanata/DeepGlobe-Road-Extraction-Challenge/blob/7354f87ea03224a2c7a4c9e2bc6988cb511eb9a8/networks/dinknet.py
+        - LeNet: https://arxiv.org/abs/1707.03718
+        - ResNet34: https://arxiv.org/abs/1512.03385
+        - ResNet34 implementation guidance: https://towardsdatascience.com/understand-and-implement-resnet-50-with-tensorflow-2-0-1190b9b52691
+
+        :param dim:
+        :param input_channels:
+        :param batch_size:
+        :return:
+        '''
+
+        inputs_layer = tf.keras.layers.Input((dim[0], dim[1], input_channels), batch_size=batch_size)
+
+        conv1 = Conv2D(64, (7, 7), padding="same", strides=2)(inputs_layer)
+        conv1 = BatchNormalization()(conv1)
+        conv1 = Activation("relu")(conv1)
+        conv1 = MaxPooling2D((3, 3), strides=2, padding="same")(conv1)
+
+        # level1
+        conv2 = Conv2D(64, (3, 3), padding="same", strides=1)(conv1)
+        conv2 = BatchNormalization()(conv2)
+        conv2 = Activation("relu")(conv2)
+        conv2 = Conv2D(64, (3, 3), padding="same", strides=1)(conv2)
+        conv2 = BatchNormalization()(conv2)
+        conv2 = Activation("relu")(conv2)
+        conv2_add = Add()([conv2, conv1])
+        conv2_add = BatchNormalization()(conv2_add)
+        conv2_add = Activation("relu")(conv2_add)
+
+        conv3 = Conv2D(64, (3, 3), padding="same", strides=1)(conv2_add)
+        conv3 = BatchNormalization()(conv3)
+        conv3 = Activation("relu")(conv3)
+        conv3 = Conv2D(64, (3, 3), padding="same", strides=1)(conv3)
+        conv3 = BatchNormalization()(conv3)
+        conv3 = Activation("relu")(conv3)
+        conv3_add = Add()([conv3, conv2_add])
+        conv3_add = BatchNormalization()(conv3_add)
+        conv3_add = Activation("relu")(conv3_add)
+
+        conv4 = Conv2D(64, (3, 3), padding="same", strides=1)(conv3_add)
+        conv4 = BatchNormalization()(conv4)
+        conv4 = Activation("relu")(conv4)
+        conv4 = Conv2D(64, (3, 3), padding="same", strides=1)(conv4)
+        conv4 = BatchNormalization()(conv4)
+        conv4 = Activation("relu")(conv4)
+        conv4_add = Add()([conv4, conv3_add])
+        conv4_add = BatchNormalization()(conv4_add)
+        conv4_add = Activation("relu")(conv4_add)
+
+        # level2
+        conv5 = Conv2D(128, (3, 3), padding="same", strides=2)(conv4_add)
+        conv5 = BatchNormalization()(conv5)
+        conv5 = Activation("relu")(conv5)
+        conv5 = Conv2D(128, (3, 3), padding="same", strides=1)(conv5)
+        conv5 = BatchNormalization()(conv5)
+        conv5 = Activation("relu")(conv5)
+        conv4_add_skip = Conv2D(128, (1, 1), padding="same", strides=2)(conv4_add)
+        conv5_add = Add()([conv5, conv4_add_skip])
+        conv5_add = BatchNormalization()(conv5_add)
+        conv5_add = Activation("relu")(conv5_add)
+
+        conv6 = Conv2D(128, (3, 3), padding="same", strides=1)(conv5_add)
+        conv6 = BatchNormalization()(conv6)
+        conv6 = Activation("relu")(conv6)
+        conv6 = Conv2D(128, (3, 3), padding="same", strides=1)(conv6)
+        conv6 = BatchNormalization()(conv6)
+        conv6 = Activation("relu")(conv6)
+        conv6_add = Add()([conv6, conv5_add])
+        conv6_add = BatchNormalization()(conv6_add)
+        conv6_add = Activation("relu")(conv6_add)
+
+        conv7 = Conv2D(128, (3, 3), padding="same", strides=1)(conv6_add)
+        conv7 = BatchNormalization()(conv7)
+        conv7 = Activation("relu")(conv7)
+        conv7 = Conv2D(128, (3, 3), padding="same", strides=1)(conv7)
+        conv7 = BatchNormalization()(conv7)
+        conv7 = Activation("relu")(conv7)
+        conv7_add = Add()([conv7, conv6_add])
+        conv7_add = BatchNormalization()(conv7_add)
+        conv7_add = Activation("relu")(conv7_add)
+
+        conv8 = Conv2D(128, (3, 3), padding="same", strides=1)(conv7_add)
+        conv8 = BatchNormalization()(conv8)
+        conv8 = Activation("relu")(conv8)
+        conv8 = Conv2D(128, (3, 3), padding="same", strides=1)(conv8)
+        conv8 = BatchNormalization()(conv8)
+        conv8 = Activation("relu")(conv8)
+        conv8_add = Add()([conv8, conv7_add])
+        conv8_add = BatchNormalization()(conv8_add)
+        conv8_add = Activation("relu")(conv8_add)
+
+        # level3
+        conv9 = Conv2D(256, (3, 3), padding="same", strides=2)(conv8_add)
+        conv9 = BatchNormalization()(conv9)
+        conv9 = Activation("relu")(conv9)
+        conv9 = Conv2D(256, (3, 3), padding="same", strides=1)(conv9)
+        conv9 = BatchNormalization()(conv9)
+        conv9 = Activation("relu")(conv9)
+        conv8_add_skip = Conv2D(256, (1, 1), padding="same", strides=2)(conv8_add)
+        conv9_add = Add()([conv9, conv8_add_skip])
+        conv9_add = BatchNormalization()(conv9_add)
+        conv9_add = Activation("relu")(conv9_add)
+
+        conv10 = Conv2D(256, (3, 3), padding="same", strides=1)(conv9_add)
+        conv10 = BatchNormalization()(conv10)
+        conv10 = Activation("relu")(conv10)
+        conv10 = Conv2D(256, (3, 3), padding="same", strides=1)(conv10)
+        conv10 = BatchNormalization()(conv10)
+        conv10 = Activation("relu")(conv10)
+        conv10_add = Add()([conv10, conv9_add])
+        conv10_add = BatchNormalization()(conv10_add)
+        conv10_add = Activation("relu")(conv10_add)
+
+        conv11 = Conv2D(256, (3, 3), padding="same", strides=1)(conv10_add)
+        conv11 = BatchNormalization()(conv11)
+        conv11 = Activation("relu")(conv11)
+        conv11 = Conv2D(256, (3, 3), padding="same", strides=1)(conv11)
+        conv11 = BatchNormalization()(conv11)
+        conv11 = Activation("relu")(conv11)
+        conv11_add = Add()([conv11, conv10_add])
+        conv11_add = BatchNormalization()(conv11_add)
+        conv11_add = Activation("relu")(conv11_add)
+
+        conv12 = Conv2D(256, (3, 3), padding="same", strides=1)(conv11_add)
+        conv12 = BatchNormalization()(conv12)
+        conv12 = Activation("relu")(conv12)
+        conv12 = Conv2D(256, (3, 3), padding="same", strides=1)(conv12)
+        conv12 = BatchNormalization()(conv12)
+        conv12 = Activation("relu")(conv12)
+        conv12_add = Add()([conv12, conv11_add])
+        conv12_add = BatchNormalization()(conv12_add)
+        conv12_add = Activation("relu")(conv12_add)
+
+        conv13 = Conv2D(256, (3, 3), padding="same", strides=1)(conv12_add)
+        conv13 = BatchNormalization()(conv13)
+        conv13 = Activation("relu")(conv13)
+        conv13 = Conv2D(256, (3, 3), padding="same", strides=1)(conv13)
+        conv13 = BatchNormalization()(conv13)
+        conv13 = Activation("relu")(conv13)
+        conv13_add = Add()([conv13, conv12_add])
+        conv13_add = BatchNormalization()(conv13_add)
+        conv13_add = Activation("relu")(conv13_add)
+
+        conv14 = Conv2D(256, (3, 3), padding="same", strides=1)(conv13_add)
+        conv14 = BatchNormalization()(conv14)
+        conv14 = Activation("relu")(conv14)
+        conv14 = Conv2D(256, (3, 3), padding="same", strides=1)(conv14)
+        conv14 = BatchNormalization()(conv14)
+        conv14 = Activation("relu")(conv14)
+        conv14_add = Add()([conv14, conv13_add])
+        conv14_add = BatchNormalization()(conv14_add)
+        conv14_add = Activation("relu")(conv14_add)
+
+        # level4
+        conv15 = Conv2D(512, (3, 3), padding="same", strides=2)(conv14_add)
+        conv15 = BatchNormalization()(conv15)
+        conv15 = Activation("relu")(conv15)
+        conv15 = Conv2D(512, (3, 3), padding="same", strides=1)(conv15)
+        conv15 = BatchNormalization()(conv15)
+        conv15 = Activation("relu")(conv15)
+        conv14_add_skip = Conv2D(512, (1, 1), padding="same", strides=2)(conv14_add)
+        conv15_add = Add()([conv15, conv14_add_skip])
+        conv15_add = BatchNormalization()(conv15_add)
+        conv15_add = Activation("relu")(conv15_add)
+
+        conv16 = Conv2D(512, (3, 3), padding="same", strides=1)(conv15_add)
+        conv16 = BatchNormalization()(conv16)
+        conv16 = Activation("relu")(conv16)
+        conv16 = Conv2D(512, (3, 3), padding="same", strides=1)(conv16)
+        conv16 = BatchNormalization()(conv16)
+        conv16 = Activation("relu")(conv16)
+        conv16_add = Add()([conv16, conv15_add])
+        conv16_add = BatchNormalization()(conv16_add)
+        conv16_add = Activation("relu")(conv16_add)
+
+        conv17 = Conv2D(512, (3, 3), padding="same", strides=1)(conv16_add)
+        conv17 = BatchNormalization()(conv17)
+        conv17 = Activation("relu")(conv17)
+        conv17 = Conv2D(512, (3, 3), padding="same", strides=1)(conv17)
+        conv17 = BatchNormalization()(conv17)
+        conv17 = Activation("relu")(conv17)
+        conv17_add = Add()([conv17, conv16_add])
+        conv17_add = BatchNormalization()(conv17_add)
+        conv17_add = Activation("relu")(conv17_add)
+
+        last_pool = AveragePooling2D((2, 2), padding="same", strides=1)(conv17_add)
+
+        # dilation8
+        dilation8 = Conv2D(512, (3, 3), dilation_rate=1, padding="same")(last_pool)
+        dilation8 = Activation("relu")(dilation8)
+        dilation8 = Conv2D(512, (3, 3), dilation_rate=2, padding="same")(dilation8)
+        dilation8 = Activation("relu")(dilation8)
+        dilation8 = Conv2D(512, (3, 3), dilation_rate=4, padding="same")(dilation8)
+        dilation8 = Activation("relu")(dilation8)
+        dilation8 = Conv2D(512, (3, 3), dilation_rate=8, padding="same")(dilation8)
+        dilation8 = Activation("relu")(dilation8)
+
+        # dilation4
+        dilation4 = Conv2D(512, (3, 3), dilation_rate=1, padding="same")(last_pool)
+        dilation4 = Activation("relu")(dilation4)
+        dilation4 = Conv2D(512, (3, 3), dilation_rate=2, padding="same")(dilation4)
+        dilation4 = Activation("relu")(dilation4)
+        dilation4 = Conv2D(512, (3, 3), dilation_rate=4, padding="same")(dilation4)
+        dilation4 = Activation("relu")(dilation4)
+
+        # dilation2
+        dilation2 = Conv2D(512, (3, 3), dilation_rate=1, padding="same")(last_pool)
+        dilation2 = Activation("relu")(dilation2)
+        dilation2 = Conv2D(512, (3, 3), dilation_rate=2, padding="same")(dilation2)
+        dilation2 = Activation("relu")(dilation2)
+
+        # dilation1
+        dilation1 = Conv2D(512, (3, 3), dilation_rate=1, padding="same")(last_pool)
+        dilation1 = Activation("relu")(dilation1)
+
+        dilation_out = Add()([last_pool, dilation1, dilation2, dilation4, dilation8])
+
+        # decode level3
+        decode3 = Conv2D(512, (1, 1), padding="same", strides=1)(dilation_out)
+        decode3 = BatchNormalization()(decode3)
+        decode3 = Activation("relu")(decode3)
+
+        decode3 = Conv2DTranspose(128, (3, 3), strides=2, padding="same")(decode3)
+        decode3 = BatchNormalization()(decode3)
+        decode3 = Activation("relu")(decode3)
+
+        decode3 = Conv2D(256, (1, 1), strides=1, padding="same")(decode3)
+        decode3 = BatchNormalization()(decode3)
+        decode3 = Activation("relu")(decode3)
+
+        decode3_out = Add()([decode3, conv14_add])
+
+        # decode level2
+        decode2 = Conv2D(256, (1, 1), padding="same", strides=1)(decode3_out)
+        decode2 = BatchNormalization()(decode2)
+        decode2 = Activation("relu")(decode2)
+
+        decode2 = Conv2DTranspose(64, (3, 3), strides=2, padding="same")(decode2)
+        decode2 = BatchNormalization()(decode2)
+        decode2 = Activation("relu")(decode2)
+
+        decode2 = Conv2D(128, (1, 1), strides=1, padding="same")(decode2)
+        decode2 = BatchNormalization()(decode2)
+        decode2 = Activation("relu")(decode2)
+
+        decode2_out = Add()([decode2, conv8_add])
+
+        # decode level1
+        decode1 = Conv2D(128, (1, 1), padding="same", strides=1)(decode2_out)
+        decode1 = BatchNormalization()(decode1)
+        decode1 = Activation("relu")(decode1)
+
+        decode1 = Conv2DTranspose(32, (3, 3), strides=2, padding="same")(decode1)
+        decode1 = BatchNormalization()(decode1)
+        decode1 = Activation("relu")(decode1)
+
+        decode1 = Conv2D(64, (1, 1), strides=1, padding="same")(decode1)
+        decode1 = BatchNormalization()(decode1)
+        decode1 = Activation("relu")(decode1)
+
+        # decode out
+        decode_out = Add()([decode1, conv4_add])
+
+        final_conv = Conv2DTranspose(64, (3, 3), padding="same", strides=2)(decode_out)
+        final_conv = Activation("relu")(final_conv)
+        final_conv = Conv2D(32, (3, 3), padding="same")(final_conv)
+        final_conv = Activation("relu")(final_conv)
+
+        output_layer = Conv2DTranspose(2, (3, 3), padding="same", activation="sigmoid", strides=2)(final_conv)
 
         self.model = tf.keras.Model(inputs=inputs_layer, outputs=output_layer)
 
