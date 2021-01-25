@@ -8,7 +8,7 @@
   },
   "optimizer_parameters": {
     "optimizer": "SGD",
-    "l_rate": 0.001,
+    "l_rate": 0.00001,
     "decay": 1e-6,
     "momentum": 0.9,
     "nesterov": true
