@@ -24,12 +24,12 @@ home_path=/truba/home/ngengec/
 
 python ${home_path}sentinel_traj_nn/run_model.py \
   ${home_path}sentinel_traj_nn/model_config_files/${config_name} \
-  ${home_path}sentinel_traj_nn/model_config_files/${input_name} ${model_name} >>${home_path}runtime_logs/${new_fileName}
-
-cp ${home_path}/error_logs/err_${slurm_job_id} ${home_path}/model_outputs/${slurm_job_id}_${model_name}_${current_time}/err_${model_name}_${current_time}
-mv ${home_path}/error_logs/err_${slurm_job_id} ${home_path}/error_logs/err_${model_name}_${current_time}
+  ${home_path}sentinel_traj_nn/model_config_files/${input_name} ${model_name} ${current_time} >>${home_path}runtime_logs/${new_fileName}
 
 cp ${home_path}/output_logs/out_${slurm_job_id} ${home_path}/model_outputs/${slurm_job_id}_${model_name}_${current_time}/out_${model_name}_${current_time}
-mv ${home_path}/output_logs/out_${slurm_job_id} ${home_path}/output_logs/out_${model_name}_${current_time}
+mv ${home_path}/output_logs/out_${slurm_job_id} ${home_path}/output_logs/out_${model_name}_${current_time}_${slurm_job_id}
 
-cp ${home_path}/runtime_logs/${new_fileName} ${home_path}/model_outputs/${slurm_job_id}_${model_name}_${current_time}/runtime_log
+cp ${home_path}/runtime_logs/${new_fileName} ${home_path}/model_outputs/${slurm_job_id}_${model_name}_${current_time}/runtime_log_${model_name}_${current_time}
+
+cp ${home_path}/error_logs/err_${slurm_job_id} ${home_path}/model_outputs/${slurm_job_id}_${model_name}_${current_time}/err_${model_name}_${current_time}
+mv ${home_path}/error_logs/err_${slurm_job_id} ${home_path}/error_logs/err_${model_name}_${current_time}_${slurm_job_id}
