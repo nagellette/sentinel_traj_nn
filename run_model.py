@@ -9,6 +9,7 @@ from datetime import datetime
 import os
 from PIL import Image
 import numpy as np
+import subprocess
 
 tf.executing_eagerly()
 
@@ -17,6 +18,11 @@ print("Num GPUs Available: ", len(tf.config.experimental.list_physical_devices('
 
 # set start time variable for output file naming
 start_time = datetime.now().strftime("%Y_%m_%d-%H_%M_%S")
+slurm_job_id = subprocess.check_output("echo $SLURM_JOB_ID", shell=True, text=True)
+slurm_job_id = slurm_job_id.strip()
+
+if slurm_job_id == "":
+    slurm_job_id = "local"
 
 # read input and configuration files
 config = InputReader(sys.argv[1])
@@ -70,8 +76,13 @@ print("Train data count:", str(len(train_list)))
 print("Test data count:", str(len(test_list)))
 print("Validation data count:", str(len(validation_list)))
 
+if sys.argv[4] == "test":
+    file_time = start_time
+else:
+    file_time = sys.argv[4]
+
 # define output folder and create necessary folders
-output_folder = OUTPUT_PATH + sys.argv[3] + "_" + start_time + "/"
+output_folder = OUTPUT_PATH + slurm_job_id + "_" + sys.argv[3] + "_" + file_time + "/"
 image_outputs = output_folder + "images/"
 os.system("mkdir " + output_folder)
 os.system("mkdir " + image_outputs)
@@ -129,10 +140,10 @@ model = ModelRepository(sys.argv[3],
                         loss=LOSS).get_model()
 
 # build model with defining input parameters
-if sys.argv[3] == "unet":
+if sys.argv[3] != "srcnn_unet":
     # build model with default provided dimensions for UNET
     model.build([IMAGE_DIMS[0], IMAGE_DIMS[1], len(file_names)])
-elif sys.argv[3] == "srcnn_unet":
+else:
     build_input_dimensions = []
     # create input shapes which will run through SRCNN
     for i in range(0, SRCNN_COUNT):
