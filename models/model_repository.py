@@ -9,7 +9,6 @@ from utils.constract_loss_function import ConstructLossFunction
 from utils.construct_optimizer import ConstructOptimizer
 from utils.get_metrics import get_metrics
 
-
 class ModelRepository:
     def __init__(self,
                  model_name,
@@ -50,7 +49,7 @@ class ModelRepository:
         self.loss = loss
         self.model = None
 
-        self.loss_function = ConstructLossFunction(loss_function_name=self.loss).get_loss_function()
+        self.loss_function = ConstructLossFunction(loss_function_name=self.loss, batch_size=self.batch_size).get_loss_function()
         self.optimizer = ConstructOptimizer(optimizer_name=self.optimizer, l_rate=self.l_rate, decay=self.decay,
                                             momentum=self.momentum, nesterov=self.nesterov).get_optimizer()
 
@@ -163,7 +162,7 @@ class ModelRepository:
 
         self.model.compile(optimizer=self.optimizer,
                            loss=self.loss_function,
-                           metrics=get_metrics())
+                           metrics=get_metrics(batch_size=self.batch_size))
 
     def unet_light(self, dim, input_channels, batch_size):
 
@@ -228,7 +227,7 @@ class ModelRepository:
 
         self.model.compile(optimizer=self.optimizer,
                            loss=self.loss_function,
-                           metrics=get_metrics())
+                           metrics=get_metrics(batch_size=self.batch_size))
 
     def srcnn_unet(self, dim, input_channels, batch_size, srcnn_count):
 
@@ -326,7 +325,7 @@ class ModelRepository:
 
         self.model.compile(optimizer=self.optimizer,
                            loss=self.loss_function,
-                           metrics=get_metrics())
+                           metrics=get_metrics(batch_size=self.batch_size))
 
     def resunet(self, dim, input_channels, batch_size):
 
@@ -469,7 +468,7 @@ class ModelRepository:
 
         self.model.compile(optimizer=self.optimizer,
                            loss=self.loss_function,
-                           metrics=get_metrics())
+                           metrics=get_metrics(batch_size=self.batch_size))
 
     def resunet_light(self, dim, input_channels, batch_size):
 
@@ -585,7 +584,7 @@ class ModelRepository:
 
         self.model.compile(optimizer=self.optimizer,
                            loss=self.loss_function,
-                           metrics=get_metrics())
+                           metrics=get_metrics(batch_size=self.batch_size))
 
     def dlinknet(self, dim, input_channels, batch_size):
 
@@ -866,4 +865,4 @@ class ModelRepository:
 
         self.model.compile(optimizer=self.optimizer,
                            loss=self.loss_function,
-                           metrics=get_metrics())
+                           metrics=get_metrics(batch_size=self.batch_size))
