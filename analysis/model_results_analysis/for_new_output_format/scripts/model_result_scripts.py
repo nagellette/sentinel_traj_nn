@@ -9,7 +9,7 @@ import pandas as pd
 sys.path.insert(1, '../../../')
 
 from utils.input_reader import InputReader
-from utils.custom_losses import dice_loss, dice_loss_soft
+from utils.custom_losses import dice_loss, dice_loss_soft, DiceLoss
 from utils.custom_metrics import mean_iou, MeanIoU
 
 """
@@ -118,8 +118,9 @@ def read_model(model_path):
 
     if model_available:
         saved_model_path = "{}{}".format(model_path, model_folder_name)
-        with custom_object_scope({"dice_loss_soft": dice_loss_soft, "dice_loss": dice_loss, "mean_iou": mean_iou, "MeanIoU": MeanIoU}):
-            model = tf.keras.models.load_model(saved_model_path)
+        with custom_object_scope({"dice_loss_soft": dice_loss_soft, "dice_loss": dice_loss, "mean_iou": mean_iou,
+                                  "MeanIoU": MeanIoU, "DiceLoss": DiceLoss}):
+            model = tf.keras.models.load_model(saved_model_path, compile=False)
             trainable_count = np.sum([K.count_params(w) for w in model.trainable_weights])
             non_trainable_count = np.sum([K.count_params(w) for w in model.non_trainable_weights])
             print("Total parameters: {}\nTrainable Parameters: {}\nNon-trainable parameters: {}".format(
@@ -139,7 +140,7 @@ def get_metrics_log(model_path):
     log = None
 
     for file in root_file_list:
-        if "log" in file:
+        if "completed" in file:
             log_available = True
             log_file_name = file
 
