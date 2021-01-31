@@ -10,6 +10,7 @@ import os
 from PIL import Image
 import numpy as np
 import subprocess
+import pandas as pd
 
 tf.executing_eagerly()
 
@@ -234,3 +235,21 @@ if TEST_MODEL:
         img = img.astype(np.uint8)
         img = Image.fromarray(img, 'L')
         img.save(image_outputs + "/" + str(j) + "_predict_" + str(j) + "_2.png")
+
+    test_data_generator = raster_data_generator.RasterDataGenerator(file_names=file_names,
+                                                                    file_path=work_directory,
+                                                                    label_path=label_path,
+                                                                    generation_list=test_list,
+                                                                    batch_size=1,
+                                                                    dim=IMAGE_DIMS,
+                                                                    shuffle=SHUFFLE,
+                                                                    srcnn_count=SRCNN_COUNT,
+                                                                    non_srcnn_count=False)
+
+    metrics_list = model.metrics_names
+    evaluation_outputs = model.evaluate_generator(test_data_generator, steps=TEST_MODEL_LENGTH)
+
+    evaluation_metrics = pd.DataFrame({"metric": metrics_list,
+                                       "score": evaluation_outputs})
+    print(evaluation_metrics)
+    evaluation_metrics.to_csv("{}test_evaluation.csv".format(output_folder))
