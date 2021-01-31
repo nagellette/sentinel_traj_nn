@@ -12,4 +12,4 @@ def get_metrics(batch_size):
             Precision(),
             Recall(),
             mean_iou,
-            MeanIoU(num_classes=2, batch_size=batch_size)]
+            MeanIoU(num_classes=2, batch_size=batch_size, name="m_IoU")]
