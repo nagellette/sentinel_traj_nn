@@ -1,7 +1,12 @@
 import numpy as np
-import gdal
 import sys
 from utils.calc_augmentation_dim import calc_augmentation_dim
+import platform
+
+if platform.system() == "Darwin":
+    from osgeo import gdal
+else:
+    import gdal
 
 
 class TrainTestValidateSplitter:

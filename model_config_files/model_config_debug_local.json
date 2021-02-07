@@ -1,6 +1,6 @@
 {
   "file_type": "config",
-  "output_path": "/home/nagellette/Desktop/model_outputs/",
+  "output_path": "/Users/gengec/Desktop/desktop/final_data/model_outputs/",
   "batch_size": 1,
   "image_dim": {
     "x": 256,
