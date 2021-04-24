@@ -1,10 +1,16 @@
 import tensorflow as tf
-import gdal
+# from osgeo import gdal
 import numpy as np
 from skimage.transform import rotate
 from utils.raster_standardize import raster_standardize
 from PIL import Image
 from utils.get_file_extension import get_file_extension
+import platform
+
+if platform.system() == "Darwin":
+    from osgeo import gdal
+else:
+    import gdal
 
 
 class RasterDataGenerator(tf.keras.utils.Sequence):
