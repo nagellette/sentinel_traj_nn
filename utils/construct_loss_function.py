@@ -1,5 +1,6 @@
 import tensorflow as tf
 import utils.custom_losses as custom_losses
+import tensorflow_addons as tfa
 
 
 class ConstructLossFunction:
@@ -16,11 +17,19 @@ class ConstructLossFunction:
 
         elif self.loss_function_name == "binary_crossentropy":
             print("Setting loss function as binary cross entropy loss.")
-            return tf.keras.losses.BinaryCrossentropy(from_logits=True)
+            return tf.keras.losses.BinaryCrossentropy(from_logits=False)
 
         elif self.loss_function_name == "dice_binary_crossentropy":
             print("Setting loss function as binary cross entropy & dice.")
             return custom_losses.DiceLoss(self.batch_size, bce=True)
+
+        elif self.loss_function_name == "focal":
+            print("Setting loss function as focal loss.")
+            return tfa.losses.focal_loss.SigmoidFocalCrossEntropy(reduction=tf.keras.losses.Reduction.AUTO)
+
+        elif self.loss_function_name == "mse":
+            print("Setting loss function as mean square error (MSE).")
+            return tf.keras.losses.MeanSquaredError()
 
         else:
             print("Loss function is not defined, please define in utils.constract_lost_function.py")

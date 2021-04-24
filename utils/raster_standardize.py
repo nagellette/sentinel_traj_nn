@@ -15,9 +15,9 @@ def raster_standardize(data, data_type, raster_min, raster_max):
     if data_type == "sentinel_msi":
         data[np.isnan(data)] = 0.0
         data[data < 0.0] = 0
-        data[data > 10000.0] = 10000.0
+        data[data > 2000.0] = 2000.0
 
-        data = data / 10000.0
+        data = data / 2000.0
 
     # standardizing Sentinel SAR layers TODO: SAR standardization be added later
     elif data_type == "sentinel_sar":

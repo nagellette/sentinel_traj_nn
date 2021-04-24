@@ -6,20 +6,6 @@ import tensorflow as tf
 from tensorflow.python.keras import backend as K
 from tensorflow.python.keras.metrics import Metric
 
-MeanIoU_THRESHOLD = 0.5
-
-# TODO: remove in next commit
-@tf.function
-def mean_iou(y_true, y_pred):
-    y_pred = y_pred[:, :, :, 0]
-    y_true = y_true[:, :, :, 0]
-    y_pred = K.cast(K.greater(y_pred, 0.5), dtype='float32')  # .5 is the threshold
-    inter = K.sum(K.sum(y_true * y_pred))
-    union = K.sum(K.sum(y_true + y_pred))
-
-    return K.mean((inter + K.epsilon()) / (union + K.epsilon()))
-
-
 class MeanIoU(Metric):
 
     def __init__(self, batch_size, num_classes=2, threshold=0.5, name=None, dtype=None):
