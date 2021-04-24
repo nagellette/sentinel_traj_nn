@@ -1,7 +1,7 @@
 {
   "file_type": "config",
-  "output_path": "/home/negengec/Desktop/model_outputs/",
-  "batch_size": 1,
+  "output_path": "/truba/home/ngengec/model_outputs/",
+  "batch_size": 4,
   "image_dim": {
     "x": 512,
     "y": 512
@@ -10,11 +10,11 @@
     "optimizer": "adam",
     "l_rate": 0.001,
     "decay": 0.0001,
-    "momentum": 0.90,
+    "momentum": 0.9,
     "nesterov": true
   },
   "loss_function": "focal",
-  "epochs": 20,
+  "epochs": 80,
   "data_split": {
     "train": 0.6,
     "test": 0.2,
@@ -24,9 +24,9 @@
   "overlap": 0.2,
   "shuffle": true,
   "seed": 10,
-  "epoch_limit": 20,
+  "epoch_limit": 500,
   "test_model": true,
-  "test_model_count": 20,
-  "validation_model_count": 2,
+  "test_model_count": 300,
+  "validation_model_count": 200,
   "srcnn_count": 0
 }

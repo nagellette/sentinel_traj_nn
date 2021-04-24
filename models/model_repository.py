@@ -5,7 +5,7 @@ from tensorflow.keras.layers import Conv2D, MaxPooling2D, Conv2DTranspose, conca
     Activation, Add
 from tensorflow_core.python.keras.layers import AveragePooling2D, GlobalAveragePooling2D
 
-from utils.constract_loss_function import ConstructLossFunction
+from utils.construct_loss_function import ConstructLossFunction
 from utils.construct_optimizer import ConstructOptimizer
 from utils.get_metrics import get_metrics
 

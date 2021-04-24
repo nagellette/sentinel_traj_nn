@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH -p akya-cuda
 #SBATCH -A ngengec
-#SBATCH -J gpu-test-ngengec
+#SBATCH -J ngengec-focal_unet
 #SBATCH -N 1
 #SBATCH -n 1
 #SBATCH -c 10
@@ -10,10 +10,10 @@
 #SBATCH --mail-user=gengec@itu.edu.tr
 #SBATCH --error=/truba/home/ngengec/error_logs/err_%j
 #SBATCH --output=/truba/home/ngengec/output_logs/out_%j
-#SBATCH --time=0-23:59:59
+#SBATCH --time=0-15:00:00
 
-model_name=dlinknet
-config_name=model_config_remote.json
+model_name=unet
+config_name=model_config_remote_focal.json
 input_name=input_files_remote_small_msi.json
 
 current_time=$(date "+%Y_%m_%d-%H_%M_%S")
