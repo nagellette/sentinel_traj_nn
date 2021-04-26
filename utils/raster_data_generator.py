@@ -150,6 +150,7 @@ class RasterDataGenerator(tf.keras.utils.Sequence):
             label_array = self.label_raster.GetRasterBand(1).ReadAsArray(list_ID[0] - list_ID[4],
                                                                          list_ID[1] - list_ID[4], list_ID[3],
                                                                          list_ID[3])
+
             # applying data rotation augmentation to label image
             if list_ID[2] != 0:
                 label_array = rotate(label_array, list_ID[2], cval=0.0, preserve_range=True)
