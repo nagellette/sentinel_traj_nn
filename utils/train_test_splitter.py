@@ -9,7 +9,6 @@ except:
 import sys
 from utils.calc_augmentation_dim import calc_augmentation_dim
 
-
 class TrainTestValidateSplitter:
     def __init__(self, sample_file, train, test, validation, dim, augment=0, overlap=0, seed=0):
         """
