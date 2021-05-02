@@ -48,3 +48,15 @@ a
 1analysis/truba_usage_analysis/usage_test_data.csv,0/b/0bd7f586b4f49c060c4f4d845150295099f4e8d8
 h
 8analysis/truba_usage_analysis/truba_usage_analysis.ipynb,b/0/b068ca7758537ba2526b21e503b1167ee89f29b2
+l
+<model_config_files/input_files_local_small_msi_only_mac.json,d/b/db1663ed4a49aa1977624b9a1d04ae75bfa5e45a
+j
+:model_config_files/input_files_local_small_msi_4bands.json,7/2/72b14620a005475e0de4a7d73004dec857db2ca6
+_
+/model_config_files/input_files_local_small.json,5/f/5fc889d915147a19575e4c46a29b227b9bf6adc8
+c
+3model_config_files/input_files_local_small_msi.json,c/7/c7610a765c9e3e5b56938388b77388c302922c8d
+g
+7model_config_files/input_files_local_small_msi_mac.json,b/6/b67556426afed424e4533d30ec1215f61777acf1
+`
+0model_config_files/model_config_debug_local.json,b/4/b4a5077075f257e4ee7d23835e716c59782d6527
