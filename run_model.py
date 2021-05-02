@@ -32,6 +32,8 @@ image_inputs = InputReader(sys.argv[2])
 # set file paths from input file
 work_directory, file_names, label_path = image_inputs.read_image()
 
+print(label_path)
+
 # set model parameters from config file
 BATCH_SIZE = config.get_batch_size()
 IMAGE_DIMS = config.get_image_dim()

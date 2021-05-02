@@ -4,31 +4,45 @@
   "input_files": [
     [
       "montreal_20160720_B02_clipped.tif",
-      "sentinel_msi"
+      "sentinel_msi",
+      0.0,
+      2000.0
     ],
     [
       "montreal_20160720_B03_clipped.tif",
-      "sentinel_msi"
+      "sentinel_msi",
+      0.0,
+      2000.0
     ],
     [
       "montreal_20160720_B04_clipped.tif",
-      "sentinel_msi"
+      "sentinel_msi",
+      0.0,
+      2000.0
     ],
     [
       "montreal_20160720_B08_clipped.tif",
-      "sentinel_msi"
+      "sentinel_msi",
+      0.0,
+      2000.0
     ],
     [
       "trajectory_frequency.tif",
-      "min_max"
+      "zero-to-max",
+      0.0,
+      20.0
     ],
     [
       "trajectory_speed_avg.tif",
-      "speed"
+      "speed",
+      0.0,
+      200.0
     ],
     [
       "trajectory_speed_max.tif",
-      "speed"
+      "speed",
+      0.0,
+      200.0
     ]
   ],
   "label_file": "montreal_label.tif"

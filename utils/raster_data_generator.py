@@ -1,16 +1,16 @@
 import tensorflow as tf
-# from osgeo import gdal
+try:
+    import gdal
+except:
+    try:
+        from osgeo import gdal
+    except:
+        print("GDAL cannot be imported.")
 import numpy as np
 from skimage.transform import rotate
 from utils.raster_standardize import raster_standardize
 from PIL import Image
 from utils.get_file_extension import get_file_extension
-import platform
-
-if platform.system() == "Darwin":
-    from osgeo import gdal
-else:
-    import gdal
 
 
 class RasterDataGenerator(tf.keras.utils.Sequence):
@@ -67,8 +67,8 @@ class RasterDataGenerator(tf.keras.utils.Sequence):
             if temp_raster_band.GetMinimum() is None or temp_raster_band.GetMaximum() is None:
                 print("Calculating band statistics: " + file_path + file_name[0])
                 temp_raster_band.ComputeStatistics(0)
-            temp_min = temp_raster_band.GetMinimum()
-            temp_max = temp_raster_band.GetMaximum()
+            temp_min = file_name[2]
+            temp_max = file_name[3]
             temp_raster = None
 
             self.raster_files.append([gdal.Open(file_path + file_name[0]),
