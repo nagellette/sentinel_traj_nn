@@ -9,8 +9,8 @@ import pandas as pd
 sys.path.insert(1, '../../../')
 
 from utils.input_reader import InputReader
-from utils.custom_losses import dice_loss, dice_loss_soft, DiceLoss
-from utils.custom_metrics import mean_iou, MeanIoU
+from utils.custom_losses import DiceLoss
+from utils.custom_metrics import MeanIoU
 
 """
 Scripts that are used in model output visualize notebook.
@@ -159,19 +159,27 @@ def get_timekeeper(model_path):
 
     train_iterations = time_log[(time_log["mode"] == "train") & (time_log["stage"] == "iteration")]
     temp = train_iterations["duration"]
-    output_time_log.append("Training iterations   - Mean: {:.2f} Min: {:.2f} Max: {:.2f} Count: {:.2f}". format(temp.mean(), temp.min(), temp.max(), temp.count()))
+    output_time_log.append(
+        "Training iterations   - Mean: {:.2f} Min: {:.2f} Max: {:.2f} Count: {:.2f}".format(temp.mean(), temp.min(),
+                                                                                            temp.max(), temp.count()))
 
     validation_iterations = time_log[(time_log["mode"] == "validate") & (time_log["stage"] == "iteration")]
     temp = validation_iterations["duration"]
-    output_time_log.append("Validation iterations - Mean: {:.2f} Min: {:.2f} Max: {:.2f} Count: {:.2f}". format(temp.mean(), temp.min(), temp.max(), temp.count()))
+    output_time_log.append(
+        "Validation iterations - Mean: {:.2f} Min: {:.2f} Max: {:.2f} Count: {:.2f}".format(temp.mean(), temp.min(),
+                                                                                            temp.max(), temp.count()))
 
     train_overall = time_log[(time_log["mode"] == "train") & (time_log["stage"] == "overall")]
     temp = train_overall["duration"]
-    output_time_log.append("Training epochs       - Mean: {:.2f} Min: {:.2f} Max: {:.2f} Count: {:.2f}". format(temp.mean(), temp.min(), temp.max(), temp.count()))
+    output_time_log.append(
+        "Training epochs       - Mean: {:.2f} Min: {:.2f} Max: {:.2f} Count: {:.2f}".format(temp.mean(), temp.min(),
+                                                                                            temp.max(), temp.count()))
 
     validation_overall = time_log[(time_log["mode"] == "validate") & (time_log["stage"] == "overall")]
     temp = validation_overall["duration"]
-    output_time_log.append("Validation epochs     - Mean: {:.2f} Min: {:.2f} Max: {:.2f} Count: {:.2f}". format(temp.mean(), temp.min(), temp.max(), temp.count()))
+    output_time_log.append(
+        "Validation epochs     - Mean: {:.2f} Min: {:.2f} Max: {:.2f} Count: {:.2f}".format(temp.mean(), temp.min(),
+                                                                                            temp.max(), temp.count()))
 
     for i in output_time_log:
         print(i)
