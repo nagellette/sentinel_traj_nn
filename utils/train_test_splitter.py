@@ -1,5 +1,11 @@
 import numpy as np
-import gdal
+try:
+    import gdal
+except:
+    try:
+        from osgeo import gdal
+    except:
+        print("GDAL cannot be imported.")
 import sys
 from utils.calc_augmentation_dim import calc_augmentation_dim
 

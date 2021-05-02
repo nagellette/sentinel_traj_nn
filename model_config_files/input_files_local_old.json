@@ -1,50 +1,72 @@
 {
   "file_type": "image",
-  "working_path": "/home/nagellette/Desktop/final_data/",
+  "working_path": "/home/negengec/Desktop/final_data/",
   "input_files": [
     [
       "_montreal_20160720_B01.tif",
-      "sentinel_msi"
+      "sentinel_msi",
+      0.0,
+      2000.0
     ],
     [
       "_montreal_20160720_B02.tif",
-      "sentinel_msi"
+      "sentinel_msi",
+      0.0,
+      2000.0
     ],
     [
       "_montreal_20160720_B03.tif",
-      "sentinel_msi"
+      "sentinel_msi",
+      0.0,
+      2000.0
     ],
     [
       "_montreal_20160720_B04.tif",
-      "sentinel_msi"
+      "sentinel_msi",
+      0.0,
+      2000.0
     ],
     [
       "_montreal_20160720_B05.tif",
-      "sentinel_msi"
+      "sentinel_msi",
+      0.0,
+      2000.0
     ],
     [
       "_montreal_20160720_B06.tif",
-      "sentinel_msi"
+      "sentinel_msi",
+      0.0,
+      2000.0
     ],
     [
       "_montreal_20160720_B07.tif",
-      "sentinel_msi"
+      "sentinel_msi",
+      0.0,
+      2000.0
     ],
     [
       "_montreal_20160720_B08.tif",
-      "sentinel_msi"
+      "sentinel_msi",
+      0.0,
+      2000.0
     ],
     [
       "_montreal_20160720_B8A.tif",
-      "sentinel_msi"
+      "sentinel_msi",
+      0.0,
+      2000.0
     ],
     [
       "_montreal_20160720_B09.tif",
-      "sentinel_msi"
+      "sentinel_msi",
+      0.0,
+      2000.0
     ],
     [
       "_montreal_20160720_B11.tif",
-      "sentinel_msi"
+      "sentinel_msi",
+      0.0,
+      2000.0
     ],
     [
       "_montreal_20160720_B12.tif",
@@ -52,15 +74,21 @@
     ],
     [
       "output_trajectory_count.tif",
-      "min_max"
+      "zero-to-max",
+      0.0,
+      20.0
     ],
     [
       "output_trajectory_speed_avg.tif",
-      "speed"
+      "speed",
+      0.0,
+      200.0
     ],
     [
       "output_trajectory_speed_max.tif",
-      "speed"
+      "speed",
+      0.0,
+      200.0
     ]
   ],
   "label_file": "_montreal_labels.tif"

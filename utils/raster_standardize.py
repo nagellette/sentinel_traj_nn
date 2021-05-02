@@ -12,24 +12,24 @@ def raster_standardize(data, data_type, raster_min, raster_max):
     :return: Standardized version of input data
     """
     # standardizing Sentinel MSI layers
-    if data_type == "sentinel_msi":
-        data[np.isnan(data)] = 0.0
-        data[data < 0.0] = 0
-        data[data > 2000.0] = 2000.0
+    if data_type == "sentinel_msi" or data_type == "zero-to-max":
+        data[np.isnan(data)] = raster_min
+        data[data < raster_min] = raster_min
+        data[data > raster_max] = raster_max
 
-        data = data / 2000.0
+        data = data / raster_max
 
     # standardizing Sentinel SAR layers TODO: SAR standardization be added later
     elif data_type == "sentinel_sar":
         sys.exit("Not supporting Sentinel SAR images yet.")
 
-    # standardizing speed related layers: 200km/h as threshold
+    # standardizing speed related layers: 200km/h as threshold TODO: can be altered to another value or way.
     elif data_type == "speed":
-        data[data < 0.0] = 0.0
-        data[data > 200.0] = 200
-        data[np.isnan(data)] = 0.0
+        data[data < raster_max] = raster_max
+        data[data > raster_max] = raster_max
+        data[np.isnan(data)] = raster_max
 
-        data = data / 200.0
+        data = data / raster_max
 
     # standardizing bearing layers TODO: Bearing standardization to be added later.
     elif data_type == "bearing":
@@ -37,9 +37,9 @@ def raster_standardize(data, data_type, raster_min, raster_max):
 
     # standardizing min/max layers
     elif data_type == "min_max":
-        # data = (data - raster_min) / (raster_max - raster_min)
-        data[data > 20.0] = 20.0
-        data = data / 20.0
+        data[data > raster_max] = raster_max
+        data[data < raster_min] = raster_min
+        data = (data - raster_min) / (raster_max - raster_min)
 
     # exit if data type is not valid
     else:

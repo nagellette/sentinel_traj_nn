@@ -4,31 +4,45 @@
   "input_files": [
     [
       "montreal_20160720_B02_small.tif",
-      "sentinel_msi"
+      "sentinel_msi",
+      0.0,
+      2000.0
     ],
     [
       "montreal_20160720_B03_small.tif",
-      "sentinel_msi"
+      "sentinel_msi",
+      0.0,
+      2000.0
     ],
     [
       "montreal_20160720_B04_small.tif",
-      "sentinel_msi"
+      "sentinel_msi",
+      0.0,
+      2000.0
     ],
     [
       "montreal_20160720_B08_small.tif",
-      "sentinel_msi"
+      "sentinel_msi",
+      0.0,
+      2000.0
     ],
     [
       "montreal_2016_traj_count_small.tif",
-      "min_max"
+      "zero-to-max",
+      0.0,
+      20.0
     ],
     [
       "montreal_2016_speed_avg_small.tif",
-      "speed"
+      "speed",
+      0.0,
+      200.0
     ],
     [
       "montreal_2016_speed_max_small.tif",
-      "speed"
+      "speed",
+      0.0,
+      200.0
     ]
   ],
   "label_file": "montreal_2018_label_small.tif"

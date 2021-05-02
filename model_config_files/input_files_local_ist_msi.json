@@ -1,22 +1,30 @@
 {
   "file_type": "image",
-  "working_path": "/home/nagellette/Desktop/final_data/ist_data/",
+  "working_path": "/home/negengec/Desktop/final_data/ist_data/",
   "input_files": [
     [
       "T35TPF_20191109T090201_B02_10m_clipped.tif",
-      "sentinel_msi"
+      "sentinel_msi",
+      0.0,
+      2000.0
     ],
     [
       "T35TPF_20191109T090201_B03_10m_clipped.tif",
-      "sentinel_msi"
+      "sentinel_msi",
+      0.0,
+      2000.0
     ],
     [
       "T35TPF_20191109T090201_B04_10m_clipped.tif",
-      "sentinel_msi"
+      "sentinel_msi",
+      0.0,
+      2000.0
     ],
     [
       "T35TPF_20191109T090201_B08_10m_clipped.tif",
-      "sentinel_msi"
+      "sentinel_msi",
+      0.0,
+      2000.0
     ]
   ],
   "label_file": "istanbul-internal_2019_roads_label_clipped.tif"
