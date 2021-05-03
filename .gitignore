@@ -1,6 +1,6 @@
 /output/*
-
 !/output/.gitkeep
 .DS_Store
 .idea
 .ipynb_checkpoints/
+.idea/*

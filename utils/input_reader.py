@@ -29,7 +29,14 @@ class InputReader:
             image_array = self.json_data["input_files"]
             working_path = self.json_data["working_path"]
             label = self.json_data["label_file"]
-            return working_path, image_array, label
+
+            # check if mask image provided, or return false
+            try:
+                mask = self.json_data["mask_file"]
+            except:
+                mask = False
+
+            return working_path, image_array, label, mask
         else:
             print("Input file is not image file.")
 

@@ -27,5 +27,6 @@
       2000.0
     ]
   ],
-  "label_file": "istanbul-internal_2019_roads_label_clipped.tif"
+  "label_file": "istanbul-internal_2019_roads_label_clipped.tif",
+  "mask_file": "istanbul-internal_2019_landmass_mask_prj.tif"
 }
