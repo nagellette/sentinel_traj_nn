@@ -1,4 +1,3 @@
-import numpy as np
 try:
     import gdal
 except:
@@ -6,11 +5,14 @@ except:
         from osgeo import gdal
     except:
         print("GDAL cannot be imported.")
+
 import sys
 from utils.calc_augmentation_dim import calc_augmentation_dim
+import numpy as np
+
 
 class TrainTestValidateSplitter:
-    def __init__(self, sample_file, train, test, validation, dim, augment=0, overlap=0, seed=0):
+    def __init__(self, sample_file, train, test, validation, dim, augment=0, overlap=0, seed=0, check_coverage=False):
         """
         Train, Test, Validation data list creator.
 
@@ -22,6 +24,8 @@ class TrainTestValidateSplitter:
         :param augment: augmentation value in degrees
         :param overlap: percentage of the overlap between batch
         :param seed: if provided, use as seed value
+        :param check_coverage: verify if the the image mask contain at least %80 landmass. Added to avoid large areas
+        covered with sea. When True, sample file must be 0 and 1 mask image.
         """
 
         self.sample_file = sample_file
@@ -34,10 +38,13 @@ class TrainTestValidateSplitter:
         self.augment = augment
         self.overlap = overlap
         self.seed = seed
+        self.check_coverage = check_coverage
 
         raster_file = gdal.Open(sample_file)
         self.X = raster_file.RasterXSize
         self.Y = raster_file.RasterYSize
+
+        self.raster = raster_file.GetRasterBand(1)
 
         # calculating dimensions if there is an overlap
         if self.overlap != 0:
@@ -74,11 +81,23 @@ class TrainTestValidateSplitter:
                             (self.dim[1] * y_i) - shift >= 0 and \
                             (self.dim[0] * x_i) + new_dim <= self.X and \
                             (self.dim[1] * y_i) + new_dim <= self.Y:
-                        self.data_set.append([self.dim[0] * x_i,
-                                              self.dim[1] * y_i,
-                                              self.augment * augment_i,
-                                              new_dim,
-                                              shift])
+
+                        # reading mask image and determining how much % of the pixels contain landmass.
+                        if self.check_coverage:
+                            raster_array = self.raster.ReadAsArray(self.dim[0] * x_i - shift,
+                                                                   self.dim[1] * y_i - shift,
+                                                                   new_dim,
+                                                                   new_dim)
+
+                            coverage_percentage = np.sum(raster_array) / (new_dim * new_dim)
+
+                        # add the tile to output data set if coverage is not being checked or coverage is more than %30
+                        if not self.check_coverage or coverage_percentage >= 0.7:
+                            self.data_set.append([self.dim[0] * x_i,
+                                                  self.dim[1] * y_i,
+                                                  self.augment * augment_i,
+                                                  new_dim,
+                                                  shift])
 
     def get_train_test_validation(self):
         # get list of files and generate numbered list

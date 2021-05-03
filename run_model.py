@@ -30,9 +30,7 @@ config = InputReader(sys.argv[1])
 image_inputs = InputReader(sys.argv[2])
 
 # set file paths from input file
-work_directory, file_names, label_path = image_inputs.read_image()
-
-print(label_path)
+work_directory, file_names, label_path, mask_path = image_inputs.read_image()
 
 # set model parameters from config file
 BATCH_SIZE = config.get_batch_size()
@@ -52,15 +50,24 @@ SRCNN_COUNT = config.get_srcnn_count()
 OUTPUT_PATH = config.get_output_path()
 LOSS = config.get_loss()
 
+
+if not mask_path:
+    sample_path = label_path
+    COVERAGE_CHECK = False
+else:
+    sample_path = mask_path
+    COVERAGE_CHECK = True
+
 # splitting data into train, test and validation
-data_splitter = TrainTestValidateSplitter(work_directory + label_path,
+data_splitter = TrainTestValidateSplitter(work_directory + sample_path,
                                           TRAIN_SIZE,
                                           TEST_SIZE,
                                           VALIDATE_SIZE,
                                           IMAGE_DIMS,
                                           AUGMENT,
                                           OVERLAP,
-                                          SEED)
+                                          SEED,
+                                          COVERAGE_CHECK)
 
 # split data to train, test, validate
 train_list, test_list, validation_list = data_splitter.get_train_test_validation()
