@@ -3,7 +3,7 @@ import sys
 import tensorflow as tf
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Conv2DTranspose, concatenate, BatchNormalization, \
     Activation, Add
-from tensorflow_core.python.keras.layers import AveragePooling2D, GlobalAveragePooling2D
+from tensorflow.python.keras.layers import AveragePooling2D, GlobalAveragePooling2D
 
 from utils.construct_loss_function import ConstructLossFunction
 from utils.construct_optimizer import ConstructOptimizer

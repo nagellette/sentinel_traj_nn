@@ -86,6 +86,7 @@ print("Train data count:", str(len(train_list)))
 print("Test data count:", str(len(test_list)))
 print("Validation data count:", str(len(validation_list)))
 
+# checking if local test run or run on production for file naming.
 if sys.argv[4] == "test":
     file_time = start_time
 else:
