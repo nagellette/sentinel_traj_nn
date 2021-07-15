@@ -25,6 +25,12 @@
       "sentinel_msi",
       0.0,
       2000.0
+    ],
+    [
+      "istanbul_2019_traj_count.tif",
+      "min_max",
+      0.0,
+      10.0
     ]
   ],
   "label_file": "istanbul-internal_2019_roads_label_clipped.tif",
