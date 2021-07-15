@@ -229,7 +229,7 @@ model.save(output_folder +
 
 if TEST_MODEL:
     print("Creating test output:")
-    predictions = model.predict_generator(test_data_generator, steps=TEST_MODEL_LENGTH)
+    predictions = model.predict(test_data_generator, steps=TEST_MODEL_LENGTH)
 
     i = predictions.shape
     print("shape of predictions")
