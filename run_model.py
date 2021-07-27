@@ -238,12 +238,12 @@ if TEST_MODEL:
         img = predictions[j, :, :, 0] * 255.
         img = img.astype(np.uint8)
         img = Image.fromarray(img, 'L')
-        img.save(image_outputs + "/" + str(j + 2) + "_predict_" + str(j) + "_1.png")
+        img.save(image_outputs + "/" + str(j + BATCH_SIZE) + "_predict_" + str(j) + "_1.png")
 
         img = predictions[j, :, :, 1] * 255.
         img = img.astype(np.uint8)
         img = Image.fromarray(img, 'L')
-        img.save(image_outputs + "/" + str(j + 2) + "_predict_" + str(j) + "_2.png")
+        img.save(image_outputs + "/" + str(j + BATCH_SIZE) + "_predict_" + str(j) + "_2.png")
 
     test_data_generator = raster_data_generator.RasterDataGenerator(file_names=file_names,
                                                                     file_path=work_directory,
