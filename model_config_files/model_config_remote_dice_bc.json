@@ -26,7 +26,7 @@
   "seed": 10,
   "epoch_limit": 500,
   "test_model": true,
-  "test_model_count": 300,
+  "test_model_count": 75,
   "validation_model_count": 200,
   "srcnn_count": 0
 }

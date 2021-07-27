@@ -50,7 +50,6 @@ SRCNN_COUNT = config.get_srcnn_count()
 OUTPUT_PATH = config.get_output_path()
 LOSS = config.get_loss()
 
-
 if not mask_path:
     sample_path = label_path
     COVERAGE_CHECK = False
@@ -129,7 +128,7 @@ test_data_generator = raster_data_generator.RasterDataGenerator(file_names=file_
                                                                 file_path=work_directory,
                                                                 label_path=label_path,
                                                                 generation_list=test_list,
-                                                                batch_size=1,
+                                                                batch_size=BATCH_SIZE,
                                                                 dim=IMAGE_DIMS,
                                                                 shuffle=SHUFFLE,
                                                                 ext="test",
@@ -202,13 +201,13 @@ checkpoint = tf.keras.callbacks.ModelCheckpoint(output_folder +
 time_keeper = TimeKeeper(log_path=output_folder)
 
 # train model
-history = model.fit_generator(train_data_generator,
-                              validation_data=validation_data_generator,
-                              epochs=EPOCH,
-                              shuffle=SHUFFLE,
-                              callbacks=[csv_logger, time_keeper],  # "checkpoint" removed
-                              steps_per_epoch=EPOCH_LIMIT,
-                              validation_steps=VALIDATION_MODEL_LENGTH)
+history = model.fit(train_data_generator,
+                    validation_data=validation_data_generator,
+                    epochs=EPOCH,
+                    shuffle=SHUFFLE,
+                    callbacks=[csv_logger, time_keeper],  # "checkpoint" removed
+                    steps_per_epoch=EPOCH_LIMIT,
+                    validation_steps=VALIDATION_MODEL_LENGTH)
 
 # mark output log file as complete if train succeeded
 os.system("mv " + output_folder +
@@ -239,25 +238,25 @@ if TEST_MODEL:
         img = predictions[j, :, :, 0] * 255.
         img = img.astype(np.uint8)
         img = Image.fromarray(img, 'L')
-        img.save(image_outputs + "/" + str(j) + "_predict_" + str(j) + "_1.png")
+        img.save(image_outputs + "/" + str(j + 2) + "_predict_" + str(j) + "_1.png")
 
         img = predictions[j, :, :, 1] * 255.
         img = img.astype(np.uint8)
         img = Image.fromarray(img, 'L')
-        img.save(image_outputs + "/" + str(j) + "_predict_" + str(j) + "_2.png")
+        img.save(image_outputs + "/" + str(j + 2) + "_predict_" + str(j) + "_2.png")
 
     test_data_generator = raster_data_generator.RasterDataGenerator(file_names=file_names,
                                                                     file_path=work_directory,
                                                                     label_path=label_path,
                                                                     generation_list=test_list,
-                                                                    batch_size=1,
+                                                                    batch_size=BATCH_SIZE,
                                                                     dim=IMAGE_DIMS,
                                                                     shuffle=SHUFFLE,
                                                                     srcnn_count=SRCNN_COUNT,
                                                                     non_srcnn_count=False)
 
     metrics_list = model.metrics_names
-    evaluation_outputs = model.evaluate_generator(test_data_generator, steps=TEST_MODEL_LENGTH)
+    evaluation_outputs = model.evaluate(test_data_generator, steps=TEST_MODEL_LENGTH)
 
     evaluation_metrics = pd.DataFrame({"metric": metrics_list,
                                        "score": evaluation_outputs})
