@@ -1,7 +1,7 @@
 {
   "file_type": "config",
   "output_path": "/home/ngengec/Desktop/model_outputs/",
-  "batch_size": 2,
+  "batch_size": 4,
   "image_dim": {
     "x": 512,
     "y": 512
@@ -14,7 +14,7 @@
     "nesterov": true
   },
   "loss_function": "focal",
-  "epochs": 2,
+  "epochs": 4,
   "data_split": {
     "train": 0.6,
     "test": 0.2,
@@ -24,7 +24,7 @@
   "overlap": 0.2,
   "shuffle": true,
   "seed": 10,
-  "epoch_limit": 2,
+  "epoch_limit": 4,
   "test_model": true,
   "test_model_count": 20,
   "validation_model_count": 2,

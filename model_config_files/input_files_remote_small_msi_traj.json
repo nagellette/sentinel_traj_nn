@@ -30,7 +30,7 @@
       "montreal_2016_traj_count_small.tif",
       "zero-to-max",
       0.0,
-      20.0
+      10.0
     ]
   ],
   "label_file": "montreal_2018_label_small.tif"
