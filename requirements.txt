@@ -30,6 +30,7 @@ pyasn1==0.4.8
 pyasn1-modules==0.2.8
 pyparsing==3.0.6
 python-dateutil==2.8.2
+python-dotenv==0.19.2
 pytz==2021.3
 PyWavelets==1.2.0
 requests==2.26.0
@@ -41,7 +42,7 @@ six==1.15.0
 tensorboard==2.7.0
 tensorboard-data-server==0.6.1
 tensorboard-plugin-wit==1.8.0
-tensorflow==2.5.0
+tensorflow==2.5.2
 tensorflow-addons==0.13.0
 tensorflow-estimator==2.5.0
 termcolor==1.1.0
@@ -51,5 +52,3 @@ typing-extensions==3.7.4.3
 urllib3==1.26.7
 Werkzeug==2.0.2
 wrapt==1.12.1
-
-python-dotenv~=0.19.2
