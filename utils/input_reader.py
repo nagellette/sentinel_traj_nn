@@ -1,6 +1,8 @@
 import json
 import sys
-
+import os
+from dotenv import load_dotenv
+from pathlib import Path
 
 class InputReader:
     def __init__(self, file_path):
@@ -9,6 +11,12 @@ class InputReader:
         :param file_path: Input json file path.
         """
         self.file_path = file_path
+        self.home = str(Path.home())
+
+        load_dotenv(dotenv_path=self.home + "/.env")
+
+        self.input_root = os.getenv("input_root")
+        self.output_root = os.getenv("output_root")
 
         try:
             f = open(self.file_path)
@@ -27,7 +35,7 @@ class InputReader:
         """
         if self.json_data["file_type"] == "image":
             image_array = self.json_data["input_files"]
-            working_path = self.json_data["working_path"]
+            working_path = self.input_root + "/" + self.json_data["working_path"]
             label = self.json_data["label_file"]
 
             # check if mask image provided, or return false
@@ -169,7 +177,7 @@ class InputReader:
 
     def get_output_path(self):
         try:
-            return self.json_data["output_path"]
+            return self.output_root + "/" + self.json_data["output_path"]
         except KeyError:
             print("Output path is not defined.")
             pass

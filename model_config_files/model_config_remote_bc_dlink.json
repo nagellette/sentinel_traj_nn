@@ -1,6 +1,6 @@
 {
   "file_type": "config",
-  "output_path": "/truba/home/ngengec/model_outputs/",
+  "output_path": "/model_outputs/",
   "batch_size": 4,
   "image_dim": {
     "x": 512,

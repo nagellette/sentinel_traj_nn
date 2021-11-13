@@ -1,6 +1,6 @@
 {
   "file_type": "image",
-  "working_path": "/truba/home/ngengec/data_sets/ist_data/",
+  "working_path": "/ist_data/",
   "input_files": [
     [
       "T35TPF_20191109T090201_B02_10m_clipped.tif",
