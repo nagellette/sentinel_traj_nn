@@ -10,7 +10,7 @@
 #SBATCH --mail-user=gengec@itu.edu.tr
 #SBATCH --error=/truba/home/ngengec/error_logs/err_%j
 #SBATCH --output=/truba/home/ngengec/output_logs/out_%j
-#SBATCH --time=0-15:00:00
+#SBATCH --time=0-20:00:00
 
 model_name=dlinknet
 config_name=model_config_remote_bc_dlink.json
