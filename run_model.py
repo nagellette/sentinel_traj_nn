@@ -1,4 +1,5 @@
 import sys
+import ast
 import tensorflow as tf
 from models.model_repository import ModelRepository
 from utils import raster_data_generator
@@ -11,6 +12,7 @@ from PIL import Image
 import numpy as np
 import subprocess
 import pandas as pd
+import json
 
 tf.executing_eagerly()
 
@@ -25,12 +27,30 @@ slurm_job_id = slurm_job_id.strip()
 if slurm_job_id == "":
     slurm_job_id = "local"
 
-# read input and configuration files
+# read configuration file
 config = InputReader(sys.argv[1])
-image_inputs = InputReader(sys.argv[2])
+
+# start creating cache file prefix string for config and input files.
+cache_file_name = config.get_md5_content()
+
+# check input file(s) passed in arguments
+try:
+    input_files = ast.literal_eval(sys.argv[2])
+except:
+    input_files = [sys.argv[2]]
+
+# read input file definitions
+image_inputs = []
+for input_file in input_files:
+    image_inputs.append(InputReader(input_file))
 
 # set file paths from input file
-work_directory, file_names, label_path, mask_path = image_inputs.read_image()
+images = []
+for image_input in image_inputs:
+    images.append(image_input.read_image())
+
+    # add image files to cache filename prefix
+    cache_file_name += image_input.get_md5_content()
 
 # set model parameters from config file
 BATCH_SIZE = config.get_batch_size()
@@ -50,26 +70,62 @@ SRCNN_COUNT = config.get_srcnn_count()
 OUTPUT_PATH = config.get_output_path()
 LOSS = config.get_loss()
 
-if not mask_path:
-    sample_path = label_path
-    COVERAGE_CHECK = False
+# check if previous cache is available to read, otherwise create and save
+if cache_file_name + 'train' in os.listdir("./cache/"):
+    with open('./cache/{}{}'.format(cache_file_name, "train"), 'r') as file:
+        train_list = json.load(file)
+
+    with open('./cache/{}{}'.format(cache_file_name, "test"), 'r') as file:
+        test_list = json.load(file)
+
+    with open('./cache/{}{}'.format(cache_file_name, "validation"), 'r') as file:
+        validation_list = json.load(file)
 else:
-    sample_path = mask_path
-    COVERAGE_CHECK = True
+    train_list = []
+    test_list = []
+    validation_list = []
+    for i, image in enumerate(images):
 
-# splitting data into train, test and validation
-data_splitter = TrainTestValidateSplitter(work_directory + sample_path,
-                                          TRAIN_SIZE,
-                                          TEST_SIZE,
-                                          VALIDATE_SIZE,
-                                          IMAGE_DIMS,
-                                          AUGMENT,
-                                          OVERLAP,
-                                          SEED,
-                                          COVERAGE_CHECK)
+        work_directory = image[0]
+        file_names = image[1]
+        label_path = image[2]
+        mask_path = image[3]
 
-# split data to train, test, validate
-train_list, test_list, validation_list = data_splitter.get_train_test_validation()
+        if not mask_path:
+            sample_path = label_path
+            COVERAGE_CHECK = False
+        else:
+            sample_path = mask_path
+            COVERAGE_CHECK = True
+
+        # splitting data into train, test and validation
+        data_splitter = TrainTestValidateSplitter(work_directory + sample_path,
+                                                  i,
+                                                  TRAIN_SIZE,
+                                                  TEST_SIZE,
+                                                  VALIDATE_SIZE,
+                                                  IMAGE_DIMS,
+                                                  AUGMENT,
+                                                  OVERLAP,
+                                                  SEED,
+                                                  COVERAGE_CHECK)
+
+        # split data to train, test, validate
+        train_list_temp, test_list_temp, validation_list_temp = data_splitter.get_train_test_validation()
+
+        train_list += train_list_temp
+        test_list += test_list_temp
+        validation_list += validation_list_temp
+
+    # create cache files
+    with open('./cache/{}{}'.format(cache_file_name, "train"), 'w') as file:
+        json.dump(train_list, file)
+
+    with open('./cache/{}{}'.format(cache_file_name, "test"), 'w') as file:
+        json.dump(test_list, file)
+
+    with open('./cache/{}{}'.format(cache_file_name, "validation"), 'w') as file:
+        json.dump(validation_list, file)
 
 # verify input values of test and validation sizes and convert to max validation/test data available if available
 # data is short
@@ -98,13 +154,12 @@ os.system("mkdir " + output_folder)
 os.system("mkdir " + image_outputs)
 
 # saving model configuration and input files
-os.system("cp " + sys.argv[1] + " " + output_folder + "config.json")
-os.system("cp " + sys.argv[2] + " " + output_folder + "inputs.json")
+os.system("cp {} {}config.json".format(sys.argv[1], output_folder))
+for i, file in enumerate(input_files):
+    os.system("cp {} {}input_{}.json".format(file, output_folder, i))
 
 # create data generators
-train_data_generator = raster_data_generator.RasterDataGenerator(file_names=file_names,
-                                                                 file_path=work_directory,
-                                                                 label_path=label_path,
+train_data_generator = raster_data_generator.RasterDataGenerator(inputs=images,
                                                                  generation_list=train_list,
                                                                  batch_size=BATCH_SIZE,
                                                                  dim=IMAGE_DIMS,
@@ -113,9 +168,7 @@ train_data_generator = raster_data_generator.RasterDataGenerator(file_names=file
                                                                  srcnn_count=SRCNN_COUNT,
                                                                  non_srcnn_count=False)
 
-validation_data_generator = raster_data_generator.RasterDataGenerator(file_names=file_names,
-                                                                      file_path=work_directory,
-                                                                      label_path=label_path,
+validation_data_generator = raster_data_generator.RasterDataGenerator(inputs=images,
                                                                       generation_list=validation_list,
                                                                       batch_size=BATCH_SIZE,
                                                                       dim=IMAGE_DIMS,
@@ -124,9 +177,7 @@ validation_data_generator = raster_data_generator.RasterDataGenerator(file_names
                                                                       srcnn_count=SRCNN_COUNT,
                                                                       non_srcnn_count=False)
 
-test_data_generator = raster_data_generator.RasterDataGenerator(file_names=file_names,
-                                                                file_path=work_directory,
-                                                                label_path=label_path,
+test_data_generator = raster_data_generator.RasterDataGenerator(inputs=images,
                                                                 generation_list=test_list,
                                                                 batch_size=BATCH_SIZE,
                                                                 dim=IMAGE_DIMS,
@@ -139,7 +190,7 @@ test_data_generator = raster_data_generator.RasterDataGenerator(file_names=file_
 # create model
 model = ModelRepository(sys.argv[3],
                         IMAGE_DIMS,
-                        len(file_names),
+                        len(images[0][1]),
                         BATCH_SIZE,
                         srcnn_count=SRCNN_COUNT,
                         optimizer=OPTIMIZER,
@@ -152,7 +203,7 @@ model = ModelRepository(sys.argv[3],
 # build model with defining input parameters
 if sys.argv[3] != "srcnn_unet":
     # build model with default provided dimensions for UNET
-    model.build([IMAGE_DIMS[0], IMAGE_DIMS[1], len(file_names)])
+    model.build([IMAGE_DIMS[0], IMAGE_DIMS[1], len(images[0][1])])
 else:
     build_input_dimensions = []
     # create input shapes which will run through SRCNN
@@ -160,8 +211,8 @@ else:
         build_input_dimensions.append((IMAGE_DIMS[0], IMAGE_DIMS[1], 1))
 
     # create input shapes which won't run through SRCNN, if any
-    if SRCNN_COUNT != len(file_names):
-        build_input_dimensions.append((IMAGE_DIMS[0], IMAGE_DIMS[1], len(file_names) - SRCNN_COUNT))
+    if SRCNN_COUNT != len(images[0][1]):
+        build_input_dimensions.append((IMAGE_DIMS[0], IMAGE_DIMS[1], len(images[0][1]) - SRCNN_COUNT))
 
     # build model
     model.build(build_input_dimensions)
@@ -245,9 +296,7 @@ if TEST_MODEL:
         img = Image.fromarray(img, 'L')
         img.save(image_outputs + "/" + str(j + BATCH_SIZE) + "_predict_" + str(j) + "_2.png")
 
-    test_data_generator = raster_data_generator.RasterDataGenerator(file_names=file_names,
-                                                                    file_path=work_directory,
-                                                                    label_path=label_path,
+    test_data_generator = raster_data_generator.RasterDataGenerator(inputs=images,
                                                                     generation_list=test_list,
                                                                     batch_size=BATCH_SIZE,
                                                                     dim=IMAGE_DIMS,

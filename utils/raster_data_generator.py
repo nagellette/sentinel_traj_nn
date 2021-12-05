@@ -1,4 +1,5 @@
 import tensorflow as tf
+
 try:
     import gdal
 except:
@@ -15,9 +16,7 @@ from utils.get_file_extension import get_file_extension
 
 class RasterDataGenerator(tf.keras.utils.Sequence):
 
-    def __init__(self, file_names,
-                 file_path,
-                 label_path,
+    def __init__(self, inputs,
                  generation_list,
                  batch_size=1,
                  dim=(572, 572),
@@ -30,9 +29,7 @@ class RasterDataGenerator(tf.keras.utils.Sequence):
         """
         Raster data generator for generating images from multiple raster datasets.
 
-        :param file_names: list of files and data types
-        :param file_path: work directory path
-        :param label_path: label file name
+        :param inputs: file_names, file_path and label_path list of files and data types
         :param generation_list: pixel offset and augmentation values list
         :param batch_size: size of the batch
         :param dim: dimensions of the batch
@@ -44,9 +41,7 @@ class RasterDataGenerator(tf.keras.utils.Sequence):
         :param non_srcnn_count: count of raster layers to skip srcnn
         """
 
-        self.file_names = file_names
-        self.file_path = file_path
-        self.label_path = label_path
+        self.inputs = inputs
         self.generation_list = generation_list
         self.batch_size = batch_size
         self.dim = dim
@@ -59,24 +54,34 @@ class RasterDataGenerator(tf.keras.utils.Sequence):
         self.filename_counter = 0
 
         self.raster_files = []
+        self.label_raster = []
 
-        # filling raster files list with data type and min/max pixel values
-        for file_name in self.file_names:
-            temp_raster = gdal.Open(file_path + file_name[0])
-            temp_raster_band = temp_raster.GetRasterBand(1)
-            if temp_raster_band.GetMinimum() is None or temp_raster_band.GetMaximum() is None:
-                print("Calculating band statistics: " + file_path + file_name[0])
-                temp_raster_band.ComputeStatistics(0)
-            temp_min = file_name[2]
-            temp_max = file_name[3]
-            temp_raster = None
+        # run init for each input set, add to raster and label lists
+        for _input in inputs:
+            file_names = _input[1]
+            file_path = _input[0]
+            label_path = _input[2]
 
-            self.raster_files.append([gdal.Open(file_path + file_name[0]),
-                                      file_name[1],
-                                      temp_min,
-                                      temp_max,
-                                      file_name[0]])
-        self.label_raster = gdal.Open(file_path + label_path)
+            # filling raster files list with data type and min/max pixel values
+            raster_files_temp = []
+            for file_name in file_names:
+                temp_raster = gdal.Open(file_path + file_name[0])
+                temp_raster_band = temp_raster.GetRasterBand(1)
+                if temp_raster_band.GetMinimum() is None or temp_raster_band.GetMaximum() is None:
+                    print("Calculating band statistics: " + file_path + file_name[0])
+                    temp_raster_band.ComputeStatistics(0)
+                temp_min = file_name[2]
+                temp_max = file_name[3]
+                temp_raster = None
+
+                raster_files_temp.append([gdal.Open(file_path + file_name[0]),
+                                          file_name[1],
+                                          temp_min,
+                                          temp_max,
+                                          file_name[0]])
+
+            self.raster_files.append(raster_files_temp)
+            self.label_raster.append(gdal.Open(file_path + label_path))
 
         self.on_epoch_end()
 
@@ -110,18 +115,24 @@ class RasterDataGenerator(tf.keras.utils.Sequence):
         counter = 0
 
         # filling batch dataset
-        for list_ID in list_IDs_temp:
+        for data in list_IDs_temp:
             train_batch = []
-            for i, raster_file in enumerate(self.raster_files):
 
-                raster_band = raster_file[0].GetRasterBand(1)
+            # assign variable values by input set from input list
+            list_ID = data[0]
+            data_index = data[1]
+            rasters = self.raster_files[data_index]
+
+            for i, raster in enumerate(rasters):
+
+                raster_band = raster[0].GetRasterBand(1)
 
                 # standardizing raster array values according to the data type
                 raster_as_array = raster_standardize(
                     raster_band.ReadAsArray(list_ID[0] - list_ID[4], list_ID[1] - list_ID[4], list_ID[3], list_ID[3]),
-                    raster_file[1],
-                    raster_file[2],
-                    raster_file[3])
+                    raster[1],
+                    raster[2],
+                    raster[3])
 
                 # applying data rotation augmentation
                 if list_ID[2] != 0:
@@ -138,7 +149,7 @@ class RasterDataGenerator(tf.keras.utils.Sequence):
                     raster_as_array = raster_as_array.astype(np.uint8)
                     img = Image.fromarray(raster_as_array, 'L')
                     img.save(
-                        self.save_image_file + str(self.filename_counter) + "_" +
+                        self.save_image_file + str(self.filename_counter) + "_" + str(data_index) + "_" +
                         self.ext + "_" +
                         str(list_ID[0]) +
                         "_" +
@@ -146,16 +157,17 @@ class RasterDataGenerator(tf.keras.utils.Sequence):
                         str(list_ID[1]) +
                         "_" +
                         str(list_ID[2]) +
-                        get_file_extension(raster_file[4]) +
+                        get_file_extension(raster[4]) +
                         ".jpg")
 
             # fill data to main batch
             train_batch_all.append(train_batch)
 
             # fill label
-            label_array = self.label_raster.GetRasterBand(1).ReadAsArray(list_ID[0] - list_ID[4],
-                                                                         list_ID[1] - list_ID[4], list_ID[3],
-                                                                         list_ID[3])
+            label_array = self.label_raster[data_index].GetRasterBand(1).ReadAsArray(list_ID[0] - list_ID[4],
+                                                                                     list_ID[1] - list_ID[4],
+                                                                                     list_ID[3],
+                                                                                     list_ID[3])
 
             # applying data rotation augmentation to label image
             if list_ID[2] != 0:
@@ -176,7 +188,7 @@ class RasterDataGenerator(tf.keras.utils.Sequence):
                     label_array_img = label_array_img.astype(np.uint8)
                     img = Image.fromarray(label_array_img, 'L')
                     img.save(
-                        self.save_image_file + str(self.filename_counter) + "_" +
+                        self.save_image_file + str(self.filename_counter) + "_" + str(data_index) + "_" +
                         self.ext +
                         "_" +
                         str(list_ID[0]) +

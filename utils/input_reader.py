@@ -3,6 +3,8 @@ import sys
 import os
 from dotenv import load_dotenv
 from pathlib import Path
+import hashlib
+
 
 class InputReader:
     def __init__(self, file_path):
@@ -17,8 +19,11 @@ class InputReader:
 
         self.input_root = os.getenv("input_root")
         self.output_root = os.getenv("output_root")
+        self.content = ""
 
         try:
+            f = open(self.file_path)
+            self.content = f.read()
             f = open(self.file_path)
             self.json_data = json.load(f)
         except OSError as err:
@@ -210,3 +215,9 @@ class InputReader:
         except:
             raise
         return "dice"
+
+    def get_md5_content(self):
+
+        result = hashlib.md5(self.content.encode())
+
+        return result.hexdigest()
