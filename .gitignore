@@ -4,3 +4,5 @@
 .idea
 .ipynb_checkpoints/
 .idea/*
+cache/*
+!cache/.gitkeep

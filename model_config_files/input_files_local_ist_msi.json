@@ -1,6 +1,6 @@
 {
   "file_type": "image",
-  "working_path": "/final_data/ist_data/",
+  "working_path": "/ist_data/",
   "input_files": [
     [
       "T35TPF_20191109T090201_B02_10m_clipped.tif",
@@ -16,12 +16,6 @@
     ],
     [
       "T35TPF_20191109T090201_B04_10m_clipped.tif",
-      "sentinel_msi",
-      0.0,
-      2000.0
-    ],
-    [
-      "T35TPF_20191109T090201_B08_10m_clipped.tif",
       "sentinel_msi",
       0.0,
       2000.0

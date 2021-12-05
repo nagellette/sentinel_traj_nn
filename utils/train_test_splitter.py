@@ -12,11 +12,15 @@ import numpy as np
 
 
 class TrainTestValidateSplitter:
-    def __init__(self, sample_file, train, test, validation, dim, augment=0, overlap=0, seed=0, check_coverage=False):
+    def __init__(self, sample_file, image_index, train, test, validation, dim, augment=0, overlap=0, seed=0,
+                 check_coverage=False):
+
+        # TODO: Add threshold for available labeled pixels vs. all pixel count.
         """
         Train, Test, Validation data list creator.
 
         :param sample_file: sample file for raster dimension template
+        :param image_index: order of the processed image in all image set
         :param train: percentage of the train data in all data
         :param test: percentage of the test data in all data
         :param validation: percentage of the validation data in all data
@@ -24,11 +28,12 @@ class TrainTestValidateSplitter:
         :param augment: augmentation value in degrees
         :param overlap: percentage of the overlap between batch
         :param seed: if provided, use as seed value
-        :param check_coverage: verify if the the image mask contain at least %80 landmass. Added to avoid large areas
+        :param check_coverage: verify if the the image mask contain at least %70 landmass. Added to avoid large areas
         covered with sea. When True, sample file must be 0 and 1 mask image.
         """
 
         self.sample_file = sample_file
+        self.image_index = image_index
         self.train = train
         self.test = test
         self.validation = validation
@@ -122,13 +127,13 @@ class TrainTestValidateSplitter:
 
         # filling  train, test, validation lists with file names
         for file in train_data:
-            train_list.append(self.data_set[file])
+            train_list.append([self.data_set[file], self.image_index])
 
         for file in test_data:
-            test_list.append(self.data_set[file])
+            test_list.append([self.data_set[file], self.image_index])
 
         for file in validation_data:
-            validation_list.append(self.data_set[file])
+            validation_list.append([self.data_set[file], self.image_index])
 
         # returning file lists
         return train_list, test_list, validation_list
