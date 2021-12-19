@@ -4,7 +4,7 @@ import sys
 import pandas as pd
 
 # read input summary file
-df = pd.read_csv(sys.argv[1])
+df = pd.read_csv(sys.argv[1], sep="|")
 df["slurm_id"] = ""
 
 # start runner loop
