@@ -40,9 +40,18 @@ def read_inputs_report(model_path):
 
 # read model config files
 def read_model_inputs(model_path):
+
+    model_path_content = os.listdir(model_path)
     # read configuration image files
     config = InputReader("{}config.json".format(model_path))
-    image_inputs = InputReader("{}inputs.json".format(model_path))
+
+    image_inputs = []
+    if "inputs.json" in model_path_content:
+        image_inputs.append(InputReader("{}inputs.json".format(model_path)))
+    else:
+        inputs_list = list(filter(lambda x: "input_" in x, model_path_content))
+        for i in range(len(inputs_list)):
+            image_inputs.append(InputReader("{}input_{}.json".format(model_path, i)))
 
     model_config_output = []
     # get model parameters from config file
@@ -94,13 +103,15 @@ def read_model_inputs(model_path):
         "====================================================================\nInput files and standardization "
         "method:\n====================================================================")
 
-    work_directory, file_names, label_path = image_inputs.read_image()
+    file_names_all = []
+    for image_input in image_inputs:
+        work_directory, file_names, label_path, mask = image_input.read_image()
+        file_names_all.append(file_names)
+        for file_name in file_names:
+            print("File: {}, Standardization: {}".format(file_name[0], file_name[1]))
+        print("====================================================================")
 
-    for file_name in file_names:
-        print("File: {}, Standardization: {}".format(file_name[0], file_name[1]))
-    print("====================================================================")
-
-    return model_config_output, file_names
+    return model_config_output, file_names_all
 
 
 # read tensorflow model

@@ -6,7 +6,7 @@ charset-normalizer==2.0.7
 cycler==0.11.0
 flatbuffers==1.12
 gast==0.4.0
-GDAL==3.2.2
+GDAL==3.3.2
 google-auth==2.3.3
 google-auth-oauthlib==0.4.6
 google-pasta==0.2.0
