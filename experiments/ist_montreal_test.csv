@@ -1,0 +1,4 @@
+JOBDEVICE|JOBNAME|MODELNAME|MODELCONFIG|MODELINPUTS
+akya-cuda|ngengec_unet_bc_ist_mont|unet|model_config_remote_bc.json|['/truba/home/ngengec/sentinel_traj_nn/model_config_files/input_files_remote_ist_msi.json','/truba/home/ngengec/sentinel_traj_nn/model_config_files/input_files_remote_small_msi.json']
+akya-cuda|ngengec_unet_bc_ist|unet|model_config_remote_bc.json|['/truba/home/ngengec/sentinel_traj_nn/model_config_files/input_files_remote_ist_msi.json']
+akya-cuda|ngengec_unet_bc_mont|unet|model_config_remote_bc.json|['/truba/home/ngengec/sentinel_traj_nn/model_config_files/input_files_remote_small_msi.json']

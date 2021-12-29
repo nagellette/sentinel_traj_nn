@@ -70,15 +70,19 @@ SRCNN_COUNT = config.get_srcnn_count()
 OUTPUT_PATH = config.get_output_path()
 LOSS = config.get_loss()
 
+# TODO: move CHECK_LABEL and LABEL_THRESHOLD to config file.
+CHECK_LABEL = True
+LABEL_THRESHOLD = 0.01
+
 # check if previous cache is available to read, otherwise create and save
-if cache_file_name + 'train' in os.listdir("./cache/"):
-    with open('./cache/{}{}'.format(cache_file_name, "train"), 'r') as file:
+if cache_file_name + 'train' + str(LABEL_THRESHOLD) in os.listdir("./cache/"):
+    with open('./cache/{}{}{}'.format(cache_file_name, "train", LABEL_THRESHOLD), 'r') as file:
         train_list = json.load(file)
 
-    with open('./cache/{}{}'.format(cache_file_name, "test"), 'r') as file:
+    with open('./cache/{}{}{}'.format(cache_file_name, "test", LABEL_THRESHOLD), 'r') as file:
         test_list = json.load(file)
 
-    with open('./cache/{}{}'.format(cache_file_name, "validation"), 'r') as file:
+    with open('./cache/{}{}{}'.format(cache_file_name, "validation", LABEL_THRESHOLD), 'r') as file:
         validation_list = json.load(file)
 else:
     train_list = []
@@ -91,15 +95,20 @@ else:
         label_path = image[2]
         mask_path = image[3]
 
+        print("Caching: {}".format(work_directory + label_path))
+
         if not mask_path:
-            sample_path = label_path
+            sample_path = work_directory + label_path
+            sample_mask_path = False
             COVERAGE_CHECK = False
         else:
-            sample_path = mask_path
+            sample_path = work_directory + label_path
+            sample_mask_path = work_directory + mask_path
             COVERAGE_CHECK = True
 
         # splitting data into train, test and validation
-        data_splitter = TrainTestValidateSplitter(work_directory + sample_path,
+        data_splitter = TrainTestValidateSplitter(sample_path,
+                                                  sample_mask_path,
                                                   i,
                                                   TRAIN_SIZE,
                                                   TEST_SIZE,
@@ -108,7 +117,10 @@ else:
                                                   AUGMENT,
                                                   OVERLAP,
                                                   SEED,
-                                                  COVERAGE_CHECK)
+                                                  COVERAGE_CHECK,
+                                                  LABEL_THRESHOLD,
+                                                  CHECK_LABEL
+                                                  )
 
         # split data to train, test, validate
         train_list_temp, test_list_temp, validation_list_temp = data_splitter.get_train_test_validation()
@@ -118,13 +130,13 @@ else:
         validation_list += validation_list_temp
 
     # create cache files
-    with open('./cache/{}{}'.format(cache_file_name, "train"), 'w') as file:
+    with open('./cache/{}{}{}'.format(cache_file_name, "train", LABEL_THRESHOLD), 'w') as file:
         json.dump(train_list, file)
 
-    with open('./cache/{}{}'.format(cache_file_name, "test"), 'w') as file:
+    with open('./cache/{}{}{}'.format(cache_file_name, "test", LABEL_THRESHOLD), 'w') as file:
         json.dump(test_list, file)
 
-    with open('./cache/{}{}'.format(cache_file_name, "validation"), 'w') as file:
+    with open('./cache/{}{}{}'.format(cache_file_name, "validation", LABEL_THRESHOLD), 'w') as file:
         json.dump(validation_list, file)
 
 # verify input values of test and validation sizes and convert to max validation/test data available if available
