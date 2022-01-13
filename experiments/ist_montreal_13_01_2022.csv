@@ -1,0 +1,7 @@
+JOBDEVICE|JOBNAME|MODELNAME|MODELCONFIG|MODELINPUTS
+akya-cuda|ngengec_unet_cont_ist|unet|model_config_remote_cont.json|['/truba/home/ngengec/sentinel_traj_nn/model_config_files/input_files_remote_ist_msi.json']
+akya-cuda|ngengec_unet_focal_custom_ist|unet|model_config_remote_focal_cust.json|['/truba/home/ngengec/sentinel_traj_nn/model_config_files/input_files_remote_ist_msi.json']
+akya-cuda|ngengec_unet_cont_ist_mont|unet|model_config_remote_cont.json|['/truba/home/ngengec/sentinel_traj_nn/model_config_files/input_files_remote_ist_msi.json','/truba/home/ngengec/sentinel_traj_nn/model_config_files/input_files_remote_small_msi.json']
+akya-cuda|ngengec_unet_focal_custom_ist_mont|unet|model_config_remote_focal_cust.json|['/truba/home/ngengec/sentinel_traj_nn/model_config_files/input_files_remote_ist_msi.json','/truba/home/ngengec/sentinel_traj_nn/model_config_files/input_files_remote_small_msi.json']
+akya-cuda|ngengec_unet_cont_mont|unet|model_config_remote_cont.json|['/truba/home/ngengec/sentinel_traj_nn/model_config_files/input_files_remote_small_msi.json']
+akya-cuda|ngengec_unet_focal_custom_mont|unet|model_config_remote_focal_cust.json|['/truba/home/ngengec/sentinel_traj_nn/model_config_files/input_files_remote_small_msi.json']

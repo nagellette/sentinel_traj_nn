@@ -31,6 +31,14 @@ class ConstructLossFunction:
             print("Setting loss function as mean square error (MSE).")
             return tf.keras.losses.MeanSquaredError()
 
+        elif self.loss_function_name == "focal_custom":
+            print("Setting loss function as custom focal loss (Alpha=0.1, Gama=5).")
+            return tfa.losses.focal_loss.SigmoidFocalCrossEntropy(alpha=0.1, gamma=5, reduction=tf.keras.losses.Reduction.AUTO)
+
+        elif self.loss_function_name == "contrastive":
+            print("Setting loss function as contrastive loss.")
+            return tfa.losses.ContrastiveLoss()
+
         else:
             print("Loss function is not defined, please define in utils.constract_lost_function.py")
 
