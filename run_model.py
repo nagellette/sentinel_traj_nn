@@ -13,8 +13,16 @@ import numpy as np
 import subprocess
 import pandas as pd
 import json
+from dotenv import load_dotenv
+from pathlib import Path
 
 tf.executing_eagerly()
+
+# read project path
+home = str(Path.home())
+load_dotenv(dotenv_path=home + "/.env")
+
+code_root = os.getenv("code_root")
 
 # call out available GPU info
 print("Num GPUs Available: ", len(tf.config.experimental.list_physical_devices('GPU')))
@@ -75,14 +83,14 @@ CHECK_LABEL = True
 LABEL_THRESHOLD = 0.01
 
 # check if previous cache is available to read, otherwise create and save
-if cache_file_name + 'train' + str(LABEL_THRESHOLD) in os.listdir("./cache/"):
-    with open('./cache/{}{}{}'.format(cache_file_name, "train", LABEL_THRESHOLD), 'r') as file:
+if cache_file_name + 'train' + str(LABEL_THRESHOLD) in os.listdir("{}/cache/".format(code_root)):
+    with open('{}/cache/{}{}{}'.format(code_root, cache_file_name, "train", LABEL_THRESHOLD), 'r') as file:
         train_list = json.load(file)
 
-    with open('./cache/{}{}{}'.format(cache_file_name, "test", LABEL_THRESHOLD), 'r') as file:
+    with open('{}/cache/{}{}{}'.format(code_root, cache_file_name, "test", LABEL_THRESHOLD), 'r') as file:
         test_list = json.load(file)
 
-    with open('./cache/{}{}{}'.format(cache_file_name, "validation", LABEL_THRESHOLD), 'r') as file:
+    with open('{}/cache/{}{}{}'.format(code_root, cache_file_name, "validation", LABEL_THRESHOLD), 'r') as file:
         validation_list = json.load(file)
 else:
     train_list = []
@@ -130,13 +138,13 @@ else:
         validation_list += validation_list_temp
 
     # create cache files
-    with open('./cache/{}{}{}'.format(cache_file_name, "train", LABEL_THRESHOLD), 'w') as file:
+    with open('{}/cache/{}{}{}'.format(code_root, cache_file_name, "train", LABEL_THRESHOLD), 'w') as file:
         json.dump(train_list, file)
 
-    with open('./cache/{}{}{}'.format(cache_file_name, "test", LABEL_THRESHOLD), 'w') as file:
+    with open('{}/cache/{}{}{}'.format(code_root, cache_file_name, "test", LABEL_THRESHOLD), 'w') as file:
         json.dump(test_list, file)
 
-    with open('./cache/{}{}{}'.format(cache_file_name, "validation", LABEL_THRESHOLD), 'w') as file:
+    with open('{}/cache/{}{}{}'.format(code_root, cache_file_name, "validation", LABEL_THRESHOLD), 'w') as file:
         json.dump(validation_list, file)
 
 # verify input values of test and validation sizes and convert to max validation/test data available if available

@@ -6,3 +6,5 @@
 .idea/*
 cache/*
 !cache/.gitkeep
+/venv
+/env
