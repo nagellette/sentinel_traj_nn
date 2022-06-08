@@ -297,6 +297,12 @@ model.save(output_folder +
            start_time +
            "_model")
 
+model.save(output_folder +
+           sys.argv[3] +
+           "_" +
+           start_time +
+           "_model.h5")
+
 if TEST_MODEL:
     print("Creating test output:")
     predictions = model.predict(test_data_generator, steps=TEST_MODEL_LENGTH)
