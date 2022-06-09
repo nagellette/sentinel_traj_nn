@@ -17,3 +17,14 @@
 
 ### run_experiment.py runtime args
 - ```python run_experiments.py ./experiments/ist_montreal_all.csv ./scripts/run_remote_template.sh```
+
+Experiment file template:
+
+JOBDEVICE| JOBNAME          | MODELNAME  | MODELCONFIG                       | MODELINPUTS                                                                                 
+---|------------------|------------|-----------------------------------|---------------------------------------------------------------------------------------------|
+truba cluster name| model description| model name | model config file to be used      | model input file path list. multiple paths work if there is more than one work area.        |
+akya-cuda| ngengec_resunet_bc_ist | resunet    | model_config_remote_bc.json       | ['/truba/home/ngengec/sentinel_traj_nn/model_config_files/input_files_remote_ist_msi.json'] 
+akya-cuda| ngengec_dlinknet_bc_ist | dlinknet   | model_config_remote_bc_dlink.json | ['/truba/home/ngengec/sentinel_traj_nn/model_config_files/input_files_remote_ist_msijson']  
+akya-cuda| ngengec_unet_bc_ist | unet       | model_config_remote_bc.json       | ['/truba/home/ngengec/sentinel_traj_nn/model_config_files/input_files_remote_ist_msi.json'] 
+
+* Seperator "|". refer to experiment table for templates.
