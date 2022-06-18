@@ -36,4 +36,7 @@ sbatch filename.sh
 
 - ```sacct``` : Beklemede, çalışmakta yada daha önce çalışmış ve sonlanmış olan işler yada tek bir iş hakkında ayrıntılı rapor ve bilgi alınmasına imkan verir. Pek çok parametre içerir. Örneğin belli tarihler arasında başlamış ve bitmiş işlerin listesi, çalışma süresi, kullandığı bellek miktarı, üzerinde çalıştığı sunucuların adresleri vs, gibi iş/işler ile ilgili bilgi alınması mümkündür. 
 
-- ```sstat: ``` Çalışmakta olan işin kullandığı, kullanmakta olduğu sistem kaynakları hakkında bilgi verir. --format= ile verilecek bilgi türleri seçilebilir. 
+- ```sstat: ``` Çalışmakta olan işin kullandığı, kullanmakta olduğu sistem kaynakları hakkında bilgi verir. --format= ile verilecek bilgi türleri seçilebilir.
+
+#### Handy scripts:
+- Cancel all running/queued tasks for current user: ```squeue -u $USER | awk '{print $1}' | tail -n+2 | xargs scancel```
