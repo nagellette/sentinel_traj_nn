@@ -68,6 +68,8 @@ class ModelRepository:
             self.resunet_light(self.dim, self.input_channels, self.batch_size)
         elif self.model_name == "dlinknet":
             self.dlinknet(self.dim, self.input_channels, self.batch_size)
+        elif self.model_name == "unet_traj_type2":
+            self.unet_traj_type2(self.dim, self.input_channels, self.batch_size)
         else:
             print(self.model_name + " not defined yet.")
             sys.exit()
@@ -860,6 +862,151 @@ class ModelRepository:
         final_conv = Activation("relu")(final_conv)
 
         output_layer = Conv2DTranspose(2, (3, 3), padding="same", activation="sigmoid", strides=2)(final_conv)
+
+        self.model = tf.keras.Model(inputs=inputs_layer, outputs=output_layer)
+
+        self.model.compile(optimizer=self.optimizer,
+                           loss=self.loss_function,
+                           metrics=get_metrics(batch_size=self.batch_size))
+
+
+    def unet_traj_type2(self, dim, input_channels, batch_size):
+
+        """
+        Unet implementation:
+        - https://arxiv.org/abs/1505.04597
+
+        :param dim: dimension of inputs
+        :param input_channels: number of bands/layers of input
+        :param batch_size: # batches in the input
+        :return: compiled model
+        """
+
+        inputs_layer = tf.keras.layers.Input((dim[0], dim[1], input_channels), batch_size=batch_size)
+
+        # split input into satellite and trajectory tensors
+        input_sat, input_traj = tf.split(inputs_layer, [input_channels - 1, 1], axis=3)
+
+        # satellite unet stream
+        conv1_sat = Conv2D(64, (3, 3), activation="relu", padding="same")(input_sat)
+        conv1_sat = BatchNormalization()(conv1_sat)
+        conv1_sat = Conv2D(64, (3, 3), activation="relu", padding="same")(conv1_sat)
+        conv1_sat = BatchNormalization()(conv1_sat)
+        pool1_sat = MaxPooling2D((2, 2))(conv1_sat)
+
+        conv2_sat = Conv2D(128, (3, 3), activation="relu", padding="same")(pool1_sat)
+        conv2_sat = BatchNormalization()(conv2_sat)
+        conv2_sat = Conv2D(128, (3, 3), activation="relu", padding="same")(conv2_sat)
+        conv2_sat = BatchNormalization()(conv2_sat)
+        pool2_sat = MaxPooling2D((2, 2))(conv2_sat)
+
+        conv3_sat = Conv2D(256, (3, 3), activation="relu", padding="same")(pool2_sat)
+        conv3_sat = BatchNormalization()(conv3_sat)
+        conv3_sat = Conv2D(256, (3, 3), activation="relu", padding="same")(conv3_sat)
+        conv3_sat = BatchNormalization()(conv3_sat)
+        pool3_sat = MaxPooling2D((2, 2))(conv3_sat)
+
+        conv4_sat = Conv2D(512, (3, 3), activation="relu", padding="same")(pool3_sat)
+        conv4_sat = BatchNormalization()(conv4_sat)
+        conv4_sat = Conv2D(512, (3, 3), activation="relu", padding="same")(conv4_sat)
+        conv4_sat = BatchNormalization()(conv4_sat)
+        pool4_sat = MaxPooling2D((2, 2))(conv4_sat)
+
+        conv_middle_sat = Conv2D(1024, (3, 3), activation="relu", padding="same")(pool4_sat)
+        conv_middle_sat = BatchNormalization()(conv_middle_sat)
+        conv_middle_sat = Conv2D(1024, (3, 3), activation="relu", padding="same")(conv_middle_sat)
+        conv_middle_sat = BatchNormalization()(conv_middle_sat)
+
+        conv_t4_sat = Conv2DTranspose(512, (2, 2), strides=(2, 2), padding="same")(conv_middle_sat)
+        conc4_sat = concatenate([conv_t4_sat, conv4_sat])
+        up_conv4_sat = Conv2D(512, (3, 3), activation="relu", padding="same")(conc4_sat)
+        up_conv4_sat = BatchNormalization()(up_conv4_sat)
+        up_conv4_sat = Conv2D(512, (3, 3), activation="relu", padding="same")(up_conv4_sat)
+        up_conv4_sat = BatchNormalization()(up_conv4_sat)
+
+        conv_t3_sat = Conv2DTranspose(256, (2, 2), strides=(2, 2), padding="same")(up_conv4_sat)
+        conc3_sat = concatenate([conv_t3_sat, conv3_sat])
+        up_conv3_sat = Conv2D(256, (3, 3), activation="relu", padding="same")(conc3_sat)
+        up_conv3_sat = BatchNormalization()(up_conv3_sat)
+        up_conv3_sat = Conv2D(256, (3, 3), activation="relu", padding="same")(up_conv3_sat)
+        up_conv3_sat = BatchNormalization()(up_conv3_sat)
+
+        conv_t2_sat = Conv2DTranspose(128, (2, 2), strides=(2, 2), padding="same")(up_conv3_sat)
+        conc2_sat = concatenate([conv_t2_sat, conv2_sat])
+        up_conv2_sat = Conv2D(128, (3, 3), activation="relu", padding="same")(conc2_sat)
+        up_conv2_sat = BatchNormalization()(up_conv2_sat)
+        up_conv2_sat = Conv2D(128, (3, 3), activation="relu", padding="same")(up_conv2_sat)
+        up_conv2_sat = BatchNormalization()(up_conv2_sat)
+
+        conv_t1_sat = Conv2DTranspose(64, (2, 2), strides=(2, 2), padding="same")(up_conv2_sat)
+        conc1_sat = concatenate([conv_t1_sat, conv1_sat])
+        up_conv1_sat = Conv2D(64, (3, 3), activation="relu", padding="same")(conc1_sat)
+        up_conv1_sat = BatchNormalization()(up_conv1_sat)
+        up_conv1_sat = Conv2D(64, (3, 3), activation="relu", padding="same")(up_conv1_sat)
+        up_conv1_sat = BatchNormalization()(up_conv1_sat)
+
+
+        # trajectory unet stream
+        conv1_traj = Conv2D(64, (3, 3), activation="relu", padding="same")(input_traj)
+        conv1_traj = BatchNormalization()(conv1_traj)
+        conv1_traj = Conv2D(64, (3, 3), activation="relu", padding="same")(conv1_traj)
+        conv1_traj = BatchNormalization()(conv1_traj)
+        pool1_traj = MaxPooling2D((2, 2))(conv1_traj)
+
+        conv2_traj = Conv2D(128, (3, 3), activation="relu", padding="same")(pool1_traj)
+        conv2_traj = BatchNormalization()(conv2_traj)
+        conv2_traj = Conv2D(128, (3, 3), activation="relu", padding="same")(conv2_traj)
+        conv2_traj = BatchNormalization()(conv2_traj)
+        pool2_traj = MaxPooling2D((2, 2))(conv2_traj)
+
+        conv3_traj = Conv2D(256, (3, 3), activation="relu", padding="same")(pool2_traj)
+        conv3_traj = BatchNormalization()(conv3_traj)
+        conv3_traj = Conv2D(256, (3, 3), activation="relu", padding="same")(conv3_traj)
+        conv3_traj = BatchNormalization()(conv3_traj)
+        pool3_traj = MaxPooling2D((2, 2))(conv3_traj)
+
+        conv4_traj = Conv2D(512, (3, 3), activation="relu", padding="same")(pool3_traj)
+        conv4_traj = BatchNormalization()(conv4_traj)
+        conv4_traj = Conv2D(512, (3, 3), activation="relu", padding="same")(conv4_traj)
+        conv4_traj = BatchNormalization()(conv4_traj)
+        pool4_traj = MaxPooling2D((2, 2))(conv4_traj)
+
+        conv_middle_traj = Conv2D(1024, (3, 3), activation="relu", padding="same")(pool4_traj)
+        conv_middle_traj = BatchNormalization()(conv_middle_traj)
+        conv_middle_traj = Conv2D(1024, (3, 3), activation="relu", padding="same")(conv_middle_traj)
+        conv_middle_traj = BatchNormalization()(conv_middle_traj)
+
+        conv_t4_traj = Conv2DTranspose(512, (2, 2), strides=(2, 2), padding="same")(conv_middle_traj)
+        conc4_traj = concatenate([conv_t4_traj, conv4_traj])
+        up_conv4_traj = Conv2D(512, (3, 3), activation="relu", padding="same")(conc4_traj)
+        up_conv4_traj = BatchNormalization()(up_conv4_traj)
+        up_conv4_traj = Conv2D(512, (3, 3), activation="relu", padding="same")(up_conv4_traj)
+        up_conv4_traj = BatchNormalization()(up_conv4_traj)
+
+        conv_t3_traj = Conv2DTranspose(256, (2, 2), strides=(2, 2), padding="same")(up_conv4_traj)
+        conc3_traj = concatenate([conv_t3_traj, conv3_traj])
+        up_conv3_traj = Conv2D(256, (3, 3), activation="relu", padding="same")(conc3_traj)
+        up_conv3_traj = BatchNormalization()(up_conv3_traj)
+        up_conv3_traj = Conv2D(256, (3, 3), activation="relu", padding="same")(up_conv3_traj)
+        up_conv3_traj = BatchNormalization()(up_conv3_traj)
+
+        conv_t2_traj = Conv2DTranspose(128, (2, 2), strides=(2, 2), padding="same")(up_conv3_traj)
+        conc2_traj = concatenate([conv_t2_traj, conv2_traj])
+        up_conv2_traj = Conv2D(128, (3, 3), activation="relu", padding="same")(conc2_traj)
+        up_conv2_traj = BatchNormalization()(up_conv2_traj)
+        up_conv2_traj = Conv2D(128, (3, 3), activation="relu", padding="same")(up_conv2_traj)
+        up_conv2_traj = BatchNormalization()(up_conv2_traj)
+
+        conv_t1_traj = Conv2DTranspose(64, (2, 2), strides=(2, 2), padding="same")(up_conv2_traj)
+        conc1_traj = concatenate([conv_t1_traj, conv1_traj])
+        up_conv1_traj = Conv2D(64, (3, 3), activation="relu", padding="same")(conc1_traj)
+        up_conv1_traj = BatchNormalization()(up_conv1_traj)
+        up_conv1_traj = Conv2D(64, (3, 3), activation="relu", padding="same")(up_conv1_traj)
+        up_conv1_traj = BatchNormalization()(up_conv1_traj)
+
+        fusion_layer = tf.keras.layers.Average()([up_conv1_sat, up_conv1_traj])
+
+        output_layer = Conv2D(2, (1, 1), padding="same", activation="sigmoid")(fusion_layer)
 
         self.model = tf.keras.Model(inputs=inputs_layer, outputs=output_layer)
 
