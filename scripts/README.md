@@ -9,6 +9,8 @@
   - ```resunet```
   - ```resunetlight```
   - ```dlinknet```
+  - ```unet_traj_type1```: Unet with late fusion with no model in trajectory stream.
+  - ```unet_traj_type2```: Unet with late fusion with Unet model in trajectory stream.
   
 ### Local Pycharm setup for run_model.Pycharm
 - Add following to the run_model.py file "Parameters" section in run options dialog: ```"./model_config_files/model_config_debug_local.json" "./model_config_files/input_files_local_small_msi_only.json" "unet"```
