@@ -221,3 +221,13 @@ class InputReader:
         result = hashlib.md5(self.content.encode())
 
         return result.hexdigest()
+
+    def get_fusion_type(self):
+        try:
+            return self.json_data["fusion_type"]
+        except KeyError:
+            print("Fusion type is not defined, setting 'average'.")
+            pass
+        except:
+            raise
+        return "average"

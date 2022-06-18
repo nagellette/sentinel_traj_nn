@@ -13,7 +13,7 @@
 #SBATCH --constraint=akya-cuda
 #SBATCH --time=0-00:14:00
 
-model_name=unet
+model_name=unet_traj_type2
 config_name=model_config_debug_remote.json
 input_name=input_files_remote_small_msi_traj.json
 
