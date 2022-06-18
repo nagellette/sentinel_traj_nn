@@ -956,11 +956,15 @@ class ModelRepository:
         up_conv1_sat = Conv2D(64, (3, 3), activation="relu", padding="same")(up_conv1_sat)
         up_conv1_sat = BatchNormalization()(up_conv1_sat)
 
-        fusion_layer = get_fusion_layer(fusion_type, up_conv1_sat, input_traj)
+        output_layer1 = Conv2D(2, (1, 1), padding="same", activation="sigmoid")(up_conv1_sat)
+        output_layer2 = Conv2D(2, (1, 1), padding="same", activation="sigmoid")(input_traj)
 
-        output_layer = Conv2D(2, (1, 1), padding="same", activation="sigmoid")(fusion_layer)
+        fusion_layer = get_fusion_layer(fusion_type, output_layer1, output_layer2)
 
-        self.model = tf.keras.Model(inputs=inputs_layer, outputs=output_layer)
+        if fusion_type == "concat":
+            fusion_layer = Conv2D(2, (1, 1), padding="same", activation="sigmoid")(fusion_layer)
+
+        self.model = tf.keras.Model(inputs=inputs_layer, outputs=fusion_layer)
 
         self.model.compile(optimizer=self.optimizer,
                            loss=self.loss_function,
@@ -1101,11 +1105,15 @@ class ModelRepository:
         up_conv1_traj = Conv2D(64, (3, 3), activation="relu", padding="same")(up_conv1_traj)
         up_conv1_traj = BatchNormalization()(up_conv1_traj)
 
-        fusion_layer = get_fusion_layer(fusion_type, up_conv1_sat, up_conv1_traj)
+        output_layer1 = Conv2D(2, (1, 1), padding="same", activation="sigmoid")(up_conv1_sat)
+        output_layer2 = Conv2D(2, (1, 1), padding="same", activation="sigmoid")(up_conv1_traj)
 
-        output_layer = Conv2D(2, (1, 1), padding="same", activation="sigmoid")(fusion_layer)
+        fusion_layer = get_fusion_layer(fusion_type, output_layer1, output_layer2)
 
-        self.model = tf.keras.Model(inputs=inputs_layer, outputs=output_layer)
+        if fusion_type == "concat":
+            fusion_layer = Conv2D(2, (1, 1), padding="same", activation="sigmoid")(fusion_layer)
+
+        self.model = tf.keras.Model(inputs=inputs_layer, outputs=fusion_layer)
 
         self.model.compile(optimizer=self.optimizer,
                            loss=self.loss_function,
