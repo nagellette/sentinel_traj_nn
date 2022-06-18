@@ -12,7 +12,7 @@ def get_fusion_layer(fusion_type, input1, input2):
     """
     if fusion_type == "average":
         return tf.keras.layers.Average()([input1, input2])
-    elif fusion_type == "max":
+    elif fusion_type == "maximum":
         return tf.keras.layers.Maximum()([input1, input2])
     elif fusion_type == "multiply":
         return tf.keras.layers.Multiply()([input1, input2])
