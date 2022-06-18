@@ -77,6 +77,7 @@ VALIDATION_MODEL_LENGTH = config.get_validation_model_count()
 SRCNN_COUNT = config.get_srcnn_count()
 OUTPUT_PATH = config.get_output_path()
 LOSS = config.get_loss()
+FUSION_TYPE = config.get_fusion_type()
 
 # TODO: move CHECK_LABEL and LABEL_THRESHOLD to config file.
 CHECK_LABEL = True
@@ -218,7 +219,8 @@ model = ModelRepository(sys.argv[3],
                         decay=DECAY,
                         momentum=MOMENTUM,
                         nesterov=NESTEROV,
-                        loss=LOSS).get_model()
+                        loss=LOSS,
+                        fusion_type=FUSION_TYPE).get_model()
 
 # build model with defining input parameters
 if sys.argv[3] != "srcnn_unet":

@@ -8,7 +8,10 @@ from tensorflow.python.keras.layers import AveragePooling2D, GlobalAveragePoolin
 from utils.construct_loss_function import ConstructLossFunction
 from utils.construct_optimizer import ConstructOptimizer
 from utils.get_metrics import get_metrics
+from utils.get_fusion_layer import get_fusion_layer
 
+
+# noinspection DuplicatedCode
 class ModelRepository:
     def __init__(self,
                  model_name,
@@ -21,7 +24,8 @@ class ModelRepository:
                  decay=1e-6,
                  momentum=0.9,
                  nesterov=True,
-                 loss="dice"):
+                 loss="dice",
+                 fusion_type="average"):
         """
         Collection of deep learning models for image segmentation.
         :param model_name:name of the model that'll run.
@@ -35,6 +39,8 @@ class ModelRepository:
         :param momentum: momentum parameter for SGD optimizer
         :param nesterov: nesterov parameter for SGD optimizer
         :param loss: loss function parameter
+        :param fusion_type: fusion type to be used in satellite+trajectory late fusion models. Set to default for early
+        fusion examples and not being used.
         """
         self.model_name = model_name
         self.dim = dim
@@ -48,8 +54,10 @@ class ModelRepository:
         self.nesterov = nesterov
         self.loss = loss
         self.model = None
+        self.fusion_type = fusion_type
 
-        self.loss_function = ConstructLossFunction(loss_function_name=self.loss, batch_size=self.batch_size).get_loss_function()
+        self.loss_function = ConstructLossFunction(loss_function_name=self.loss,
+                                                   batch_size=self.batch_size).get_loss_function()
         self.optimizer = ConstructOptimizer(optimizer_name=self.optimizer, l_rate=self.l_rate, decay=self.decay,
                                             momentum=self.momentum, nesterov=self.nesterov).get_optimizer()
 
@@ -68,8 +76,10 @@ class ModelRepository:
             self.resunet_light(self.dim, self.input_channels, self.batch_size)
         elif self.model_name == "dlinknet":
             self.dlinknet(self.dim, self.input_channels, self.batch_size)
+        elif self.model_name == "unet_traj_type1":
+            self.unet_traj_type1(self.dim, self.input_channels, self.batch_size, self.fusion_type)
         elif self.model_name == "unet_traj_type2":
-            self.unet_traj_type2(self.dim, self.input_channels, self.batch_size)
+            self.unet_traj_type2(self.dim, self.input_channels, self.batch_size, self.fusion_type)
         else:
             print(self.model_name + " not defined yet.")
             sys.exit()
@@ -869,16 +879,17 @@ class ModelRepository:
                            loss=self.loss_function,
                            metrics=get_metrics(batch_size=self.batch_size))
 
-
-    def unet_traj_type2(self, dim, input_channels, batch_size):
+    def unet_traj_type1(self, dim, input_channels, batch_size, fusion_type):
 
         """
-        Unet implementation:
-        - https://arxiv.org/abs/1505.04597
+        Unet trajectory late fusion implementation with unet stream for satellite and direct connection to trajectory.
+        CAUTION: This model works only with satellite and trajectory data and automatically pick last array as
+        trajectory array.
 
         :param dim: dimension of inputs
         :param input_channels: number of bands/layers of input
         :param batch_size: # batches in the input
+        :param fusion_type: preferred fusion type to be used
         :return: compiled model
         """
 
@@ -945,6 +956,92 @@ class ModelRepository:
         up_conv1_sat = Conv2D(64, (3, 3), activation="relu", padding="same")(up_conv1_sat)
         up_conv1_sat = BatchNormalization()(up_conv1_sat)
 
+        fusion_layer = get_fusion_layer(fusion_type, up_conv1_sat, input_traj)
+
+        output_layer = Conv2D(2, (1, 1), padding="same", activation="sigmoid")(fusion_layer)
+
+        self.model = tf.keras.Model(inputs=inputs_layer, outputs=output_layer)
+
+        self.model.compile(optimizer=self.optimizer,
+                           loss=self.loss_function,
+                           metrics=get_metrics(batch_size=self.batch_size))
+
+    def unet_traj_type2(self, dim, input_channels, batch_size, fusion_type):
+
+        """
+        Unet trajectory late fusion implementation with unet stream for both satellite and trajectory.
+        CAUTION: This model works only with satellite and trajectory data and automatically pick last array as
+        trajectory array.
+
+        :param dim: dimension of inputs
+        :param input_channels: number of bands/layers of input
+        :param batch_size: # batches in the input
+        :param fusion_type: preferred fusion type to be used
+        :return: compiled model
+        """
+
+        inputs_layer = tf.keras.layers.Input((dim[0], dim[1], input_channels), batch_size=batch_size)
+
+        # split input into satellite and trajectory tensors
+        input_sat, input_traj = tf.split(inputs_layer, [input_channels - 1, 1], axis=3)
+
+        # satellite unet stream
+        conv1_sat = Conv2D(64, (3, 3), activation="relu", padding="same")(input_sat)
+        conv1_sat = BatchNormalization()(conv1_sat)
+        conv1_sat = Conv2D(64, (3, 3), activation="relu", padding="same")(conv1_sat)
+        conv1_sat = BatchNormalization()(conv1_sat)
+        pool1_sat = MaxPooling2D((2, 2))(conv1_sat)
+
+        conv2_sat = Conv2D(128, (3, 3), activation="relu", padding="same")(pool1_sat)
+        conv2_sat = BatchNormalization()(conv2_sat)
+        conv2_sat = Conv2D(128, (3, 3), activation="relu", padding="same")(conv2_sat)
+        conv2_sat = BatchNormalization()(conv2_sat)
+        pool2_sat = MaxPooling2D((2, 2))(conv2_sat)
+
+        conv3_sat = Conv2D(256, (3, 3), activation="relu", padding="same")(pool2_sat)
+        conv3_sat = BatchNormalization()(conv3_sat)
+        conv3_sat = Conv2D(256, (3, 3), activation="relu", padding="same")(conv3_sat)
+        conv3_sat = BatchNormalization()(conv3_sat)
+        pool3_sat = MaxPooling2D((2, 2))(conv3_sat)
+
+        conv4_sat = Conv2D(512, (3, 3), activation="relu", padding="same")(pool3_sat)
+        conv4_sat = BatchNormalization()(conv4_sat)
+        conv4_sat = Conv2D(512, (3, 3), activation="relu", padding="same")(conv4_sat)
+        conv4_sat = BatchNormalization()(conv4_sat)
+        pool4_sat = MaxPooling2D((2, 2))(conv4_sat)
+
+        conv_middle_sat = Conv2D(1024, (3, 3), activation="relu", padding="same")(pool4_sat)
+        conv_middle_sat = BatchNormalization()(conv_middle_sat)
+        conv_middle_sat = Conv2D(1024, (3, 3), activation="relu", padding="same")(conv_middle_sat)
+        conv_middle_sat = BatchNormalization()(conv_middle_sat)
+
+        conv_t4_sat = Conv2DTranspose(512, (2, 2), strides=(2, 2), padding="same")(conv_middle_sat)
+        conc4_sat = concatenate([conv_t4_sat, conv4_sat])
+        up_conv4_sat = Conv2D(512, (3, 3), activation="relu", padding="same")(conc4_sat)
+        up_conv4_sat = BatchNormalization()(up_conv4_sat)
+        up_conv4_sat = Conv2D(512, (3, 3), activation="relu", padding="same")(up_conv4_sat)
+        up_conv4_sat = BatchNormalization()(up_conv4_sat)
+
+        conv_t3_sat = Conv2DTranspose(256, (2, 2), strides=(2, 2), padding="same")(up_conv4_sat)
+        conc3_sat = concatenate([conv_t3_sat, conv3_sat])
+        up_conv3_sat = Conv2D(256, (3, 3), activation="relu", padding="same")(conc3_sat)
+        up_conv3_sat = BatchNormalization()(up_conv3_sat)
+        up_conv3_sat = Conv2D(256, (3, 3), activation="relu", padding="same")(up_conv3_sat)
+        up_conv3_sat = BatchNormalization()(up_conv3_sat)
+
+        conv_t2_sat = Conv2DTranspose(128, (2, 2), strides=(2, 2), padding="same")(up_conv3_sat)
+        conc2_sat = concatenate([conv_t2_sat, conv2_sat])
+        up_conv2_sat = Conv2D(128, (3, 3), activation="relu", padding="same")(conc2_sat)
+        up_conv2_sat = BatchNormalization()(up_conv2_sat)
+        up_conv2_sat = Conv2D(128, (3, 3), activation="relu", padding="same")(up_conv2_sat)
+        up_conv2_sat = BatchNormalization()(up_conv2_sat)
+
+        conv_t1_sat = Conv2DTranspose(64, (2, 2), strides=(2, 2), padding="same")(up_conv2_sat)
+        conc1_sat = concatenate([conv_t1_sat, conv1_sat])
+        up_conv1_sat = Conv2D(64, (3, 3), activation="relu", padding="same")(conc1_sat)
+        up_conv1_sat = BatchNormalization()(up_conv1_sat)
+        up_conv1_sat = Conv2D(64, (3, 3), activation="relu", padding="same")(up_conv1_sat)
+        up_conv1_sat = BatchNormalization()(up_conv1_sat)
 
         # trajectory unet stream
         conv1_traj = Conv2D(64, (3, 3), activation="relu", padding="same")(input_traj)
@@ -1004,7 +1101,7 @@ class ModelRepository:
         up_conv1_traj = Conv2D(64, (3, 3), activation="relu", padding="same")(up_conv1_traj)
         up_conv1_traj = BatchNormalization()(up_conv1_traj)
 
-        fusion_layer = tf.keras.layers.Average()([up_conv1_sat, up_conv1_traj])
+        fusion_layer = get_fusion_layer(fusion_type, up_conv1_sat, up_conv1_traj)
 
         output_layer = Conv2D(2, (1, 1), padding="same", activation="sigmoid")(fusion_layer)
 
