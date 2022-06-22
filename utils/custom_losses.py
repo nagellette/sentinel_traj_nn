@@ -39,7 +39,3 @@ class DiceLoss(Loss):
             bce_output = binary_crossentropy(y_true, y_pred, from_logits=False)
 
         return 1. - (dice / self.batch_size) + bce_output
-
-    def get_config(self):
-        """Returns the config dictionary for a `Loss` instance."""
-        return {'reduction': self.reduction, 'name': self.name}
