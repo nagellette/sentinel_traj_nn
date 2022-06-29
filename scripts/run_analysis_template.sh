@@ -20,4 +20,4 @@ slurm_job_id=$$SLURM_JOB_ID
 
 home_path=/truba/home/ngengec/
 
-python $${home_path}sentinel_traj_nn/run_analysis.py "{$$model_id}" "$${model_type}" "$${model_area}"  >> $${home_path}runtime_logs/$${$slurm_job_id}
+python $${home_path}sentinel_traj_nn/run_analysis.py "$${model_id}" "$${model_type}" "$${model_area}"  >> $${home_path}runtime_logs/$${slurm_job_id}
