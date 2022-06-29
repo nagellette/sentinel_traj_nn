@@ -30,3 +30,19 @@ akya-cuda| ngengec_dlinknet_bc_ist | dlinknet   | model_config_remote_bc_dlink.j
 akya-cuda| ngengec_unet_bc_ist | unet       | model_config_remote_bc.json       | ['/truba/home/ngengec/sentinel_traj_nn/model_config_files/input_files_remote_ist_msi.json'] 
 
 * Seperator "|". refer to experiment table for templates.
+
+
+### run_batch_analysis.py runtime args
+Only `model_id`, `model_type` (msi/traj), `model_area` (ist/mont/ist-mont) options are available. Most of the other options are hard coded for the sake of simplicity of the input config file.
+
+model folder should have model file saved as "`model_id.h5`" in the folder `model_id_{msi/traj}`. Model folder must have `ist`, `mont` and `ist-mont` subfolders.
+- ```python3 run_batch_analysis.py "./batch_analysis/test_batch_list.csv" "./scripts/run_analysis_template.sh"```
+
+model_id| model_type |model_area
+---|------------|---
+163162| msi        |ist
+163162| msi        |mont
+163162|msi|ist_mont
+166235|traj|ist
+166235|traj|ist_mont
+166235|traj|mont
