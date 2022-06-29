@@ -26,17 +26,17 @@ result_file_all = pd.read_csv("{}/output_all.csv".format(batch_path))
 result_file_removed = pd.read_csv("{}/output_removed.csv".format(batch_path))
 
 # set inputs
-if output_folder == "ist":
+if model_area == "ist":
     samples = get_sample_list("{}/test_samples/".format(batch_path), "_test_list_ist.csv", sample_count=1000,
                               dataset_index=0)
-    if "traj" in model_path:
+    if model_type == "traj":
         input_files = ['/truba/home/ngengec/sentinel_traj_nn/model_config_files/input_files_remote_ist_msi_traj.json']
     else:
         input_files = ['/truba/home/ngengec/sentinel_traj_nn/model_config_files/input_files_remote_ist_msi.json']
-elif output_folder == "mont":
+elif model_area == "mont":
     samples = get_sample_list("{}/test_samples/".format(batch_path), "_test_list_mont.csv", sample_count=1000,
                               dataset_index=0)
-    if "traj" in model_path:
+    if model_type == "traj":
         input_files = ['/truba/home/ngengec/sentinel_traj_nn/model_config_files/input_files_remote_small_msi_traj.json']
     else:
         input_files = ['/truba/home/ngengec/sentinel_traj_nn/model_config_files/input_files_remote_small_msi.json']
@@ -48,7 +48,7 @@ else:
     for sample in samples_ist:
         samples.append(sample)
 
-    if "traj" in model_path:
+    if model_type == "traj":
         input_files = ['/truba/home/ngengec/sentinel_traj_nn/model_config_files/input_files_remote_ist_msi_traj.json',
                        '/truba/home/ngengec/sentinel_traj_nn/model_config_files/input_files_remote_small_msi_traj.json']
     else:
@@ -211,22 +211,22 @@ print("Precision : {}/{}".format(precision_tf.mean(), precision_tf.std()))
 print("Recall : {}/{}".format(recall_tf.mean(), recall_tf.std()))
 print("F1 Score : {}/{}".format(f1_tfa.mean(), f1_tfa.std()))
 
-df_data = [[model_path[-9:].replace(".h5", ""),
+df_data = [[model_path[-9:].replace(".h5", ""), model_type, model_area,
             iou_tf.mean(), iou_tf.std(),
             accuracy_tf.mean(), accuracy_tf.std(),
             precision_tf.mean(), precision_tf.std(),
             recall_tf.mean(), recall_tf.std(),
             f1_tfa.mean(), f1_tfa.std()]]
 
-df_temp = pd.DataFrame(df_data, columns=["model_no",
+df_temp = pd.DataFrame(df_data, columns=["model_no", "model_type", "model_area",
                                          "iou", "iou_std",
                                          "accuracy", "accuracy_std",
                                          "precision", "precision_std",
                                          "recall", "recall_std",
                                          "f1", "f1_std"])
 
-result_file_all = pd.concat([result_file_all, df_temp], axis=0)
-result_file_all.to_csv("{}/output_all.csv".format(batch_path), index=False)
+# result_file_all = pd.concat([result_file_all, df_temp], axis=0)
+df_temp.to_csv("{}/output_all.csv".format(batch_path), mode='a', header=False, index=False)
 
 iou_tf = np.delete(iou_tf, remove)
 accuracy_tf = np.delete(accuracy_tf, remove)
@@ -241,19 +241,19 @@ print("Precision : {}/{}".format(precision_tf.mean(), precision_tf.std()))
 print("Recall : {}/{}".format(recall_tf.mean(), recall_tf.std()))
 print("F1 Score : {}/{}".format(f1_tfa.mean(), f1_tfa.std()))
 
-df_data = [[model_path[-9:].replace(".h5", ""),
+df_data = [[model_path[-9:].replace(".h5", ""), model_type, model_area,
             iou_tf.mean(), iou_tf.std(),
             accuracy_tf.mean(), accuracy_tf.std(),
             precision_tf.mean(), precision_tf.std(),
             recall_tf.mean(), recall_tf.std(),
             f1_tfa.mean(), f1_tfa.std()]]
 
-df_temp = pd.DataFrame(df_data, columns=["model_no",
+df_temp = pd.DataFrame(df_data, columns=["model_no", "model_type", "model_area",
                                          "iou", "iou_std",
                                          "accuracy", "accuracy_std",
                                          "precision", "precision_std",
                                          "recall", "recall_std",
                                          "f1", "f1_std"])
 
-result_file_removed = pd.concat([result_file_removed, df_temp], axis=0)
-result_file_removed.to_csv("{}/output_removed.csv".format(batch_path), index=False)
+# result_file_removed = pd.concat([result_file_removed, df_temp], axis=0)
+df_temp.to_csv("{}/output_removed.csv".format(batch_path), mode='a', header=False, index=False)
