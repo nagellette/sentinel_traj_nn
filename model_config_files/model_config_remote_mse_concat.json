@@ -13,7 +13,7 @@
     "momentum": 0.9,
     "nesterov": true
   },
-  "loss_function": "focal_custom",
+  "loss_function": "mse",
   "epochs": 80,
   "data_split": {
     "train": 0.6,
@@ -25,8 +25,9 @@
   "shuffle": true,
   "seed": 10,
   "epoch_limit": 500,
-  "test_model": true,
+  "test_model": false,
   "test_model_count": 75,
   "validation_model_count": 200,
-  "srcnn_count": 0
+  "srcnn_count": 0,
+  "fusion_type": "concat"
 }

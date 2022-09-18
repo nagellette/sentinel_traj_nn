@@ -14,7 +14,7 @@
     "nesterov": true
   },
   "loss_function": "focal",
-  "epochs": 150,
+  "epochs": 80,
   "data_split": {
     "train": 0.6,
     "test": 0.2,
@@ -28,5 +28,6 @@
   "test_model": false,
   "test_model_count": 75,
   "validation_model_count": 200,
-  "srcnn_count": 0
+  "srcnn_count": 0,
+  "fusion_type": "average"
 }
