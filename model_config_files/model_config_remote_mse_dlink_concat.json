@@ -14,7 +14,7 @@
     "nesterov": true
   },
   "loss_function": "mse",
-  "epochs": 80,
+  "epochs": 150,
   "data_split": {
     "train": 0.6,
     "test": 0.2,
