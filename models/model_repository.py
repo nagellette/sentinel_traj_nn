@@ -85,9 +85,9 @@ class ModelRepository:
         elif self.model_name == "dlinknet":
             self.dlinknet(self.dim, self.input_channels, self.batch_size)
         elif self.model_name == "dlinknet_traj_type1":
-            self.dlinknet_traj_type1(self.dim, self.input_channels, self.batch_size)
+            self.dlinknet_traj_type1(self.dim, self.input_channels, self.batch_size, self.fusion_type)
         elif self.model_name == "dlinknet_traj_type2":
-            self.dlinknet_traj_type2(self.dim, self.input_channels, self.batch_size)
+            self.dlinknet_traj_type2(self.dim, self.input_channels, self.batch_size, self.fusion_type)
         else:
             print(self.model_name + " not defined yet.")
             sys.exit()

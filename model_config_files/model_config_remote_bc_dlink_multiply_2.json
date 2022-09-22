@@ -1,7 +1,7 @@
 {
   "file_type": "config",
   "output_path": "/model_outputs/",
-  "batch_size": 4,
+  "batch_size": 2,
   "image_dim": {
     "x": 512,
     "y": 512
@@ -13,8 +13,8 @@
     "momentum": 0.9,
     "nesterov": true
   },
-  "loss_function": "mse",
-  "epochs": 150,
+  "loss_function": "binary_crossentropy",
+  "epochs": 300,
   "data_split": {
     "train": 0.6,
     "test": 0.2,
