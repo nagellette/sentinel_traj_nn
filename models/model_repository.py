@@ -1832,6 +1832,7 @@ class ModelRepository:
         final_conv_sat = Activation("relu")(final_conv_sat)
         final_conv_sat = Conv2D(32, (3, 3), padding="same")(final_conv_sat)
         final_conv_sat = Activation("relu")(final_conv_sat)
+        final_conv_sat = Conv2DTranspose(2, (3, 3), padding="same", activation="sigmoid", strides=2)(final_conv_sat)
 
         output_layer1 = Conv2D(2, (1, 1), padding="same", activation="sigmoid")(final_conv_sat)
         output_layer2 = Conv2D(2, (1, 1), padding="same", activation="sigmoid")(input_traj)
@@ -2121,6 +2122,7 @@ class ModelRepository:
         final_conv_sat = Activation("relu")(final_conv_sat)
         final_conv_sat = Conv2D(32, (3, 3), padding="same")(final_conv_sat)
         final_conv_sat = Activation("relu")(final_conv_sat)
+        final_conv_sat = Conv2DTranspose(2, (3, 3), padding="same", activation="sigmoid", strides=2)(final_conv_sat)
 
         # trajectory d-linknet stream
         conv1_traj = Conv2D(64, (7, 7), padding="same", strides=2)(input_traj)
@@ -2377,6 +2379,7 @@ class ModelRepository:
         final_conv_traj = Activation("relu")(final_conv_traj)
         final_conv_traj = Conv2D(32, (3, 3), padding="same")(final_conv_traj)
         final_conv_traj = Activation("relu")(final_conv_traj)
+        final_conv_traj = Conv2DTranspose(2, (3, 3), padding="same", activation="sigmoid", strides=2)(final_conv_traj)
 
         output_layer1 = Conv2D(2, (1, 1), padding="same", activation="sigmoid")(final_conv_sat)
         output_layer2 = Conv2D(2, (1, 1), padding="same", activation="sigmoid")(final_conv_traj)
