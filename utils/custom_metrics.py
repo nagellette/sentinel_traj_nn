@@ -6,6 +6,41 @@ import tensorflow as tf
 from tensorflow.python.keras import backend as K
 from tensorflow.python.keras.metrics import Metric
 
+import numpy as np
+
+
+def create_boundary(array):
+    # get input shape
+    buffer_row, buffer_col = array.shape[0], array.shape[1]
+
+    # create output canvas
+    new_array = np.ones((buffer_row, buffer_col))
+
+    # loop over pixels, update to boundary pixels
+    for i in range(0, buffer_row):
+        for j in range(0, buffer_col):
+            if array[i][j] == 0:
+                new_array[i][j] = 1
+                if i - 1 >= 0 and array[i - 1][j] != 0:
+                    new_array[i - 1][j] = 0
+                if j - 1 >= 0 and array[i][j - 1] != 0:
+                    new_array[i][j - 1] = 0
+                if i - 1 >= 0 and j - 1 >= 0 and array[i - 1][j - 1] != 0:
+                    new_array[i - 1][j - 1] = 0
+                if i + 1 < buffer_row and array[i + 1][j] != 0:
+                    new_array[i + 1][j] = 0
+                if j + 1 < buffer_col and array[i][j + 1] != 0:
+                    new_array[i][j + 1] = 0
+                if i + 1 < buffer_row and j + 1 < buffer_col and array[i + 1][j + 1] != 0:
+                    new_array[i + 1][j + 1] = 0
+                if i - 1 >= 0 and j + 1 < buffer_col and array[i - 1][j + 1] != 0:
+                    new_array[i - 1][j + 1] = 0
+                if i + 1 < buffer_row and j - 1 >= 0 and array[i + 1][j - 1] != 0:
+                    new_array[i + 1][j - 1] = 0
+
+    return new_array.astype('uint8')
+
+
 class MeanIoU(Metric):
 
     def __init__(self, batch_size, num_classes=2, threshold=0.5, name=None, dtype=None):
@@ -31,8 +66,8 @@ class MeanIoU(Metric):
 
         for i in range(self.batch_size):
 
-            y_true_f = y_true[i,:,:,:]
-            y_pred_f = y_pred[i,:,:,:]
+            y_true_f = y_true[i, :, :, :]
+            y_pred_f = y_pred[i, :, :, :]
 
             if y_true_f.shape.ndims > 1:
                 y_true_f = tf.reshape(y_true_f, [-1])

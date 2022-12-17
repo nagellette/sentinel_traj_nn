@@ -7,6 +7,7 @@ import numpy as np
 import tensorflow_addons as tfa
 import pandas as pd
 import matplotlib.pyplot as plt
+from utils.custom_metrics import create_boundary
 
 # parameters
 DIMS = (512, 512)
@@ -110,6 +111,7 @@ iou_tf = np.empty([list_size])
 accuracy_tf = np.empty([list_size])
 precision_tf = np.empty([list_size])
 recall_tf = np.empty([list_size])
+boundary_iou_tf = np.empty([list_size])
 
 # create measure output list for measures from tensorflow-addons library
 f1_tfa = np.empty([list_size])
@@ -132,6 +134,7 @@ for i in range(STEPS):
         measure_accuracy_tf = tf.keras.metrics.Accuracy()
         measure_precision_tf = tf.keras.metrics.Precision(thresholds=0.5)
         measure_recall_tf = tf.keras.metrics.Recall(thresholds=0.5)
+        measure_boundary_iou_tf = tf.keras.metrics.MeanIoU(num_classes=2)
 
         # Measures from tensorflow-addons library
         measure_f1_tfa = tfa.metrics.F1Score(num_classes=2, threshold=0.5, average='micro')
@@ -155,12 +158,17 @@ for i in range(STEPS):
         plt.imshow(y, cmap="gray")
         plt.imsave("{}{}_label.jpeg".format(output_folder, str(prediction_count)), y, cmap="gray")
 
+        y_boundary = create_boundary(y)
+        prediction_boundary = create_boundary(prediction)
+
         # run measures and add to output list:
         # Measures from tensorflow library
         measure_iou_tf.update_state(y, prediction)
         measure_accuracy_tf.update_state(y, prediction)
         measure_precision_tf.update_state(y, prediction)
         measure_recall_tf.update_state(y, prediction)
+        measure_boundary_iou_tf.update_state(y_boundary, prediction_boundary)
+
 
         # Measures from tensorflow-addons library
         measure_f1_tfa.update_state(y, prediction)
@@ -169,6 +177,7 @@ for i in range(STEPS):
         accuracy_tf[prediction_count] = measure_accuracy_tf.result().numpy()
         precision_tf[prediction_count] = measure_precision_tf.result().numpy()
         recall_tf[prediction_count] = measure_recall_tf.result().numpy()
+        boundary_iou_tf[prediction_count] = measure_boundary_iou_tf.result().numpy()
 
         f1_tfa[prediction_count] = measure_f1_tfa.result().numpy()
 
@@ -178,7 +187,8 @@ for i in range(STEPS):
                                  measure_accuracy_tf.result().numpy(),
                                  measure_precision_tf.result().numpy(),
                                  measure_recall_tf.result().numpy(),
-                                 measure_f1_tfa.result().numpy()])
+                                 measure_f1_tfa.result().numpy(),
+                                 measure_boundary_iou_tf.result().numpy()])
 
         x = x_batch[j, :, :, :3]
         # save msi image
@@ -198,7 +208,8 @@ df_stat_output_list = pd.DataFrame(stat_output_list, columns=["sample_count",
                                                               "accuracy",
                                                               "precision",
                                                               "recall",
-                                                              "f1"])
+                                                              "f1",
+                                                              "boundary_iou"])
 df_stat_output_list.to_csv("{}output_stats.csv".format(output_folder))
 
 # remove fully overlapping (=empty) samples
@@ -209,6 +220,7 @@ print("Mean IoU : {}/{}".format(iou_tf.mean(), iou_tf.std()))
 print("Accuracy : {}/{}".format(accuracy_tf.mean(), accuracy_tf.std()))
 print("Precision : {}/{}".format(precision_tf.mean(), precision_tf.std()))
 print("Recall : {}/{}".format(recall_tf.mean(), recall_tf.std()))
+print("Boundary IoU : {}/{}".format(boundary_iou_tf.mean(), boundary_iou_tf.std()))
 print("F1 Score : {}/{}".format(f1_tfa.mean(), f1_tfa.std()))
 
 df_data = [[model_path[-9:].replace(".h5", ""), model_type, model_area,
@@ -216,14 +228,16 @@ df_data = [[model_path[-9:].replace(".h5", ""), model_type, model_area,
             accuracy_tf.mean(), accuracy_tf.std(),
             precision_tf.mean(), precision_tf.std(),
             recall_tf.mean(), recall_tf.std(),
-            f1_tfa.mean(), f1_tfa.std()]]
+            f1_tfa.mean(), f1_tfa.std(),
+            boundary_iou_tf.mean(), boundary_iou_tf.std()]]
 
 df_temp = pd.DataFrame(df_data, columns=["model_no", "model_type", "model_area",
                                          "iou", "iou_std",
                                          "accuracy", "accuracy_std",
                                          "precision", "precision_std",
                                          "recall", "recall_std",
-                                         "f1", "f1_std"])
+                                         "f1", "f1_std",
+                                         "boundary_iou", "boundary_iou_std"])
 
 # result_file_all = pd.concat([result_file_all, df_temp], axis=0)
 df_temp.to_csv("{}/output_all.csv".format(batch_path), mode='a', header=False, index=False)
@@ -232,6 +246,7 @@ iou_tf = np.delete(iou_tf, remove)
 accuracy_tf = np.delete(accuracy_tf, remove)
 precision_tf = np.delete(precision_tf, remove)
 recall_tf = np.delete(recall_tf, remove)
+boundary_iou_tf = np.delete(boundary_iou_tf, remove)
 f1_tfa = np.delete(f1_tfa, remove)
 
 # create removed stat output file
@@ -239,6 +254,7 @@ print("Mean IoU : {}/{}".format(iou_tf.mean(), iou_tf.std()))
 print("Accuracy : {}/{}".format(accuracy_tf.mean(), accuracy_tf.std()))
 print("Precision : {}/{}".format(precision_tf.mean(), precision_tf.std()))
 print("Recall : {}/{}".format(recall_tf.mean(), recall_tf.std()))
+print("Boundary IoU : {}/{}".format(boundary_iou_tf.mean(), boundary_iou_tf.std()))
 print("F1 Score : {}/{}".format(f1_tfa.mean(), f1_tfa.std()))
 
 df_data = [[model_path[-9:].replace(".h5", ""), model_type, model_area,
@@ -246,14 +262,16 @@ df_data = [[model_path[-9:].replace(".h5", ""), model_type, model_area,
             accuracy_tf.mean(), accuracy_tf.std(),
             precision_tf.mean(), precision_tf.std(),
             recall_tf.mean(), recall_tf.std(),
-            f1_tfa.mean(), f1_tfa.std()]]
+            f1_tfa.mean(), f1_tfa.std(),
+            boundary_iou_tf.mean(), boundary_iou_tf.std()]]
 
 df_temp = pd.DataFrame(df_data, columns=["model_no", "model_type", "model_area",
                                          "iou", "iou_std",
                                          "accuracy", "accuracy_std",
                                          "precision", "precision_std",
                                          "recall", "recall_std",
-                                         "f1", "f1_std"])
+                                         "f1", "f1_std",
+                                         "boundary_iou", "boundary_iou_std"])
 
 # result_file_removed = pd.concat([result_file_removed, df_temp], axis=0)
 df_temp.to_csv("{}/output_removed.csv".format(batch_path), mode='a', header=False, index=False)
