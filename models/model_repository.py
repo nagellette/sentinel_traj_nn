@@ -2,7 +2,7 @@ import sys
 
 import tensorflow as tf
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Conv2DTranspose, concatenate, BatchNormalization, \
-    Activation, Add
+    Activation, Add, Dense
 from tensorflow.python.keras.layers import AveragePooling2D
 
 from utils.construct_loss_function import ConstructLossFunction
@@ -63,7 +63,7 @@ class ModelRepository:
 
         # model to run
         if self.model_name == "test_model":
-            self.test_model()
+            self.test_model(self.dim, self.input_channels, self.batch_size)
         elif self.model_name == "unet":
             self.unet(self.dim, self.input_channels, self.batch_size)
         elif self.model_name == "unetlight":
@@ -95,16 +95,18 @@ class ModelRepository:
     def get_model(self):
         return self.model
 
-    def test_model(self):
-        self.model = tf.keras.Sequential()
-        # model.add(tf.keras.layers.Flatten())
-        self.model.add(tf.keras.layers.Dense(100, activation='relu'))
-        self.model.add(tf.keras.layers.Dense(100, activation='relu'))
-        self.model.add(tf.keras.layers.Dense(100, activation='relu'))
-        self.model.add(tf.keras.layers.Dense(10000, activation='softmax'))
+    def test_model(self, dim, input_channels, batch_size):
+        inputs_layer = tf.keras.layers.Input((dim[0], dim[1], input_channels), batch_size=batch_size)
+        conv = Conv2D(64, (2, 2), activation="relu", padding="same")(inputs_layer)
+        conv_trans = Conv2DTranspose(64, (2, 2), padding="same")(conv)
+
+        output_layer = Conv2D(2, (1, 1), padding="same", activation="sigmoid")(conv_trans)
+
+        self.model = tf.keras.Model(inputs=inputs_layer, outputs=output_layer)
+
         self.model.compile(optimizer=self.optimizer,
                            loss=self.loss_function,
-                           metrics=['accuracy'])
+                           metrics=get_metrics(batch_size=self.batch_size))
 
     def unet(self, dim, input_channels, batch_size):
 
