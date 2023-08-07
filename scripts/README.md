@@ -17,7 +17,7 @@
   - ```dlinknet_traj_type2```: D-Linknet with late fusion with Unet model in trajectory stream.
   
 ### Local Pycharm setup for run_model.Pycharm
-- Add following to the run_model.py file "Parameters" section in run options dialog: ```"./model_config_files/model_config_debug_local.json" "./model_config_files/input_files_local_small_msi_only.json" "unet"```
+- Add following to the run_model.py file "Parameters" section in run options dialog: ```"./model_config_files/model_config_debug_local.json" "./model_config_files/input_files_local_small_msi.json" "unet"```
 - Second argument can be a list of input files for the multi area experiments: ```"./model_config_files/model_config_debug_local.json" "['./model_config_files/input_files_local_small_msi.json', './model_config_files/input_files_local_ist_msi.json']" "unet" "test"```
 - Pass last argument as ```test``` for local experiments.
 

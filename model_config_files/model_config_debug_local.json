@@ -14,17 +14,17 @@
     "nesterov": true
   },
   "loss_function": "binary_crossentropy",
-  "epochs": 4,
+  "epochs": 1,
   "data_split": {
-    "train": 0.6,
-    "test": 0.2,
-    "validate": 0.2
+    "train": 1.0,
+    "test": 0.0,
+    "validate": 0.0
   },
   "augment_deg": 45,
   "overlap": 0.2,
-  "shuffle": true,
+  "shuffle": false,
   "seed": 10,
-  "epoch_limit": 4,
+  "epoch_limit": 20064,
   "test_model": false,
   "test_model_count": 20,
   "validation_model_count": 2,

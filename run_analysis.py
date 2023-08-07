@@ -11,8 +11,8 @@ from utils.custom_metrics import create_boundary
 
 # parameters
 DIMS = (512, 512)
-BATCH_SIZE = 4
-STEPS = 250
+BATCH_SIZE = 4 # update this line depending on the input batch size
+STEPS = 250 # proportionally update this line depending on the input batch size
 
 # set input parameters
 model_no = sys.argv[1]
