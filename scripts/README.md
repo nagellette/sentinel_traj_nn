@@ -9,12 +9,18 @@
   - ```resunet```
   - ```resunetlight```
   - ```dlinknet```
+  - ```transunet```
+  - ```swin_unet```
   - ```unet_traj_type1```: Unet with late fusion with no model in trajectory stream.
   - ```unet_traj_type2```: Unet with late fusion with Unet model in trajectory stream.
   - ```resunet_traj_type1```: ResUnet with late fusion with no model in trajectory stream.
   - ```resunet_traj_type2```: ResUnet with late fusion with ResUnet model in trajectory stream.
   - ```dlinknet_traj_type1```: D-Linknet with late fusion with no model in trajectory stream.
   - ```dlinknet_traj_type2```: D-Linknet with late fusion with Unet model in trajectory stream.
+  - ```transnet_traj_type1```: TransUNet with late fusion with no model in trajectory stream.
+  - ```transnet_traj_type2```: TransUNet with late fusion with Unet model in trajectory stream.
+  - ```swin_unet_traj_type1```: Swin-Unet with late fusion with no model in trajectory stream.
+  - ```swin_unet_traj_type2```: Swin-Unet with late fusion with Unet model in trajectory stream.
   
 ### Local Pycharm setup for run_model.Pycharm
 - Add following to the run_model.py file "Parameters" section in run options dialog: ```"./model_config_files/model_config_debug_local.json" "./model_config_files/input_files_local_small_msi.json" "unet"```
