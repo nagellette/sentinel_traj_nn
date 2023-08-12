@@ -92,8 +92,16 @@ class ModelRepository:
             self.dlinknet_traj_type2(self.dim, self.input_channels, self.batch_size, self.fusion_type)
         elif self.model_name == "transunet":
             self.transunet(self.dim, self.input_channels, self.batch_size)
+        elif self.model_name == "transunet_traj_type1":
+            self.transunet_traj_type1(self.dim, self.input_channels, self.batch_size, self.fusion_type)
+        elif self.model_name == "transunet_traj_type2":
+            self.transunet_traj_type2(self.dim, self.input_channels, self.batch_size, self.fusion_type)
         elif self.model_name == "swin_unet":
             self.swin_unet(self.dim, self.input_channels, self.batch_size)
+        elif self.model_name == "swin_unet_traj_type1":
+            self.swin_unet_traj_type1(self.dim, self.input_channels, self.batch_size, self.fusion_type)
+        elif self.model_name == "swin_unet_traj_type2":
+            self.swin_unet_traj_type2(self.dim, self.input_channels, self.batch_size, self.fusion_type)
         else:
             print(self.model_name + " not defined yet.")
             sys.exit()
@@ -888,6 +896,79 @@ class ModelRepository:
         final_conv = Activation("relu")(final_conv)
 
         output_layer = Conv2DTranspose(2, (3, 3), padding="same", activation="sigmoid", strides=2)(final_conv)
+
+        self.model = tf.keras.Model(inputs=inputs_layer, outputs=output_layer)
+
+        self.model.compile(optimizer=self.optimizer,
+                           loss=self.loss_function,
+                           metrics=get_metrics(batch_size=self.batch_size))
+
+    def transunet(self, dim, input_channels, batch_size):
+
+        """
+                TransUnet implementation derived using base layer which is implemented in https://github.com/yingkaisha/keras-unet-collection/blob/d30f14a259656d2f26ea11ed978255d6a7d0ce37/keras_unet_collection/_model_transunet_2d.py#L92
+
+                :param dim: dimension of inputs
+                :param input_channels: number of bands/layers of input
+                :param batch_size: # batches in the input
+                :return:
+                """
+
+        inputs_layer = tf.keras.layers.Input((dim[0], dim[1], input_channels), batch_size=batch_size)
+
+        transunet_model_base = base.transunet_2d_base(inputs_layer,
+                                                      filter_num=[64, 128, 256, 512],
+                                                      stack_num_down=2,
+                                                      stack_num_up=2,
+                                                      embed_dim=192,  # default: 768
+                                                      num_mlp=768,  # default: 3072
+                                                      num_heads=12,  # default: 12
+                                                      num_transformer=12,  # default: 12
+                                                      activation='ReLU',
+                                                      mlp_activation='GELU',
+                                                      batch_norm=False,
+                                                      pool=True,
+                                                      unpool=True,
+                                                      backbone=None,
+                                                      weights=None,
+                                                      freeze_backbone=False,
+                                                      freeze_batch_norm=True,
+                                                      name='transunet')
+
+        output_layer = Conv2D(2, (1, 1), padding="same", activation="sigmoid", use_bias=True)(transunet_model_base)
+
+        self.model = tf.keras.Model(inputs=inputs_layer, outputs=output_layer)
+
+        self.model.compile(optimizer=self.optimizer,
+                           loss=self.loss_function,
+                           metrics=get_metrics(batch_size=self.batch_size))
+
+    def swin_unet(self, dim, input_channels, batch_size):
+
+        """
+        Swin-Unet implementation derived using base layer which is implemented in https://github.com/yingkaisha/keras-unet-collection/blob/d30f14a259656d2f26ea11ed978255d6a7d0ce37/keras_unet_collection/_model_swin_unet_2d.py#L45
+
+        :param dim: dimension of inputs
+        :param input_channels: number of bands/layers of input
+        :param batch_size: # batches in the input
+        :return:
+        """
+
+        inputs_layer = tf.keras.layers.Input((dim[0], dim[1], input_channels), batch_size=batch_size)
+
+        swin_unet_model_base = base.swin_unet_2d_base(inputs_layer,
+                                                      filter_num_begin=96,
+                                                      depth=4,
+                                                      stack_num_down=4,
+                                                      stack_num_up=4,
+                                                      patch_size=(2, 2),
+                                                      num_heads=[4, 8, 8, 8],
+                                                      window_size=[4, 2, 2, 2],
+                                                      num_mlp=512,
+                                                      shift_window=True,
+                                                      name='swin_unet')
+
+        output_layer = Conv2D(2, (1, 1), padding="same", activation="sigmoid", use_bias=True)(swin_unet_model_base)
 
         self.model = tf.keras.Model(inputs=inputs_layer, outputs=output_layer)
 
@@ -2403,10 +2484,25 @@ class ModelRepository:
                            loss=self.loss_function,
                            metrics=get_metrics(batch_size=self.batch_size))
 
-    def transunet(self, dim, input_channels, batch_size):
+    def transunet_traj_type1(self, dim, input_channels, batch_size, fusion_type):
+        """
+        TransUnet trajectory late fusion implementation with TransUnet stream for satellite and direct connection to
+        trajectory. CAUTION: This model works only with satellite and trajectory data and automatically pick last
+        array as trajectory array.
+
+        :param dim: dimension of inputs
+        :param input_channels: number of bands/layers of input
+        :param batch_size: # batches in the input
+        :param fusion_type: preferred fusion type to be used
+        :return:
+        """
+
         inputs_layer = tf.keras.layers.Input((dim[0], dim[1], input_channels), batch_size=batch_size)
 
-        transunet_model_base = base.transunet_2d_base(inputs_layer,
+        # split input into satellite and trajectory tensors
+        input_sat, input_traj = tf.split(inputs_layer, [input_channels - 1, 1], axis=3)
+
+        transunet_model_base = base.transunet_2d_base(input_sat,
                                                       filter_num=[64, 128, 256, 512],
                                                       stack_num_down=2,
                                                       stack_num_up=2,
@@ -2425,32 +2521,190 @@ class ModelRepository:
                                                       freeze_batch_norm=True,
                                                       name='transunet')
 
-        output_layer = Conv2D(2, (1, 1), padding="same", activation="sigmoid", use_bias=True)(transunet_model_base)
+        output_layer1 = Conv2D(2, (1, 1), padding="same", activation="sigmoid", use_bias=True)(transunet_model_base)
+        output_layer2 = Conv2D(2, (1, 1), padding="same", activation="sigmoid")(input_traj)
 
-        self.model = tf.keras.Model(inputs=inputs_layer, outputs=output_layer)
+        fusion_layer = get_fusion_layer(fusion_type, output_layer1, output_layer2)
+
+        if fusion_type == "concat":
+            fusion_layer = Conv2D(2, (1, 1), padding="same", activation="sigmoid")(fusion_layer)
+
+        self.model = tf.keras.Model(inputs=inputs_layer, outputs=fusion_layer)
 
         self.model.compile(optimizer=self.optimizer,
                            loss=self.loss_function,
                            metrics=get_metrics(batch_size=self.batch_size))
 
-    def swin_unet(self, dim, input_channels, batch_size):
+    def transunet_traj_type2(self, dim, input_channels, batch_size, fusion_type):
+
+        """
+        TransUnet trajectory late fusion implementation with TransUnet stream for both satellite and trajectory.
+        CAUTION: This model works only with satellite and trajectory data and automatically pick last array as
+        trajectory array.
+
+        :param dim: dimension of inputs
+        :param input_channels: number of bands/layers of input
+        :param batch_size: # batches in the input
+        :param fusion_type: preferred fusion type to be used
+        :return:
+        """
+
         inputs_layer = tf.keras.layers.Input((dim[0], dim[1], input_channels), batch_size=batch_size)
 
-        swin_unet_model_base = base.swin_unet_2d_base(inputs_layer,
-                                                     filter_num_begin = 96,
-                                                     depth = 4,
-                                                     stack_num_down = 4,
-                                                     stack_num_up = 4,
-                                                     patch_size = (2, 2),
-                                                     num_heads = [4, 8, 8, 8],
-                                                     window_size = [4, 2, 2, 2],
-                                                     num_mlp = 512,
-                                                     shift_window=True,
-                                                     name='swin_unet')
+        # split input into satellite and trajectory tensors
+        input_sat, input_traj = tf.split(inputs_layer, [input_channels - 1, 1], axis=3)
 
-        output_layer = Conv2D(2, (1, 1), padding="same", activation="sigmoid", use_bias=True)(swin_unet_model_base)
+        transunet_model_base_sat = base.transunet_2d_base(input_sat,
+                                                          filter_num=[64, 128, 256, 512],
+                                                          stack_num_down=2,
+                                                          stack_num_up=2,
+                                                          embed_dim=192,  # default: 768
+                                                          num_mlp=768,  # default: 3072
+                                                          num_heads=12,  # default: 12
+                                                          num_transformer=12,  # default: 12
+                                                          activation='ReLU',
+                                                          mlp_activation='GELU',
+                                                          batch_norm=False,
+                                                          pool=True,
+                                                          unpool=True,
+                                                          backbone=None,
+                                                          weights=None,
+                                                          freeze_backbone=False,
+                                                          freeze_batch_norm=True,
+                                                          name='transunet_sat')
 
-        self.model = tf.keras.Model(inputs=inputs_layer, outputs=output_layer)
+        transunet_model_base_traj = base.transunet_2d_base(input_traj,
+                                                           filter_num=[64, 128, 256, 512],
+                                                           stack_num_down=2,
+                                                           stack_num_up=2,
+                                                           embed_dim=192,  # default: 768
+                                                           num_mlp=768,  # default: 3072
+                                                           num_heads=12,  # default: 12
+                                                           num_transformer=12,  # default: 12
+                                                           activation='ReLU',
+                                                           mlp_activation='GELU',
+                                                           batch_norm=False,
+                                                           pool=True,
+                                                           unpool=True,
+                                                           backbone=None,
+                                                           weights=None,
+                                                           freeze_backbone=False,
+                                                           freeze_batch_norm=True,
+                                                           name='transunet_traj')
+
+        output_layer1 = Conv2D(2, (1, 1), padding="same", activation="sigmoid", use_bias=True)(transunet_model_base_sat)
+        output_layer2 = Conv2D(2, (1, 1), padding="same", activation="sigmoid", use_bias=True)(
+            transunet_model_base_traj)
+
+        fusion_layer = get_fusion_layer(fusion_type, output_layer1, output_layer2)
+
+        if fusion_type == "concat":
+            fusion_layer = Conv2D(2, (1, 1), padding="same", activation="sigmoid")(fusion_layer)
+
+        self.model = tf.keras.Model(inputs=inputs_layer, outputs=fusion_layer)
+
+        self.model.compile(optimizer=self.optimizer,
+                           loss=self.loss_function,
+                           metrics=get_metrics(batch_size=self.batch_size))
+
+    def swin_unet_traj_type1(self, dim, input_channels, batch_size, fusion_type):
+
+        """
+        Swin-Unet trajectory late fusion implementation with Swin-Unet stream for satellite and direct connection to
+        trajectory. CAUTION: This model works only with satellite and trajectory data and automatically pick last
+        array as trajectory array.
+
+        :param dim: dimension of inputs
+        :param input_channels: number of bands/layers of input
+        :param batch_size: # batches in the input
+        :param fusion_type: preferred fusion type to be used
+        :return:
+        """
+
+        inputs_layer = tf.keras.layers.Input((dim[0], dim[1], input_channels), batch_size=batch_size)
+
+        # split input into satellite and trajectory tensors
+        input_sat, input_traj = tf.split(inputs_layer, [input_channels - 1, 1], axis=3)
+
+        swin_unet_model_base = base.swin_unet_2d_base(input_sat,
+                                                      filter_num_begin=96,
+                                                      depth=4,
+                                                      stack_num_down=4,
+                                                      stack_num_up=4,
+                                                      patch_size=(2, 2),
+                                                      num_heads=[4, 8, 8, 8],
+                                                      window_size=[4, 2, 2, 2],
+                                                      num_mlp=512,
+                                                      shift_window=True,
+                                                      name='swin_unet')
+
+        output_layer1 = Conv2D(2, (1, 1), padding="same", activation="sigmoid", use_bias=True)(swin_unet_model_base)
+        output_layer2 = Conv2D(2, (1, 1), padding="same", activation="sigmoid")(input_traj)
+
+        fusion_layer = get_fusion_layer(fusion_type, output_layer1, output_layer2)
+
+        if fusion_type == "concat":
+            fusion_layer = Conv2D(2, (1, 1), padding="same", activation="sigmoid")(fusion_layer)
+
+        self.model = tf.keras.Model(inputs=inputs_layer, outputs=fusion_layer)
+
+        self.model.compile(optimizer=self.optimizer,
+                           loss=self.loss_function,
+                           metrics=get_metrics(batch_size=self.batch_size))
+
+    def swin_unet_traj_type2(self, dim, input_channels, batch_size, fusion_type):
+
+        """
+        Swin-Unet trajectory late fusion implementation with Swin-Unet stream for both satellite and trajectory.
+        CAUTION: This model works only with satellite and trajectory data and automatically pick last array as
+        trajectory array.
+
+        :param dim: dimension of inputs
+        :param input_channels: number of bands/layers of input
+        :param batch_size: # batches in the input
+        :param fusion_type: preferred fusion type to be used
+        :return:
+        """
+
+        inputs_layer = tf.keras.layers.Input((dim[0], dim[1], input_channels), batch_size=batch_size)
+
+        # split input into satellite and trajectory tensors
+        input_sat, input_traj = tf.split(inputs_layer, [input_channels - 1, 1], axis=3)
+
+        swin_unet_model_base_sat = base.swin_unet_2d_base(input_sat,
+                                                          filter_num_begin=96,
+                                                          depth=4,
+                                                          stack_num_down=4,
+                                                          stack_num_up=4,
+                                                          patch_size=(2, 2),
+                                                          num_heads=[4, 8, 8, 8],
+                                                          window_size=[4, 2, 2, 2],
+                                                          num_mlp=512,
+                                                          shift_window=True,
+                                                          name='swin_unet_sat')
+
+        swin_unet_model_base_traj = base.swin_unet_2d_base(input_traj,
+                                                           filter_num_begin=96,
+                                                           depth=4,
+                                                           stack_num_down=4,
+                                                           stack_num_up=4,
+                                                           patch_size=(2, 2),
+                                                           num_heads=[4, 8, 8, 8],
+                                                           window_size=[4, 2, 2, 2],
+                                                           num_mlp=512,
+                                                           shift_window=True,
+                                                           name='swin_unet_traj')
+
+        output_layer1 = Conv2D(2, (1, 1), padding="same", activation="sigmoid", use_bias=True)(swin_unet_model_base_sat)
+        output_layer2 = Conv2D(2, (1, 1), padding="same", activation="sigmoid", use_bias=True)(
+            swin_unet_model_base_traj)
+
+        fusion_layer = get_fusion_layer(fusion_type, output_layer1, output_layer2)
+
+        if fusion_type == "concat":
+            fusion_layer = Conv2D(2, (1, 1), padding="same", activation="sigmoid")(fusion_layer)
+
+        self.model = tf.keras.Model(inputs=inputs_layer, outputs=fusion_layer)
 
         self.model.compile(optimizer=self.optimizer,
                            loss=self.loss_function,
