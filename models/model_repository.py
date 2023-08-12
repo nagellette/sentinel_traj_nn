@@ -2,8 +2,10 @@ import sys
 
 import tensorflow as tf
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Conv2DTranspose, concatenate, BatchNormalization, \
-    Activation, Add, Dense
+    Activation, Add
 from tensorflow.python.keras.layers import AveragePooling2D
+
+from keras_unet_collection import base
 
 from utils.construct_loss_function import ConstructLossFunction
 from utils.construct_optimizer import ConstructOptimizer
@@ -88,6 +90,10 @@ class ModelRepository:
             self.dlinknet_traj_type1(self.dim, self.input_channels, self.batch_size, self.fusion_type)
         elif self.model_name == "dlinknet_traj_type2":
             self.dlinknet_traj_type2(self.dim, self.input_channels, self.batch_size, self.fusion_type)
+        elif self.model_name == "transunet":
+            self.transunet(self.dim, self.input_channels, self.batch_size)
+        elif self.model_name == "swin_unet":
+            self.swin_unet(self.dim, self.input_channels, self.batch_size)
         else:
             print(self.model_name + " not defined yet.")
             sys.exit()
@@ -2392,6 +2398,59 @@ class ModelRepository:
             fusion_layer = Conv2D(2, (1, 1), padding="same", activation="sigmoid")(fusion_layer)
 
         self.model = tf.keras.Model(inputs=inputs_layer, outputs=fusion_layer)
+
+        self.model.compile(optimizer=self.optimizer,
+                           loss=self.loss_function,
+                           metrics=get_metrics(batch_size=self.batch_size))
+
+    def transunet(self, dim, input_channels, batch_size):
+        inputs_layer = tf.keras.layers.Input((dim[0], dim[1], input_channels), batch_size=batch_size)
+
+        transunet_model_base = base.transunet_2d_base(inputs_layer,
+                                                      filter_num=[64, 128, 256, 512],
+                                                      stack_num_down=2,
+                                                      stack_num_up=2,
+                                                      embed_dim=192,  # default: 768
+                                                      num_mlp=768,  # default: 3072
+                                                      num_heads=12,  # default: 12
+                                                      num_transformer=12,  # default: 12
+                                                      activation='ReLU',
+                                                      mlp_activation='GELU',
+                                                      batch_norm=False,
+                                                      pool=True,
+                                                      unpool=True,
+                                                      backbone=None,
+                                                      weights=None,
+                                                      freeze_backbone=False,
+                                                      freeze_batch_norm=True,
+                                                      name='transunet')
+
+        output_layer = Conv2D(2, (1, 1), padding="same", activation="sigmoid", use_bias=True)(transunet_model_base)
+
+        self.model = tf.keras.Model(inputs=inputs_layer, outputs=output_layer)
+
+        self.model.compile(optimizer=self.optimizer,
+                           loss=self.loss_function,
+                           metrics=get_metrics(batch_size=self.batch_size))
+
+    def swin_unet(self, dim, input_channels, batch_size):
+        inputs_layer = tf.keras.layers.Input((dim[0], dim[1], input_channels), batch_size=batch_size)
+
+        swin_unet_model_base = base.swin_unet_2d_base(inputs_layer,
+                                                     filter_num_begin = 96,
+                                                     depth = 4,
+                                                     stack_num_down = 4,
+                                                     stack_num_up = 4,
+                                                     patch_size = (2, 2),
+                                                     num_heads = [4, 8, 8, 8],
+                                                     window_size = [4, 2, 2, 2],
+                                                     num_mlp = 512,
+                                                     shift_window=True,
+                                                     name='swin_unet')
+
+        output_layer = Conv2D(2, (1, 1), padding="same", activation="sigmoid", use_bias=True)(swin_unet_model_base)
+
+        self.model = tf.keras.Model(inputs=inputs_layer, outputs=output_layer)
 
         self.model.compile(optimizer=self.optimizer,
                            loss=self.loss_function,
