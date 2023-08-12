@@ -8,3 +8,4 @@ tensorflow-gpu==2.5
 tensorflow~=2.5.0
 numpy~=1.19.5
 matplotlib~=3.5.2
+keras-unet-collection==0.1.13
