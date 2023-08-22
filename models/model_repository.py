@@ -922,8 +922,8 @@ class ModelRepository:
                                                       stack_num_up=2,
                                                       embed_dim=192,  # default: 768
                                                       num_mlp=768,  # default: 3072
-                                                      num_heads=12,  # default: 12
-                                                      num_transformer=12,  # default: 12
+                                                      num_heads=2,  # default: 12
+                                                      num_transformer=2,  # default: 12
                                                       activation='ReLU',
                                                       mlp_activation='GELU',
                                                       batch_norm=False,
@@ -946,7 +946,8 @@ class ModelRepository:
     def swin_unet(self, dim, input_channels, batch_size):
 
         """
-        Swin-Unet implementation derived using base layer which is implemented in https://github.com/yingkaisha/keras-unet-collection/blob/d30f14a259656d2f26ea11ed978255d6a7d0ce37/keras_unet_collection/_model_swin_unet_2d.py#L45
+        Swin-Unet implementation derived using base layer which is implemented in
+        https://github.com/yingkaisha/keras-unet-collection/blob/d30f14a259656d2f26ea11ed978255d6a7d0ce37/keras_unet_collection/_model_swin_unet_2d.py#L45
 
         :param dim: dimension of inputs
         :param input_channels: number of bands/layers of input
@@ -957,14 +958,14 @@ class ModelRepository:
         inputs_layer = tf.keras.layers.Input((dim[0], dim[1], input_channels), batch_size=batch_size)
 
         swin_unet_model_base = base.swin_unet_2d_base(inputs_layer,
-                                                      filter_num_begin=96,
+                                                      filter_num_begin=16,
                                                       depth=4,
                                                       stack_num_down=4,
                                                       stack_num_up=4,
                                                       patch_size=(2, 2),
                                                       num_heads=[4, 8, 8, 8],
                                                       window_size=[4, 2, 2, 2],
-                                                      num_mlp=512,
+                                                      num_mlp=128,
                                                       shift_window=True,
                                                       name='swin_unet')
 
@@ -2508,8 +2509,8 @@ class ModelRepository:
                                                       stack_num_up=2,
                                                       embed_dim=192,  # default: 768
                                                       num_mlp=768,  # default: 3072
-                                                      num_heads=12,  # default: 12
-                                                      num_transformer=12,  # default: 12
+                                                      num_heads=2,  # default: 12
+                                                      num_transformer=2,  # default: 12
                                                       activation='ReLU',
                                                       mlp_activation='GELU',
                                                       batch_norm=False,
@@ -2560,8 +2561,8 @@ class ModelRepository:
                                                           stack_num_up=2,
                                                           embed_dim=192,  # default: 768
                                                           num_mlp=768,  # default: 3072
-                                                          num_heads=12,  # default: 12
-                                                          num_transformer=12,  # default: 12
+                                                          num_heads=2,  # default: 12
+                                                          num_transformer=2,  # default: 12
                                                           activation='ReLU',
                                                           mlp_activation='GELU',
                                                           batch_norm=False,
@@ -2579,8 +2580,8 @@ class ModelRepository:
                                                            stack_num_up=2,
                                                            embed_dim=192,  # default: 768
                                                            num_mlp=768,  # default: 3072
-                                                           num_heads=12,  # default: 12
-                                                           num_transformer=12,  # default: 12
+                                                           num_heads=2,  # default: 12
+                                                           num_transformer=2,  # default: 12
                                                            activation='ReLU',
                                                            mlp_activation='GELU',
                                                            batch_norm=False,
@@ -2627,14 +2628,14 @@ class ModelRepository:
         input_sat, input_traj = tf.split(inputs_layer, [input_channels - 1, 1], axis=3)
 
         swin_unet_model_base = base.swin_unet_2d_base(input_sat,
-                                                      filter_num_begin=96,
+                                                      filter_num_begin=16,
                                                       depth=4,
                                                       stack_num_down=4,
                                                       stack_num_up=4,
                                                       patch_size=(2, 2),
                                                       num_heads=[4, 8, 8, 8],
                                                       window_size=[4, 2, 2, 2],
-                                                      num_mlp=512,
+                                                      num_mlp=128,
                                                       shift_window=True,
                                                       name='swin_unet')
 
@@ -2672,26 +2673,26 @@ class ModelRepository:
         input_sat, input_traj = tf.split(inputs_layer, [input_channels - 1, 1], axis=3)
 
         swin_unet_model_base_sat = base.swin_unet_2d_base(input_sat,
-                                                          filter_num_begin=96,
+                                                          filter_num_begin=16,
                                                           depth=4,
                                                           stack_num_down=4,
                                                           stack_num_up=4,
                                                           patch_size=(2, 2),
                                                           num_heads=[4, 8, 8, 8],
                                                           window_size=[4, 2, 2, 2],
-                                                          num_mlp=512,
+                                                          num_mlp=128,
                                                           shift_window=True,
                                                           name='swin_unet_sat')
 
         swin_unet_model_base_traj = base.swin_unet_2d_base(input_traj,
-                                                           filter_num_begin=96,
+                                                           filter_num_begin=16,
                                                            depth=4,
                                                            stack_num_down=4,
                                                            stack_num_up=4,
                                                            patch_size=(2, 2),
                                                            num_heads=[4, 8, 8, 8],
                                                            window_size=[4, 2, 2, 2],
-                                                           num_mlp=512,
+                                                           num_mlp=128,
                                                            shift_window=True,
                                                            name='swin_unet_traj')
 

@@ -9,10 +9,14 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from utils.custom_metrics import create_boundary
 
+from keras_unet_collection.transformer_layers import patch_extract, patch_embedding, SwinTransformerBlock, \
+    patch_merging, patch_expanding
+from keras_unet_collection.activations import GELU
+
 # parameters
 DIMS = (512, 512)
-BATCH_SIZE = 4 # update this line depending on the input batch size
-STEPS = 250 # proportionally update this line depending on the input batch size
+BATCH_SIZE = 4  # update this line depending on the input batch size
+STEPS = 250  # proportionally update this line depending on the input batch size
 
 # set input parameters
 model_no = sys.argv[1]
@@ -91,7 +95,13 @@ def get_generator(input_files,
 test_generator = get_generator(input_files=input_files, test_list=samples, batch_size=BATCH_SIZE, image_dims=DIMS)
 
 # read model
-model = tf.keras.models.load_model(model_path)
+model = tf.keras.models.load_model(model_path, custom_objects={"GELU": GELU,
+                                                               "patch_extract": patch_extract,
+                                                               "patch_embedding": patch_embedding,
+                                                               "SwinTransformerBlock": SwinTransformerBlock,
+                                                               "patch_merging": patch_merging,
+                                                               "patch_expanding": patch_expanding
+                                                               })
 
 # get predictions
 predictions = model.predict(test_generator, steps=STEPS)
@@ -168,7 +178,6 @@ for i in range(STEPS):
         measure_precision_tf.update_state(y, prediction)
         measure_recall_tf.update_state(y, prediction)
         measure_boundary_iou_tf.update_state(y_boundary, prediction_boundary)
-
 
         # Measures from tensorflow-addons library
         measure_f1_tfa.update_state(y, prediction)
