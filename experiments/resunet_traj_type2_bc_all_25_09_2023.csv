@@ -1,0 +1,5 @@
+JOBDEVICE|JOBNAME|MODELNAME|MODELCONFIG|MODELINPUTS
+akya-cuda|ngengec_resunet_bc_mont_traj_average_1|resunet_traj_type2|model_config_remote_bc_average_3.json|['/truba/home/ngengec/sentinel_traj_nn/model_config_files/input_files_remote_small_msi__rgb_traj.json']
+akya-cuda|ngengec_resunet_bc_mont_traj_concat_1|resunet_traj_type2|model_config_remote_bc_concat_3.json|['/truba/home/ngengec/sentinel_traj_nn/model_config_files/input_files_remote_small_msi__rgb_traj.json']
+akya-cuda|ngengec_resunet_bc_mont_traj_maximum_1|resunet_traj_type2|model_config_remote_bc_maximum_3.json|['/truba/home/ngengec/sentinel_traj_nn/model_config_files/input_files_remote_small_msi__rgb_traj.json']
+akya-cuda|ngengec_resunet_bc_mont_traj_multiply_1|resunet_traj_type2|model_config_remote_bc_multiply_3.json|['/truba/home/ngengec/sentinel_traj_nn/model_config_files/input_files_remote_small_msi__rgb_traj.json']
