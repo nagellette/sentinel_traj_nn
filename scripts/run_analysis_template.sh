@@ -10,7 +10,7 @@
 #SBATCH --mail-user=gengec@itu.edu.tr
 #SBATCH --error=/truba/home/ngengec/error_logs/err_%j
 #SBATCH --output=/truba/home/ngengec/output_logs/out_%j
-#SBATCH --time=0-23:59:59
+#SBATCH --time=0-01:59:59
 
 model_id=$MODEL_ID
 model_type=$MODEL_TYPE
