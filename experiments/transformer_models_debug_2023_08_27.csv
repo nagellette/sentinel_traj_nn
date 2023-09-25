@@ -1,0 +1,9 @@
+JOBDEVICE|JOBNAME|MODELNAME|MODELCONFIG|MODELINPUTS
+akya-cuda|ngengec_swin_unet_bc_ist|swin_unet|model_config_remote_bc_3.json|['/truba/home/ngengec/sentinel_traj_nn/model_config_files/input_files_remote_ist_msi.json']
+akya-cuda|ngengec_transunet_bc_ist|transunet|model_config_remote_bc_3.json|['/truba/home/ngengec/sentinel_traj_nn/model_config_files/input_files_remote_ist_msi.json']
+akya-cuda|ngengec_swin_unet_bc_ist_traj|swin_unet|model_config_remote_bc_3.json|['/truba/home/ngengec/sentinel_traj_nn/model_config_files/input_files_remote_ist_msi_traj.json']
+akya-cuda|ngengec_transunet_bc_ist_traj|transunet|model_config_remote_bc_3.json|['/truba/home/ngengec/sentinel_traj_nn/model_config_files/input_files_remote_ist_msi_traj.json']
+akya-cuda|ngengec_swin_unet_bc_ist_traj|swin_unet_traj_type1|model_config_remote_bc_3.json|['/truba/home/ngengec/sentinel_traj_nn/model_config_files/input_files_remote_ist_msi_traj.json']
+akya-cuda|ngengec_transunet_bc_ist_traj|transunet_traj_type1|model_config_remote_bc_3.json|['/truba/home/ngengec/sentinel_traj_nn/model_config_files/input_files_remote_ist_msi_traj.json']
+akya-cuda|ngengec_swin_unet_bc_ist_traj|swin_unet_traj_type2|model_config_remote_bc_3.json|['/truba/home/ngengec/sentinel_traj_nn/model_config_files/input_files_remote_ist_msi_traj.json']
+akya-cuda|ngengec_transunet_bc_ist_traj|transunet_traj_type2|model_config_remote_bc_3.json|['/truba/home/ngengec/sentinel_traj_nn/model_config_files/input_files_remote_ist_msi_traj.json']
