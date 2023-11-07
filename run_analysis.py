@@ -30,11 +30,17 @@ batch_path = "/truba/home/ngengec/sentinel_traj_nn/batch_analysis"
 result_file_all = pd.read_csv("{}/output_all.csv".format(batch_path))
 result_file_removed = pd.read_csv("{}/output_removed.csv".format(batch_path))
 
-# UPDATE these depending on the input dataset in use.
+# Comment out the following for evaluating RGBI models
 mont_msi = "input_files_remote_small_msi_rgb"  # input_files_remote_small_msi
 mont_traj = "input_files_remote_small_msi_rgb_traj"  # input_files_remote_small_msi_traj
 ist_msi = "input_files_remote_ist_msi_rgb"  # input_files_remote_ist_msi.json
 ist_traj = "input_files_remote_ist_msi_rgb_traj"  # input_files_remote_ist_msi_traj.json
+
+# Comment out the following for evaluating RGB models
+# mont_msi = "input_files_remote_small_msi"  # input_files_remote_small_msi_rgb
+# mont_traj = "input_files_remote_small_msi_traj"  # input_files_remote_small_msi_rgb_traj
+# ist_msi = "input_files_remote_ist_msi"  # input_files_remote_ist_msi_rgb
+# ist_traj = "input_files_remote_ist_msi_traj"  # input_files_remote_ist_msi_rgb_traj
 
 # set inputs
 if model_area == "ist":
