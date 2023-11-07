@@ -1059,7 +1059,7 @@ class ModelRepository:
 
         fusion_layer = get_fusion_layer(fusion_type, output_layer1, output_layer2)
 
-        if fusion_type == "concat":
+        if fusion_type == "concat" or fusion_type == "multiheadattention":
             fusion_layer = Conv2D(2, (1, 1), padding="same", activation="sigmoid")(fusion_layer)
 
         self.model = tf.keras.Model(inputs=inputs_layer, outputs=fusion_layer)
@@ -1208,7 +1208,7 @@ class ModelRepository:
 
         fusion_layer = get_fusion_layer(fusion_type, output_layer1, output_layer2)
 
-        if fusion_type == "concat":
+        if fusion_type == "concat" or fusion_type == "multiheadattention":
             fusion_layer = Conv2D(2, (1, 1), padding="same", activation="sigmoid")(fusion_layer)
 
         self.model = tf.keras.Model(inputs=inputs_layer, outputs=fusion_layer)
@@ -1363,7 +1363,7 @@ class ModelRepository:
 
         fusion_layer = get_fusion_layer(fusion_type, output_layer1, output_layer2)
 
-        if fusion_type == "concat":
+        if fusion_type == "concat" or fusion_type == "multiheadattention":
             fusion_layer = Conv2D(2, (1, 1), padding="same", activation="sigmoid")(fusion_layer)
 
         self.model = tf.keras.Model(inputs=inputs_layer, outputs=fusion_layer)
@@ -1639,7 +1639,7 @@ class ModelRepository:
 
         fusion_layer = get_fusion_layer(fusion_type, output_layer1, output_layer2)
 
-        if fusion_type == "concat":
+        if fusion_type == "concat" or fusion_type == "multiheadattention":
             fusion_layer = Conv2D(2, (1, 1), padding="same", activation="sigmoid")(fusion_layer)
 
         self.model = tf.keras.Model(inputs=inputs_layer, outputs=fusion_layer)
@@ -1929,7 +1929,7 @@ class ModelRepository:
 
         fusion_layer = get_fusion_layer(fusion_type, output_layer1, output_layer2)
 
-        if fusion_type == "concat":
+        if fusion_type == "concat" or fusion_type == "multiheadattention":
             fusion_layer = Conv2D(2, (1, 1), padding="same", activation="sigmoid")(fusion_layer)
 
         self.model = tf.keras.Model(inputs=inputs_layer, outputs=fusion_layer)
@@ -2476,7 +2476,7 @@ class ModelRepository:
 
         fusion_layer = get_fusion_layer(fusion_type, output_layer1, output_layer2)
 
-        if fusion_type == "concat":
+        if fusion_type == "concat" or fusion_type == "multiheadattention":
             fusion_layer = Conv2D(2, (1, 1), padding="same", activation="sigmoid")(fusion_layer)
 
         self.model = tf.keras.Model(inputs=inputs_layer, outputs=fusion_layer)
@@ -2527,7 +2527,7 @@ class ModelRepository:
 
         fusion_layer = get_fusion_layer(fusion_type, output_layer1, output_layer2)
 
-        if fusion_type == "concat":
+        if fusion_type == "concat" or fusion_type == "multiheadattention":
             fusion_layer = Conv2D(2, (1, 1), padding="same", activation="sigmoid")(fusion_layer)
 
         self.model = tf.keras.Model(inputs=inputs_layer, outputs=fusion_layer)
@@ -2599,7 +2599,7 @@ class ModelRepository:
 
         fusion_layer = get_fusion_layer(fusion_type, output_layer1, output_layer2)
 
-        if fusion_type == "concat":
+        if fusion_type == "concat" or fusion_type == "multiheadattention":
             fusion_layer = Conv2D(2, (1, 1), padding="same", activation="sigmoid")(fusion_layer)
 
         self.model = tf.keras.Model(inputs=inputs_layer, outputs=fusion_layer)
@@ -2644,7 +2644,7 @@ class ModelRepository:
 
         fusion_layer = get_fusion_layer(fusion_type, output_layer1, output_layer2)
 
-        if fusion_type == "concat":
+        if fusion_type == "concat" or fusion_type == "multiheadattention":
             fusion_layer = Conv2D(2, (1, 1), padding="same", activation="sigmoid")(fusion_layer)
 
         self.model = tf.keras.Model(inputs=inputs_layer, outputs=fusion_layer)
@@ -2702,7 +2702,7 @@ class ModelRepository:
 
         fusion_layer = get_fusion_layer(fusion_type, output_layer1, output_layer2)
 
-        if fusion_type == "concat":
+        if fusion_type == "concat" or fusion_type == "multiheadattention":
             fusion_layer = Conv2D(2, (1, 1), padding="same", activation="sigmoid")(fusion_layer)
 
         self.model = tf.keras.Model(inputs=inputs_layer, outputs=fusion_layer)
