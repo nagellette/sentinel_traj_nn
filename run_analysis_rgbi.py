@@ -30,21 +30,27 @@ batch_path = "/truba/home/ngengec/sentinel_traj_nn/batch_analysis"
 result_file_all = pd.read_csv("{}/output_all.csv".format(batch_path))
 result_file_removed = pd.read_csv("{}/output_removed.csv".format(batch_path))
 
+# UPDATE these depending on the input dataset in use.
+mont_msi = "input_files_remote_small_msi_rgb"  # input_files_remote_small_msi
+mont_traj = "input_files_remote_small_msi_rgb_traj"  # input_files_remote_small_msi_traj
+ist_msi = "input_files_remote_ist_msi_rgb"  # input_files_remote_ist_msi.json
+ist_traj = "input_files_remote_ist_msi_rgb_traj"  # input_files_remote_ist_msi_traj.json
+
 # set inputs
 if model_area == "ist":
     samples = get_sample_list("{}/test_samples/".format(batch_path), "_test_list_ist.csv", sample_count=1000,
                               dataset_index=0)
     if model_type == "traj":
-        input_files = ['/truba/home/ngengec/sentinel_traj_nn/model_config_files/input_files_remote_ist_msi_traj.json']
+        input_files = [f'/truba/home/ngengec/sentinel_traj_nn/model_config_files/{ist_traj}.json']
     else:
-        input_files = ['/truba/home/ngengec/sentinel_traj_nn/model_config_files/input_files_remote_ist_msi.json']
+        input_files = [f'/truba/home/ngengec/sentinel_traj_nn/model_config_files/{ist_msi}.json']
 elif model_area == "mont":
     samples = get_sample_list("{}/test_samples/".format(batch_path), "_test_list_mont.csv", sample_count=1000,
                               dataset_index=0)
     if model_type == "traj":
-        input_files = ['/truba/home/ngengec/sentinel_traj_nn/model_config_files/input_files_remote_small_msi_traj.json']
+        input_files = [f'/truba/home/ngengec/sentinel_traj_nn/model_config_files/{mont_traj}.json']
     else:
-        input_files = ['/truba/home/ngengec/sentinel_traj_nn/model_config_files/input_files_remote_small_msi.json']
+        input_files = [f'/truba/home/ngengec/sentinel_traj_nn/model_config_files/{mont_msi}.json']
 else:
     samples = get_sample_list("{}/test_samples/".format(batch_path), "_test_list_mont.csv", sample_count=500,
                               dataset_index=1)
@@ -54,11 +60,11 @@ else:
         samples.append(sample)
 
     if model_type == "traj":
-        input_files = ['/truba/home/ngengec/sentinel_traj_nn/model_config_files/input_files_remote_ist_msi_traj.json',
-                       '/truba/home/ngengec/sentinel_traj_nn/model_config_files/input_files_remote_small_msi_traj.json']
+        input_files = [f'/truba/home/ngengec/sentinel_traj_nn/model_config_files/{ist_traj}.json',
+                       f'/truba/home/ngengec/sentinel_traj_nn/model_config_files/{mont_traj}.json']
     else:
-        input_files = ['/truba/home/ngengec/sentinel_traj_nn/model_config_files/input_files_remote_ist_msi.json',
-                       '/truba/home/ngengec/sentinel_traj_nn/model_config_files/input_files_remote_small_msi.json']
+        input_files = [f'/truba/home/ngengec/sentinel_traj_nn/model_config_files/{ist_msi}.json',
+                       f'/truba/home/ngengec/sentinel_traj_nn/model_config_files/{mont_msi}.json']
 
 
 # generator

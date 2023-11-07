@@ -18,6 +18,10 @@ def get_fusion_layer(fusion_type, input1, input2):
         return tf.keras.layers.Multiply()([input1, input2])
     elif fusion_type == "concat":
         return tf.keras.layers.Concatenate(axis=3)([input1, input2])
+    elif fusion_type == "multiheadattention":
+        concat_level = tf.keras.layers.Concatenate(axis=3)([input1, input2])
+        multihead_level = tf.keras.layers.MultiHeadAttention(num_heads=8, key_dim=8, attention_axes=(2, 3))
+        return multihead_level(concat_level, concat_level)
     else:
         print("Fusion type not defined!")
         return -1
