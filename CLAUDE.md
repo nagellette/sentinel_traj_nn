@@ -1,0 +1,6 @@
+# Claude Code entry point — Agent Seed
+
+Follow `docs/AGENT_GUIDELINES.md` as the shared operating contract.
+On startup read `vault/INDEX.md`, `vault/projects/PROJECT.md`, `vault/CURRENT_STATE.md`, and `vault/TODOS.md`; inspect the latest worklog and Git status before continuing.
+Claude skills are in `.claude/skills/`. Use these for project-bootstrap, session-handoff, knowledge-curation, and verification.
+Maintain checkpoint files during substantial work. Do not silently commit or push.
