@@ -9,10 +9,9 @@ REQUIRED = [
     '.codex/config.toml', '.claude/settings.json', 'vault/INDEX.md', 'vault/projects/PROJECT.md',
     'vault/CURRENT_STATE.md', 'vault/TODOS.md', 'vault/projects/PLANS.md',
     'vault/kb/decisions.md', 'vault/worklogs/README.md',
-    '.agents/skills/session-handoff/SKILL.md',
-    '.agents/skills/project-bootstrap/SKILL.md',
-    '.claude/skills/project-bootstrap/SKILL.md',
-    '.claude/skills/session-handoff/SKILL.md',
+    *[f'{harness}/skills/{skill}/SKILL.md'
+      for harness in ('.agents', '.claude')
+      for skill in ('project-bootstrap', 'session-handoff', 'knowledge-curation', 'verification')],
 ]
 errors = []
 for name in REQUIRED:

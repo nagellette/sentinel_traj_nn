@@ -1,10 +1,10 @@
 # Agent Seed
 
-A reusable, Git-first project seed for Codex and Claude Code and Claude Code. New projects inherit a foundation of agent instructions, reusable skills, engineering practices, and structured knowledge. As each project evolves, its decisions and progress stay durable across sessions, while transferable lessons can be contributed back to the seed for future projects.
+A reusable, Git-first project seed for Codex and Claude Code. New projects inherit a foundation of agent instructions, reusable skills, engineering practices, and structured knowledge. As each project evolves, its decisions and progress stay durable across sessions, while transferable lessons can be contributed back to the seed for future projects.
 
 ## Inspiration and attribution
 
-This template is inspired by Eugene Yan’s article **[How to Work and Compound with AI](https://eugeneyan.com/writing/working-with-ai/)**. It adapts ideas such as persistent context, reusable instructions and skills, verification, and continuous improvement into a **general-purpose project template for Codex and Claude Code and Claude Code**.
+This template is inspired by Eugene Yan’s article **[How to Work and Compound with AI](https://eugeneyan.com/writing/working-with-ai/)**. It adapts ideas such as persistent context, reusable instructions and skills, verification, and continuous improvement into a **general-purpose project template for Codex and Claude Code**.
 
 It is an independent, community-style adaptation—not an official template by Eugene Yan or OpenAI, and not a one-to-one reproduction of the article’s Claude-oriented setup. The repository-local `vault/` and session-handoff conventions are deliberate changes to make new projects portable and resumable across agent sessions.
 
