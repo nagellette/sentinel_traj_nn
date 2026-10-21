@@ -9,6 +9,7 @@ This repository is a fresh template. No application implementation has been star
 
 ## Most recent verified results
 - Template structure created; project-specific checks not yet configured.
+- 2026-10-21: Template fixes — validator now requires all 4 skills in both harnesses (21 files); `tests/test_context.py` converted to unittest (2 tests run); README typo fixed; `.claude/settings.json` allowlists the validator and test commands. `check_context.py` OK, unittest 2/2 OK.
 
 ## In progress
 - Define `vault/projects/PROJECT.md` and initial milestones.
