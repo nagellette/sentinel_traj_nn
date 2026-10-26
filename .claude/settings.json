@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(python3 scripts/check_context.py)",
-      "Bash(python3 -m unittest discover -s tests -p 'test_*.py')"
+      "Bash(python3 -m unittest discover -s tests -p 'test_*.py')",
+      "Bash(python3 -m unittest tests.test_models_smoke -v)"
     ]
   }
 }
