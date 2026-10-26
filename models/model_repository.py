@@ -3,7 +3,7 @@ import sys
 import tensorflow as tf
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Conv2DTranspose, concatenate, BatchNormalization, \
     Activation, Add
-from tensorflow.python.keras.layers import AveragePooling2D
+from tensorflow.keras.layers import AveragePooling2D
 
 from keras_unet_collection import base
 

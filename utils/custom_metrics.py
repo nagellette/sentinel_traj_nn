@@ -3,8 +3,8 @@ from __future__ import division
 from __future__ import print_function
 
 import tensorflow as tf
-from tensorflow.python.keras import backend as K
-from tensorflow.python.keras.metrics import Metric
+from tensorflow.keras import backend as K
+from tensorflow.keras.metrics import Metric
 
 import numpy as np
 
