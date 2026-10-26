@@ -9,16 +9,14 @@ bash Miniconda3-latest-Linux-x86_64.sh
 ```shell
 eval "$(/truba/home/$USER/miniconda3/bin/conda shell.bash hook)"
 conda update conda
-conda create --name tensorflow_2.5
-conda activate tensorflow_2.5
+conda create --name tensorflow_2.15
+conda activate tensorflow_2.15
 ```
 
-- Install Tensorflow dependencies and GDAL with conda
+- Install Python and GDAL with conda (CUDA 12.2 / cuDNN 8.9 are installed by pip via `tensorflow[and-cuda]`, GPU driver must be >= 525, check with `nvidia-smi`)
 ```shell
-conda install python=3.8
-conda install -c conda-forge cudatoolkit=11.2
-conda install -c conda-forge cudnn=8.1
-conda install -c conda-forge gdal=3.3.2
+conda install python=3.11
+conda install -c conda-forge gdal=3.13.1 numpy=1.26.4
 ```
 
 - Install `requirements.txt` with pip (comment out GDAL while installing to remote)
@@ -43,7 +41,7 @@ fi
 unset __conda_setup
 # <<< conda initialize <<<
 
-conda activate tensorflow_2.5
+conda activate tensorflow_2.15
 ```
 
 - Check file counts of folders
