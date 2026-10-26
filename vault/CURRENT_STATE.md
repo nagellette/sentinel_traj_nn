@@ -2,7 +2,7 @@
 
 Last checkpoint: **2026-10-26 22:43 CET**
 Project phase: **maintenance — security dependency upgrade**
-Branch / last known commit: **`agents_seed_integration`** (based on `security_dependency_upgrade` @ `b3fbdbc`); nothing pushed yet
+Branch / last known commit: **`agents_seed_integration`**; security upgrade merged to `master` via PR #169 (`e36c954`)
 Latest worklog: `vault/worklogs/2026-10-26-2243-security-upgrade.md`
 
 ## One-paragraph status
@@ -15,7 +15,7 @@ Research code for road extraction from Sentinel-2 + GPS trajectories. Dependenci
 - 2026-10-26: `python3 scripts/check_context.py` and `python3 -m unittest discover -s tests -p 'test_*.py'` pass (see worklog).
 
 ## In progress
-- Branches `security_dependency_upgrade` and `agents_seed_integration` are local only; push and PRs pending (T-004).
+- PR for `agents_seed_integration` → `master` opened; confirm Dependabot alerts close after the rescan of `master` (T-004).
 
 ## Risks, unknowns, blockers
 - Not tested: GPU on TRUBA (driver must be >= 525 for CUDA 12.2), GDAL with real rasters, loading models saved under TF 2.5.
@@ -23,7 +23,7 @@ Research code for road extraction from Sentinel-2 + GPS trajectories. Dependenci
 - Pre-upgrade working version for reproducing old results: commit `105f842`.
 
 ## Next actions (ordered)
-1. Push `security_dependency_upgrade`, open PR to `master` (T-004).
+1. Merge the Agent Seed PR (merge commit, keeps template history) and confirm the alerts closed (T-004).
 2. Build the TRUBA environment and run the smoke test there (T-001).
 3. Short real training run and old-model reload (T-002, T-003).
 

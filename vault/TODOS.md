@@ -3,7 +3,7 @@
 Use checkboxes and stable identifiers. Move completed items to Done periodically; include acceptance criteria where possible.
 
 ## Now
-- [ ] T-004 — Push `security_dependency_upgrade` and `agents_seed_integration`, open PRs to `master`. Done when merged and the Dependabot alerts page shows the alerts closed.
+- [ ] T-004 — Merge both PRs to `master` with merge commits (security upgrade: PR #169, merged 2026-10-26; Agent Seed: open). Done when both are merged and the Dependabot alerts page shows the alerts closed.
 - [ ] T-001 — Create the TRUBA conda env per `truba_docs/TRUBA_ENV_INST.md`. Done when `nvidia-smi` shows driver >= 525, `python -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"` lists a GPU, `from osgeo import gdal` works, and `python3 -m unittest tests.test_models_smoke -v` passes.
 
 ## Next
