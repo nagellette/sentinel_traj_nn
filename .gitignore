@@ -9,3 +9,31 @@ cache/*
 /venv
 /env
 __pycache__
+
+# Credentials and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Python / general runtime files
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.venv/
+venv/
+node_modules/
+*.log
+.tmp/
+.cache/
+
+# Local agent runtime state and transcripts must not be committed.
+# Keep repository .codex/config.toml and .claude/settings.json tracked.
+
+# Output artifacts
+build/
+dist/
+coverage/
