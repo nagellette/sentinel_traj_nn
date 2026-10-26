@@ -25,6 +25,11 @@ Extract road networks as binary segmentation masks from Sentinel-2 multispectral
 ## Stakeholders / users
 Repository owner (research project).
 
+## References
+- Publication: Gengec, Tari, Bagci (2024), *Earth Science Informatics* 17(2):1013–1029, doi:10.1007/s12145-023-01201-6 (preprint arXiv:2312.17040).
+- PhD thesis: YÖK National Thesis Center link in `README.md`.
+- Dataset: Hugging Face `negengec/sentinel_trajectory_ist_mont` (CC-BY-4.0), see `Data.md`.
+
 ## Stack and commands
 - Runtime / versions: Python 3.11, TensorFlow 2.15.1 (Keras 2.15), CUDA 12.2 / cuDNN 8.9 via `tensorflow[and-cuda]`, GDAL 3.13.1 (conda-forge), numpy 1.26.4. Full pins in `requirements.txt`.
 - Setup: `truba_docs/TRUBA_ENV_INST.md` (conda for Python + GDAL, then `pip install -r requirements.txt`); copy `.env_template` to `~/.env` and set paths.
