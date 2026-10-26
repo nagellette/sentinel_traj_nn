@@ -18,4 +18,11 @@
 - Truba python environment installation instructions are [here](./truba_docs/TRUBA_ENV_INST.md)
 - [Data](./Data.md)
 
+#### Working with agents
+
+This repository uses the [Agent Seed](https://github.com/nagellette/agents-seed) template (see [docs/AGENT_SEED.md](./docs/AGENT_SEED.md)).
+- Entry points: [AGENTS.md](./AGENTS.md) (Codex) and [CLAUDE.md](./CLAUDE.md) (Claude Code), with shared rules in [docs/AGENT_GUIDELINES.md](./docs/AGENT_GUIDELINES.md).
+- Project state, tasks and decisions: [vault/](./vault/INDEX.md).
+- Checks: `python3 scripts/check_context.py`, `python3 -m unittest discover -s tests -p 'test_*.py'`, and the model smoke test `python3 -m unittest tests.test_models_smoke -v` (needs the full environment).
+
  

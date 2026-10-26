@@ -1,27 +1,31 @@
 # Current state
 
-Last checkpoint: **2026-10-21 09:45 CEST**
-Project phase: **bootstrap**
-Branch / last known commit: **`fix/template-checks` @ `7dfd7f8` (reviewed)**
+Last checkpoint: **2026-10-26 22:43 CET**
+Project phase: **maintenance — security dependency upgrade**
+Branch / last known commit: **`agents_seed_integration`** (based on `security_dependency_upgrade` @ `b3fbdbc`); nothing pushed yet
+Latest worklog: `vault/worklogs/2026-10-26-2243-security-upgrade.md`
 
 ## One-paragraph status
-This repository is a fresh template. No application implementation has been started.
+Research code for road extraction from Sentinel-2 + GPS trajectories. Dependencies were upgraded to fix the GitHub security alerts (TF 2.5 → 2.15.1, Python 3.11, Pillow 13, GDAL 3.13.1, ...) with small compatibility fixes, and Agent Seed was merged in with its history. The upgraded stack has only been verified on CPU with random data.
 
 ## Most recent verified results
-- Template structure created; project-specific checks not yet configured.
-- 2026-10-21: Template fixes — validator now requires all 4 skills in both harnesses (21 files); `tests/test_context.py` converted to unittest (2 tests run); README typo fixed; `.claude/settings.json` allowlists the validator and test commands. `check_context.py` OK, unittest 2/2 OK.
-- 2026-10-21: Added `tests/test_validator_regressions.py` (removes each of the 8 required skill files in a temp copy; expects exit 1 and `Missing or empty: <path>`). `check_context.py` OK (21 files), unittest 4/4 OK, `git diff --check` clean.
+- 2026-10-26: `pip install --dry-run` for linux x86_64 / Python 3.11 resolves `requirements.txt` (without GDAL) including CUDA 12.2 / cuDNN 8.9 wheels.
+- 2026-10-26: conda-forge has GDAL 3.13.1 linux-64 py311 builds requiring `numpy >=1.23,<3`.
+- 2026-10-26: CPU smoke test on macOS arm64 (TF 2.15.1, tfa 0.23.0, numpy 1.26.4) — 71/71 cases pass: all 19 models, 5 fusion types, 7 losses × 2 optimizers, metrics as in `run_analysis.py`, SavedModel + `.h5` save/reload.
+- 2026-10-26: `python3 scripts/check_context.py` and `python3 -m unittest discover -s tests -p 'test_*.py'` pass (see worklog).
 
 ## In progress
-- Define `vault/projects/PROJECT.md` and initial milestones.
+- Branches `security_dependency_upgrade` and `agents_seed_integration` are local only; push and PRs pending (T-004).
 
 ## Risks, unknowns, blockers
-- Technology, requirements, and acceptance criteria still undecided.
+- Not tested: GPU on TRUBA (driver must be >= 525 for CUDA 12.2), GDAL with real rasters, loading models saved under TF 2.5.
+- TF 2.15 and tensorflow-addons are end-of-life (ADR-2026-001).
+- Pre-upgrade working version for reproducing old results: commit `105f842`.
 
 ## Next actions (ordered)
-1. Fill project charter with user.
-2. Convert outcomes into actionable tasks in `vault/TODOS.md`.
-3. Establish test/build commands and first implementation milestone.
+1. Push `security_dependency_upgrade`, open PR to `master` (T-004).
+2. Build the TRUBA environment and run the smoke test there (T-001).
+3. Short real training run and old-model reload (T-002, T-003).
 
 ## Recovery notes
 Start by reviewing Git status/diff and this file. If a session ended unexpectedly, validate the working tree before trusting the last narrative checkpoint.

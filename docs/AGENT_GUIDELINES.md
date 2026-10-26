@@ -35,6 +35,14 @@ This repository starts from **Agent Seed**, a reusable project foundation that c
 - Prefer explicit paths relative to repository root. Do not assume access to external `~/vault/` or global agent settings.
 - Project-specific engineering/build/test commands belong here once established. Until then inspect the project before choosing commands.
 
+## Project-specific commands
+
+- Context checks (stdlib, also run in CI): `python3 scripts/check_context.py` and `python3 -m unittest discover -s tests -p 'test_*.py'`.
+- Model smoke test (needs the full environment from `requirements.txt`; CPU is enough): `python3 -m unittest tests.test_models_smoke -v`. Run it after any dependency, model, loss, metric or optimizer change.
+- Training and analysis entry points (`run_model.py`, `run_experiments.py`, `run_batch_analysis.py`) need data and `~/.env`; their arguments are in `scripts/README.md`. Real runs happen on TRUBA via SLURM; do not submit jobs (`sbatch`) without explicit approval.
+- Never commit `.env`, data rasters, or model outputs; never add credentials or cluster account details to `vault/`.
+- Template updates: `git fetch seed && git merge seed/main` (remote `seed` = `https://github.com/nagellette/agents-seed.git`); keep project-specific files on conflict and review skill changes in both harness copies.
+
 ## Skill routing
 
 Use the harness-specific skills folder for bootstrap, handoff, knowledge-curation, and verification. Keep shared vault documentation authoritative. Harness-specific skills may evolve independently.

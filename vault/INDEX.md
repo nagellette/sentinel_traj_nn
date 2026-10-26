@@ -13,5 +13,10 @@ Read this index first. Load only the documents needed for the current task. Upda
 | `kb/conventions.md` | Coding and verification expectations | When contributing code |
 | `notes/README.md` | Exploratory notes and sources | Research-oriented work |
 | `worklogs/` | Dated evidence-rich checkpoints and handoffs | Latest handoff at startup; older only if relevant |
+| `../scripts/README.md` | Model names, run arguments, experiment/batch table formats | Before running or adding models |
+| `../truba_docs/` | TRUBA environment setup and SLURM commands | Environment or cluster work |
+| `../model_config_files/` | Training (`model_config_*`) and input raster (`input_files_*`) configs | Before changing run parameters |
+| `../Data.md` | Link to the external dataset | Data questions |
+| `../docs/AGENT_SEED.md` | Upstream Agent Seed README and attribution | Updating the template (`git merge seed/main`) |
 
 **Truth ordering:** explicit new user instructions > current code/configuration/test results > maintained current-state docs > historical worklogs. Flag conflicts instead of guessing.
